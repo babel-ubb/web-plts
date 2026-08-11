@@ -130,12 +130,14 @@
       border: none;
       transition: color 0.3s;
     }
-    .status-online {
-      color: #00e676;
+    
+.status-online {
+      color: #00e676; /* Hapus penggunaan var() karena ini langsung kode warna hex */
     }
     .status-offline {
-      color: var(--text-muted);
+      color: var(--danger-color); /* Tetap gunakan var() karena memanggil variabel */
     }
+
 
     .status-note {
       font-size: 14px;
