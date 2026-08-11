@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pemantauan dan Pengendalian PLTS - Teknik Elektro UBB</title>
+
+  <!-- Firebase Web SDK v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <!-- Chart.js Library untuk Grafik (Versi 2.9.4) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --card-inner-bg: #181818;
+      --text-color: #ffffff;
+      --text-muted: #cccccc;
+      --border-color: #333333;
+      --primary-color: #00e676;
+      --danger-color: #ff5252;
+      --warning-color: #ff9800;
+      --chart-grid: rgba(255,255,255,0.15);
+      --sub-heading-color: #3399ff;
+      --color-v: #ff5252;
+      --color-i: #3399ff;
+      --color-p: #ff5252;
+      --color-irr: #3399ff;
+      --color-energy: #00e676;
+      
+      --btn-blue-bg: #0284c7;
+      --btn-blue-hover: #0369a1;
+      --box-blue-color: #0284c7;
+      --realtime-value-color: #3399ff;
+      
+      --slider-track: #38bdf8;
+      --slider-thumb: #38bdf8;
+    }
+
+    body.light-mode {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --card-inner-bg: #f1f5f9;
+      --text-color: #0f172a;
+      --text-muted: #475569;
+      --border-color: #cbd5e1;
+      --primary-color: #0d9488;
+      --danger-color: #e11d48;
+      --warning-color: #d97706;
+      --chart-grid: rgba(0, 0, 0, 0.15);
+      --sub-heading-color: #0066cc;
+      --color-v: #e11d48;
+      --color-i: #2563eb;
+      --color-p: #e11d48;
+      --color-irr: #2563eb;
+      --color-energy: #0d9488;
+
+      --btn-blue-bg: #0284c7;
+      --btn-blue-hover: #0369a1;
+      --box-blue-color: #0284c7;
+      --realtime-value-color: #2563eb;
+
+      --slider-track: #38bdf8;
+      --slider-thumb: #38bdf8;
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+    body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; transition: background-color 0.3s, color 0.3s; font-size: 16px; }
+    
+    header { 
+      position: relative;
+      text-align: center; 
+      margin-bottom: 25px; 
+      padding-bottom: 12px; 
+      border-bottom: 2px solid var(--border-color); 
+    }
+    
+    .sub-title {
+      color: #3399ff;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    h1 { color: var(--primary-color); font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
+    
+    .status { 
+      font-size: 16px; 
+      font-weight: 500;
+      color: var(--text-muted); 
+      margin-top: 6px; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .theme-toggle-btn {
+      background: var(--btn-blue-bg);
+      border: 2px solid var(--btn-blue-bg);
+      color: #ffffff;
+      padding: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .theme-toggle-btn:hover {
+      background: var(--btn-blue-hover);
+      border-color: var(--btn-blue-hover);
+    }
+
+    .status-badge {
+      font-weight: 500;
+      font-size: 16px;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      border: none;
+      transition: color 0.3s;
+    }
+    .status-online {
+      color: #00e676;
+    }
+    .status-offline {
+      color: var(--text-muted);
+    }
+
+    .status-note {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .control-section {
+      max-width: 1200px;
+      margin: 0 auto 25px auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .control-section h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 16px;
+    }
+
+    .control-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mode-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-mode {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 2px solid var(--btn-blue-bg);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+      background: var(--card-inner-bg);
+      color: var(--btn-blue-bg);
+    }
+
+    .btn-mode:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-mode.active-auto, .btn-mode.active-manual {
+      background: var(--btn-blue-bg);
+      color: #ffffff;
+      border-color: var(--btn-blue-bg);
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: var(--card-inner-bg);
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      transition: opacity 0.3s;
+    }
+
+    .slider-container label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      width: 180px;
+      height: 8px;
+      border-radius: 5px;
+      background: var(--slider-track);
+      outline: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--slider-thumb);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+    }
+    
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--slider-thumb);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+    }
+
+    .slider:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .slider-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: #38bdf8;
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .control-duty-realtime {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card-inner-bg);
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      transition: opacity 0.3s;
+    }
+
+    .control-duty-realtime label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .control-duty-realtime .val-box {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--realtime-value-color);
+    }
+
+    .control-duty-realtime .unit-box {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .dashboard-grid {
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
+    }
+
+    .realtime-grouped-box {
+      background: var(--card-bg);
+      border: 2px solid var(--box-blue-color);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .realtime-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .realtime-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--box-blue-color);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1024px) {
+      .grid-container { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 540px) {
+      .grid-container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-inner-bg);
+      border-radius: 12px;
+      padding: 16px 12px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 95px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      border-color: var(--box-blue-color);
+    }
+
+    .card h3 { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.6px; }
+    .card .value { font-size: 24px; font-weight: 800; color: var(--realtime-value-color); margin: auto 0; line-height: 1.1; }
+    .card .unit { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
+
+    .charts-wrapper {
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .chart-box {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .chart-box h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .esp-memory-box {
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .esp-memory-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      text-align: center;
+    }
+
+    .esp-memory-box span {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .esp-memory-box strong {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--warning-color);
+    }
+
+    .history-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 22px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .history-section h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .filter-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .filter-group { display: flex; align-items: center; gap: 8px; }
+    .filter-group label { font-size: 15px; font-weight: 600; color: var(--text-muted); }
+    
+    .filter-group input[type="date"], .filter-group select {
+      background: var(--card-inner-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .filter-group input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(39%) sepia(97%) saturate(1478%) hue-rotate(175deg) brightness(94%) contrast(97%);
+      cursor: pointer;
+    }
+
+    .btn-search, .btn-export, .btn-clear, .btn-action-custom {
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      background: var(--btn-blue-bg);
+      color: #ffffff;
+      transition: 0.2s;
+    }
+    .btn-search:hover, .btn-export:hover, .btn-clear:hover, .btn-action-custom:hover { background: var(--btn-blue-hover); }
+
+    .history-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card {
+      background: var(--card-inner-bg);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .summary-card span { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .summary-card strong { font-size: 17px; font-weight: 800; color: var(--primary-color); margin-top: 4px; display: block; }
+
+    .history-charts-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .history-chart-box {
+      background: var(--card-inner-bg);
+      border-radius: 8px;
+      padding: 18px;
+      border: 1px solid var(--border-color);
+    }
+
+    .history-chart-box h3 {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .history-table-box {
+      background: var(--card-inner-bg);
+      border-radius: 8px;
+      padding: 18px;
+      border: 1px solid var(--border-color);
+      margin-top: 20px;
+    }
+
+    .history-table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .history-table-header .table-action-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .history-table-box h3 {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      flex-grow: 1;
+    }
+
+    .log-rekap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .log-rekap-card {
+      background: var(--card-bg);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .log-rekap-card span {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .log-rekap-card strong {
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 4px;
+      display: block;
+    }
+
+    .table-responsive {
+      max-height: 350px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .log-status-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .log-status-table th, .log-status-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .log-status-table th {
+      background: var(--card-bg);
+      color: var(--primary-color);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+
+    .log-status-table th:hover {
+      background: var(--border-color);
+    }
+
+    .log-status-table tfoot td {
+      background: var(--card-bg);
+      font-weight: 800;
+      color: var(--primary-color);
+      border-top: 2px solid var(--border-color);
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="sub-title">Teknik Elektro UBB</div>
+    <h1>Pemantauan dan Pengendalian PLTS</h1>
+    <p class="status">
+      Status PLTS: 
+      <span id="status-esp" class="status-badge status-offline">Offline</span>
+      <span id="status-note" class="status-note" style="display:none;"></span>
+    </p>
+  </header>
+
+  <!-- SECTION KONTROL MPPT -->
+  <div class="control-section">
+    <h2>Parameter Pengendalian PLTS</h2>
+    <div class="control-box">
+      <div class="mode-buttons">
+        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT</button>
+        <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">MPPT</button>
+        <button id="btn-manual" class="btn-mode" onclick="setMode(true)">MANUAL</button>
+	
+      </div>
+
+      <div class="slider-container" id="slider-container-box">
+        <label for="dutySlider">DUTY CYCLE:</label>
+        <input type="range" min="0" max="100" value="50" class="slider" id="dutySlider" disabled oninput="updateSliderLabel(this.value)" onchange="sendDutyToFirebase(this.value)">
+        <span class="slider-val" id="lbl-slider-val" style="display: none;">50%</span>
+      </div>
+
+      <div class="control-duty-realtime">
+        <label>Duty Cycle:</label>
+        <span class="val-box" id="val-siklus-control">0.0</span>
+        <span class="unit-box">%</span>
+      </div>
+
+      <div id="mppt-mode-info-container" class="control-duty-realtime">
+        <label>Mode MPPT:</label>
+        <span class="val-box" id="val-mppt-mode-info">-</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monitoring Realtime Dashboard -->
+  <div class="dashboard-grid">
+    <div class="realtime-grouped-box">
+      <div class="realtime-header">
+        <h2>Data Real Time (Setiap <span id="interval-label">5</span> detik)</h2>
+      </div>
+      <div class="grid-container">
+        <div class="card iradiah">
+          <h3>Iradiansi</h3>
+          <div class="value" id="val-iradiah">0</div>
+          <div class="unit">W/m²</div>
+        </div>
+
+        <div class="card power">
+          <h3>Daya (P)</h3>
+          <div class="value" id="val-daya">0.00</div>
+          <div class="unit">Watt</div>
+        </div>
+
+        <div class="card voltage">
+          <h3>Tegangan (V)</h3>
+          <div class="value" id="val-tegangan">0.00</div>
+          <div class="unit">Volt</div>
+        </div>
+
+        <div class="card current">
+          <h3>Arus (I)</h3>
+          <div class="value" id="val-arus">0.00</div>
+          <div class="unit">Ampere</div>
+        </div>
+
+        <div class="card duty" style="display: none;">
+          <h3>Duty Cycle</h3>
+          <div class="value" id="val-siklus">0.0</div>
+          <div class="unit">%</div>
+        </div>
+
+        <div class="card energy">
+          <h3>Energi Harian</h3>
+          <div class="value" id="val-energi">0.00</div>
+          <div class="unit">Wh</div>
+        </div>
+
+        <div class="card avg-power">
+          <h3>Daya Rata-rata</h3>
+          <div class="value" id="val-daya-rata">0.00</div>
+          <div class="unit">Watt</div>
+        </div>
+
+        <div class="card avg-irr">
+          <h3>Iradiansi Rata-rata</h3>
+          <div class="value" id="val-irr-rata">0</div>
+          <div class="unit">W/m²</div>
+        </div>
+
+        <div class="card operating-hours">
+          <h3>LAMA OPERASI (PERHARI)</h3>
+          <div class="value" id="val-lama-operasi">0.00</div>
+          <div class="unit">Jam</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grafik Realtime -->
+  <div class="charts-wrapper">
+    <div class="chart-box">
+      <h2>Tegangan (V) & Arus (A)</h2>
+      <canvas id="chartVI" style="max-height: 400px;"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Daya (W) & Iradiansi (W/m²)</h2>
+      <canvas id="chartDayaIrradiance" style="max-height: 400px;"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Duty Cycle (%)</h2>
+      <canvas id="chartDutyCycle" style="max-height: 400px;"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Energi Harian, Daya Rata-rata & Iradiansi Rata-rata</h2>
+      <canvas id="chartRealtimeAkumulasi" style="max-height: 400px;"></canvas>
+    </div>
+  </div>
+
+  <!-- Section Data Historis -->
+  <div class="history-section">
+    <h2>Data Historis</h2>
+    
+    <div class="filter-box">
+      <div class="filter-group">
+        <label for="startDate">AWAL:</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="filter-group">
+        <label for="endDate">AKHIR:</label>
+        <input type="date" id="endDate">
+      </div>
+      <div class="filter-group">
+        <label for="stepSelect">Interval Data:</label>
+        <select id="stepSelect">
+          <option value="5s">5 detik</option>
+          <option value="1m">1 menit</option>
+          <option value="15m">15 menit</option>
+          <option value="30m" selected>30 menit</option>
+          <option value="1h">1 jam</option>
+        </select>
+      </div>
+      <button class="btn-search" onclick="loadHistory()">Tampilkan Data</button>
+     </div>
+
+    <div class="history-summary-grid" id="history-summary">
+      <div class="summary-card">
+        <span>Total Hari</span>
+        <strong id="sum-hari">0</strong>
+      </div>
+      <div class="summary-card">
+        <span>Total Energi</span>
+        <strong id="sum-energi">0.00 Wh</strong>
+      </div>
+      <div class="summary-card">
+        <span>Rata-rata Daya Harian</span>
+        <strong id="sum-daya">0.00 W</strong>
+      </div>
+      <div class="summary-card">
+        <span>Rata-rata Iradiansi Harian</span>
+        <strong id="sum-irr">0 W/m²</strong>
+      </div>
+    </div>
+
+    <div class="history-charts-grid">
+      <div class="history-chart-box">
+        <h3>Energi Harian (Wh)</h3>
+        <canvas id="chartHistoryEnergi" style="max-height: 380px;"></canvas>
+      </div>
+
+      <div class="history-chart-box">
+        <h3>Daya Rata-rata & Iradiansi Rata-rata Harian</h3>
+        <canvas id="chartHistoryDayaIrr" style="max-height: 380px;"></canvas>
+      </div>
+
+      <div class="history-chart-box">
+        <h3>Daya (W) & Iradiansi (W/m²)</h3>
+        <canvas id="chartHistPowerIrr" style="max-height: 380px;"></canvas>
+      </div>
+
+      <div class="history-chart-box">
+        <h3>Tegangan (V) & Arus (A)</h3>
+        <canvas id="chartHistVI" style="max-height: 380px;"></canvas>
+      </div>
+    </div>
+
+    <!-- Tabel Rekapitulasi Harian -->
+    <div class="history-table-box">
+      <div class="history-table-header">
+        <h3 style="text-align: left;">Rekapitulasi Harian</h3>
+        <div class="table-action-btns">
+          <button class="btn-export" onclick="exportToCSV()">UNDUH SEMUA DATA</button>
+          <button class="btn-export" onclick="exportTableToCSV()">UNDUH REKAPITULASI</button>
+        </div>
+      </div>
+      
+      <div class="log-rekap-grid">
+        <div class="log-rekap-card">
+          <span>Total Hari</span>
+          <strong id="rekap-total-hari" style="color: var(--box-blue-color);">0 Hari</strong>
+        </div>
+        <div class="log-rekap-card">
+          <span>HARI BEROPERASI</span>
+          <strong id="rekap-hari-ada-log" style="color: var(--primary-color);">0 Hari</strong>
+        </div>
+        <div class="log-rekap-card">
+          <span>Tak Beroperasi</span>
+          <strong id="rekap-hari-tak-ada-log" style="color: var(--danger-color);">0 Hari</strong>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="log-status-table" id="table-rekap-harian">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)">No <span id="sort-icon-0">↕</span></th>
+              <th onclick="sortTable(1)">Tgl <span id="sort-icon-1">↕</span></th>
+              <th onclick="sortTable(2)">Energi Harian <span id="sort-icon-2">↕</span></th>
+              <th onclick="sortTable(3)">Lama Operasi <span id="sort-icon-3">↕</span></th>
+              <th onclick="sortTable(4)">Daya Rata-rata <span id="sort-icon-4">↕</span></th>
+              <th onclick="sortTable(5)">Iradian Rata-rata <span id="sort-icon-5">↕</span></th>
+              <th onclick="sortTable(6)">Daya Maks <span id="sort-icon-6">↕</span></th>
+              <th onclick="sortTable(7)">Iradian Maks <span id="sort-icon-7">↕</span></th>
+            </tr>
+          </thead>
+          <tbody id="log-status-tbody">
+            <tr>
+              <td colspan="8" style="color: var(--text-muted); font-style: italic;">Silakan klik "Tampilkan Data" untuk memuat info rekapitulasi harian.</td>
+            </tr>
+          </tbody>
+          <tfoot id="log-status-tfoot">
+            <tr>
+              <td colspan="2" style="text-align: right;">TOTAL / RATA-RATA / MAKS:</td>
+              <td id="foot-total-energi">0.00 Wh</td>
+              <td id="foot-total-lama-operasi">0.00 Jam</td>
+              <td id="foot-avg-daya">0.00 W</td>
+              <td id="foot-avg-irr">0 W/m²</td>
+              <td id="foot-max-daya">0.00 W</td>
+              <td id="foot-max-irr">0 W/m²</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sisa Memori ESP & Sisa Penyimpanan Database + Tombol Tambahan sebaris -->
+  <div class="esp-memory-box" style="margin-top: 30px; flex-wrap: wrap;">
+    <div class="esp-memory-item">
+      <span>SISA MEMORI ESP</span>
+      <strong id="rekap-sisa-memori">PLTS Offline</strong>
+    </div>
+    <div class="esp-memory-item">
+      <span>SISA PENYIMPANAN DATABASE</span>
+      <strong id="rekap-sisa-kuota" style="color: var(--primary-color);">100.0%</strong>
+    </div>
+    <div class="esp-memory-item" style="flex-direction: row; justify-content: center; gap: 10px;">
+      <button class="btn-action-custom" onclick="handleParameterStatistikSensorClick()">Parameter Statistik Sensor</button>
+    </div>
+  </div>
+
+  <footer-toggle-container style="max-width: 1200px; margin: 20px auto 0 auto; display: flex; justify-content: flex-end;">
+    <button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar">☀️</button>
+  </footer-toggle-container>
+
+  <script>
+    const annotationLinePlugin = {
+      afterDraw: function(chart) {
+        if (!chart.config.data.boundaryIndices || chart.config.data.boundaryIndices.length === 0) return;
+        
+        const ctx = chart.ctx;
+        const xAxis = chart.scales['x-axis-0'];
+        const yAxis = chart.scales[chart.config.options.scales.yAxes[0].id];
+
+        if (!xAxis || !yAxis) return;
+
+        ctx.save();
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([4, 4]);
+
+        chart.config.data.boundaryIndices.forEach(index => {
+          const x = xAxis.getPixelForTick(index);
+          if (x >= xAxis.left && x <= xAxis.right) {
+            ctx.beginPath();
+            ctx.moveTo(x, yAxis.top);
+            ctx.lineTo(x, yAxis.bottom);
+            ctx.stroke();
+          }
+        });
+
+        ctx.restore();
+      }
+    };
+
+    Chart.plugins.register(annotationLinePlugin);
+
+    let INTERVAL_DETIK = 5; 
+    let currentModeManual = false; 
+    let latestRealtimeData = null; 
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const labelEl = document.getElementById("interval-label");
+      if (labelEl) labelEl.innerText = INTERVAL_DETIK;
+
+      const now = new Date();
+      const prevWeek = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+
+      const formatDateOnly = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      document.getElementById("startDate").value = formatDateOnly(prevWeek);
+      document.getElementById("endDate").value = formatDateOnly(now);
+
+      loadHistory();
+      initFirebaseStorageAndUsersMonitor();
+    });
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaa5YhfXUag4Acq5Xjs7iZHCTpJA8tDAQ",
+      authDomain: "panel-surya-ccf56.firebaseapp.com",
+      databaseURL: "https://panel-surya-ccf56-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "panel-surya-ccf56",
+      storageBucket: "panel-surya-ccf56.firebasestorage.app",
+      messagingSenderId: "145011837257",
+      appId: "1:145011837257:web:ebb24f7388fa19ee29f298"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let lastEspHeartbeatTime = 0;
+
+    function getCssVar(variable) {
+      return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      const isLight = document.body.classList.contains("light-mode");
+      document.getElementById("btn-theme").innerText = isLight ? "🌙" : "☀️";
+      updateChartThemeColors();
+    }
+
+    function getLegendTextColor() {
+      return document.body.classList.contains("light-mode") ? "#0f172a" : "#ffffff";
+    }
+
+    function updateChartThemeColors() {
+      const textColor = getLegendTextColor();
+      const gridColor = getCssVar('--chart-grid');
+
+      const colorV = getCssVar('--color-v');
+      const colorI = getCssVar('--color-i');
+      const colorP = getCssVar('--color-p');
+      const colorIrr = getCssVar('--color-irr');
+      const colorEnergy = getCssVar('--color-energy');
+
+      const allCharts = [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartHistVI, chartHistPowerIrr, chartHistDayaIrr, chartHistEnergi];
+
+      allCharts.forEach((chart) => {
+        if (!chart) return;
+        chart.options.legend.labels.fontColor = textColor;
+        
+        chart.options.scales.xAxes.forEach(axis => {
+          if (axis.ticks) axis.ticks.fontColor = textColor;
+          if (axis.gridLines) axis.gridLines.color = gridColor;
+        });
+
+        chart.options.scales.yAxes.forEach(axis => {
+          if (axis.gridLines) axis.gridLines.color = gridColor;
+        });
+
+        if (chart === chartVI || chart === chartHistVI) {
+          chart.data.datasets[0].borderColor = colorV;
+          chart.data.datasets[1].borderColor = colorI;
+        } else if (chart === chartDayaIrr || chart === chartHistPowerIrr) {
+          chart.data.datasets[0].borderColor = colorP;
+          chart.data.datasets[1].borderColor = colorIrr;
+        } else if (chart === chartDutyCycle) {
+          chart.data.datasets[0].borderColor = getCssVar('--warning-color');
+          chart.options.scales.yAxes[0].ticks.fontColor = getCssVar('--warning-color');
+        } else if (chart === chartRealtimeAkumulasi) {
+          chart.data.datasets[0].borderColor = colorEnergy;
+          chart.data.datasets[1].borderColor = colorP;
+          chart.data.datasets[2].borderColor = colorIrr;
+        } else if (chart === chartHistDayaIrr) {
+          chart.data.datasets[0].backgroundColor = colorP;
+          chart.data.datasets[1].backgroundColor = colorIrr;
+          chart.options.scales.yAxes[0].ticks.fontColor = colorP;
+          chart.options.scales.yAxes[1].ticks.fontColor = colorIrr;
+        } else if (chart === chartHistEnergi) {
+          chart.data.datasets[0].backgroundColor = colorEnergy;
+          chart.options.scales.yAxes[0].ticks.fontColor = colorEnergy;
+        }
+
+        chart.update();
+      });
+    }
+
+    const statusRef = database.ref("/mppt_status/last_seen");
+    statusRef.on("value", (snapshot) => {
+      if (snapshot.exists()) {
+        lastEspHeartbeatTime = Number(snapshot.val());
+      }
+    });
+
+    function updateSliderState(isConnected, isManual) {
+      const sliderContainer = document.getElementById("slider-container-box");
+      const slider = document.getElementById("dutySlider");
+      const sliderValSpan = document.getElementById("lbl-slider-val");
+
+      if (isManual) {
+        sliderContainer.style.display = "flex";
+        slider.removeAttribute("disabled");
+        sliderValSpan.style.display = "inline-block";
+      } else {
+        sliderContainer.style.display = "none";
+        slider.setAttribute("disabled", "true");
+        sliderValSpan.style.display = "none";
+      }
+    }
+
+    setInterval(() => {
+      const statusElem = document.getElementById("status-esp");
+      const statusNote = document.getElementById("status-note");
+      const now = Date.now();
+      const isConnected = lastEspHeartbeatTime > 0 && (now - lastEspHeartbeatTime) <= 12000;
+      
+      if (isConnected) {
+        statusElem.innerText = "Online";
+        statusElem.className = "status-badge status-online";
+        if (statusNote) statusNote.style.display = "none";
+      } else {
+        statusElem.innerText = "Offline";
+        statusElem.className = "status-badge status-offline";
+        if (statusNote) statusNote.style.display = "none";
+        
+        document.getElementById("val-iradiah").innerText = "0";
+        document.getElementById("val-daya").innerText = "0.00";
+        document.getElementById("val-tegangan").innerText = "0.00";
+        document.getElementById("val-arus").innerText = "0.00";
+        document.getElementById("val-siklus").innerText = "0.0";
+        document.getElementById("val-siklus-control").innerText = "0.0";
+        document.getElementById("val-energi").innerText = "0.00";
+        document.getElementById("val-daya-rata").innerText = "0.00";
+        document.getElementById("val-irr-rata").innerText = "0";
+        document.getElementById("val-lama-operasi").innerText = "0.00";
+        document.getElementById("rekap-sisa-memori").innerText = "PLTS Offline";
+      }
+
+      updateSliderState(isConnected, currentModeManual);
+    }, 2000);
+
+    const controlRef = database.ref("/mppt_control");
+    
+    controlRef.once("value", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        controlRef.set({ mode_manual: false, duty_manual: 50 });
+      }
+    });
+
+    controlRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      const btnManual = document.getElementById("btn-manual");
+      const btnMppt = document.getElementById("btn-param");
+      const btnParamMppt = document.getElementById("btn-param-mppt");
+      const sliderContainerBox = document.getElementById("slider-container-box");
+      const slider = document.getElementById("dutySlider");
+      const sliderValSpan = document.getElementById("lbl-slider-val");
+      const mpptInfoContainer = document.getElementById("mppt-mode-info-container");
+      const mpptInfoVal = document.getElementById("val-mppt-mode-info");
+
+      let isManual = false;
+      let dutyVal = 50;
+      let mpptOpMode = 0;
+
+      if (data) {
+        isManual = data.mode_manual || false;
+        dutyVal = data.duty_manual !== undefined ? data.duty_manual : 50;
+        if (data.MODE_OPERASI_MPPT !== undefined) {
+          mpptOpMode = Number(data.MODE_OPERASI_MPPT);
+        }
+      }
+
+      currentModeManual = isManual;
+
+      if (isManual) {
+        btnManual.className = "btn-mode active-manual";
+        btnManual.style.opacity = "1";
+        btnManual.style.filter = "none";
+        sliderContainerBox.style.opacity = "0.75";
+      } else {
+        btnManual.className = "btn-mode";
+        btnManual.style.opacity = "0.75";
+        sliderContainerBox.style.opacity = "1";
+      }
+
+      if (!isManual) {
+        btnMppt.classList.add("active-auto");
+        btnMppt.style.opacity = "1";
+        btnMppt.style.filter = "none";
+        
+        btnParamMppt.style.display = "inline-block";
+        btnParamMppt.style.opacity = "1";
+        btnParamMppt.style.filter = "none";
+
+        mpptInfoContainer.style.display = "flex";
+        mpptInfoContainer.style.opacity = "1";
+        mpptInfoContainer.style.filter = "none";
+      } else {
+        btnMppt.classList.remove("active-auto");
+        btnMppt.style.opacity = "0.75";
+        btnMppt.style.filter = "none";
+        
+        btnParamMppt.style.display = "none";
+
+        mpptInfoContainer.style.display = "none";
+      }
+
+      if (mpptOpMode === 0) {
+        mpptInfoVal.innerText = "P&O";
+      } else if (mpptOpMode === 1) {
+        mpptInfoVal.innerText = "InC";
+      } else {
+        mpptInfoVal.innerText = "-";
+      }
+
+      const now = Date.now();
+      const isConnected = lastEspHeartbeatTime > 0 && (now - lastEspHeartbeatTime) <= 12000;
+      updateSliderState(isConnected, isManual);
+
+      if (document.activeElement !== slider) {
+        slider.value = dutyVal;
+        sliderValSpan.innerText = dutyVal + "%";
+      }
+    });
+
+
+function handleParameterStatistikSensorClick() {
+  showCustomPasswordPrompt((inputPassword) => {
+    if (inputPassword === "hanya kita saja") {
+      openParameterStatistikSensorModal();
+    } else if (inputPassword !== null) {
+      alert(`Password Salah!`);
+    }
+  });
+}
+
+
+    function setMode(isManual) {
+      controlRef.update({ mode_manual: isManual });
+    }
+
+    function handleMpptSelectionClick() {
+  if (currentModeManual) {
+    controlRef.update({ mode_manual: false });
+  }
+  openMpptSelectionModal();
+}
+
+    function handleParameterMpptClick() {
+  showCustomPasswordPrompt((inputPassword) => {
+    if (inputPassword === "hanya kita saja") {
+      openParameterMpptModal();
+    } else if (inputPassword !== null) {
+      alert(`Password Salah! Tidak dapat masuk ke jendela Parameter MPPT.`);
+    }
+  });
+}
+    function openMpptSelectionModal() {
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
+
+      let box = document.createElement("div");
+      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.textAlign = "center"; box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "320px";
+
+      let title = document.createElement("h3");
+      title.innerText = "Pilih Metode MPPT"; title.style.marginBottom = "20px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px";
+
+      let btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex"; btnContainer.style.flexDirection = "column"; btnContainer.style.gap = "12px";
+
+      const options = [
+        { label: "P and O", val: 0 },
+        { label: "InC", val: 1 }
+      ];
+
+      options.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.innerText = opt.label;
+        btn.style.padding = "12px"; btn.style.borderRadius = "6px"; btn.style.border = "1px solid " + getCssVar('--btn-blue-bg');
+        btn.style.background = getCssVar('--card-inner-bg'); btn.style.color = getCssVar('--btn-blue-bg');
+        btn.style.fontWeight = "bold"; btn.style.cursor = "pointer"; btn.style.transition = "0.2s";
+
+        btn.onmouseover = () => { btn.style.background = getCssVar('--btn-blue-bg'); btn.style.color = "#ffffff"; };
+        btn.onmouseout = () => { btn.style.background = getCssVar('--card-inner-bg'); btn.style.color = getCssVar('--btn-blue-bg'); };
+
+        btn.onclick = () => {
+          controlRef.update({ 
+            MODE_OPERASI_MPPT: opt.val,
+            mode_manual: false 
+          });
+          document.body.removeChild(overlay);
+        };
+        btnContainer.appendChild(btn);
+      });
+
+      let btnCancel = document.createElement("button");
+      btnCancel.innerText = "Batal"; btnCancel.style.marginTop = "8px"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
+      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
+      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+
+      box.appendChild(title);
+      box.appendChild(btnContainer);
+      box.appendChild(btnCancel);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+    }
+
+    function openParameterMpptModal() {
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
+
+      let box = document.createElement("div");
+      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.textAlign = "center"; box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "320px";
+
+      let title = document.createElement("h3");
+      title.innerText = "Parameter MPPT"; title.style.marginBottom = "20px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px";
+
+      let btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex"; btnContainer.style.flexDirection = "column"; btnContainer.style.gap = "12px";
+
+      const paramOptions = [
+        { 
+          label: "Parameter P&O (Perturb and Observe)",
+          action: () => {
+            document.body.removeChild(overlay);
+            openParameterPoModal();
+          }
+        },
+        { 
+          label: "Parameter InC (Incremental Conductance)",
+          action: () => {
+            document.body.removeChild(overlay);
+            openParameterInCModal();
+          }
+        }
+      ];
+
+      paramOptions.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.innerText = opt.label;
+        btn.style.padding = "12px"; btn.style.borderRadius = "6px"; btn.style.border = "1px solid " + getCssVar('--btn-blue-bg');
+        btn.style.background = getCssVar('--card-inner-bg'); btn.style.color = getCssVar('--btn-blue-bg');
+        btn.style.fontWeight = "bold"; btn.style.cursor = "pointer"; btn.style.transition = "0.2s";
+
+        btn.onmouseover = () => { btn.style.background = getCssVar('--btn-blue-bg'); btn.style.color = "#ffffff"; };
+        btn.onmouseout = () => { btn.style.background = getCssVar('--card-inner-bg'); btn.style.color = getCssVar('--btn-blue-bg'); };
+
+        btn.onclick = opt.action;
+        btnContainer.appendChild(btn);
+      });
+
+      let btnCancel = document.createElement("button");
+      btnCancel.innerText = "Batal"; btnCancel.style.marginTop = "8px"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
+      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
+      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+
+      box.appendChild(title);
+      box.appendChild(btnContainer);
+      box.appendChild(btnCancel);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+    }
+
+    function openParameterPoModal() {
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
+
+      let box = document.createElement("div");
+      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "520px"; box.style.maxHeight = "90vh"; box.style.overflowY = "auto";
+
+      let title = document.createElement("h3");
+      title.innerText = "Parameter P&O (Perturb and Observe)"; title.style.marginBottom = "15px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px"; title.style.textAlign = "center";
+
+      let formContainer = document.createElement("div");
+      formContainer.style.display = "flex"; formContainer.style.flexDirection = "column"; formContainer.style.gap = "12px";
+
+      const inputsConfig = [
+        { id: "po-proporsi-p-and-o", label: "PROPORSI_P_AND_O", firebaseKey: "PROPORSI_P_AND_O", type: "number", step: "any" },
+        { id: "po-perubahan-teg-min", label: "PERUBAHAN_TEG_MIN_P_AND_O", firebaseKey: "PERUBAHAN_TEG_MIN_P_AND_O", type: "number", step: "any" },
+        { id: "po-perubahan-daya-min", label: "PERUBAHAN_DAYA_MIN_P_AND_O", firebaseKey: "PERUBAHAN_DAYA_MIN_P_AND_O", type: "number", step: "any" },
+        { id: "po-batas-atas-step", label: "BATAS_ATAS_STEP_P_AND_O", firebaseKey: "BATAS_ATAS_STEP_P_AND_O", type: "number", step: "any" },
+        { id: "po-batas-bawah-step", label: "BATAS_BAWAH_STEP_P_AND_O", firebaseKey: "BATAS_BAWAH_STEP_P_AND_O", type: "number", step: "any" }
+      ];
+
+      database.ref("/mppt_control").once("value", (snapshot) => {
+        const val = snapshot.val() || {};
+
+        inputsConfig.forEach(item => {
+          let group = document.createElement("div");
+          group.style.display = "flex"; group.style.flexDirection = "column"; group.style.gap = "4px";
+
+          let lbl = document.createElement("label");
+          lbl.innerText = item.label;
+          lbl.style.fontSize = "13px"; lbl.style.fontWeight = "bold"; lbl.style.color = getCssVar('--text-color');
+
+          let rowFlex = document.createElement("div");
+          rowFlex.style.display = "flex"; rowFlex.style.gap = "8px"; rowFlex.style.alignItems = "center";
+
+          let fbValSpan = document.createElement("span");
+          let rawFbVal = val[item.firebaseKey];
+          let formattedFbVal = (rawFbVal !== undefined && !isNaN(rawFbVal)) ? Number(rawFbVal).toFixed(6) : "0.000000";
+          fbValSpan.innerText = formattedFbVal;
+          fbValSpan.style.minWidth = "110px";
+          fbValSpan.style.padding = "8px";
+          fbValSpan.style.background = getCssVar('--card-bg');
+          fbValSpan.style.border = "1px solid " + getCssVar('--border-color');
+          fbValSpan.style.borderRadius = "6px";
+          fbValSpan.style.fontSize = "13px";
+          fbValSpan.style.fontWeight = "bold";
+          fbValSpan.style.color = getCssVar('--realtime-value-color');
+          fbValSpan.style.textAlign = "center";
+          fbValSpan.title = "Data dari Firebase";
+
+          let input = document.createElement("input");
+          input.type = item.type || "text";
+          input.id = item.id;
+          if (item.step) input.step = item.step;
+          input.style.flex = "1";
+          input.style.padding = "8px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color');
+          input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "14px"; input.style.outline = "none";
+
+          if (rawFbVal !== undefined) {
+            input.value = rawFbVal;
+          }
+
+          rowFlex.appendChild(fbValSpan);
+          rowFlex.appendChild(input);
+
+          group.appendChild(lbl);
+          group.appendChild(rowFlex);
+          formContainer.appendChild(group);
+        });
+      });
+
+      let btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex"; btnContainer.style.gap = "10px"; btnContainer.style.marginTop = "15px";
+
+      let btnCancel = document.createElement("button");
+      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
+      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
+      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+
+      let btnSave = document.createElement("button");
+      btnSave.innerText = "Simpan"; btnSave.style.flex = "1"; btnSave.style.padding = "10px"; btnSave.style.borderRadius = "6px"; btnSave.style.border = "none";
+      btnSave.style.background = getCssVar('--btn-blue-bg'); btnSave.style.color = "#ffffff"; btnSave.style.fontWeight = "bold"; btnSave.style.cursor = "pointer";
+      
+      btnSave.onclick = () => {
+        let v1 = parseFloat(document.getElementById("po-proporsi-p-and-o").value);
+        let v2 = parseFloat(document.getElementById("po-perubahan-teg-min").value);
+        let v3 = parseFloat(document.getElementById("po-perubahan-daya-min").value);
+        let v4 = parseFloat(document.getElementById("po-batas-atas-step").value);
+        let v5 = parseFloat(document.getElementById("po-batas-bawah-step").value);
+
+        if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5)) {
+          alert("Semua kolom parameter harus diisi dengan angka yang valid!");
+          return;
+        }
+
+        if (v1 < 0.00000001 || v1 > 1000000) {
+          alert("PROPORSI_P_AND_O harus bernilai antara 0.00000001 sd 1000000!");
+          return;
+        }
+        if (v2 < 0.00000001 || v2 > 100) {
+          alert("PERUBAHAN_TEG_MIN_P_AND_O harus bernilai antara 0.00000001 sd 100!");
+          return;
+        }
+        if (v3 < 0.00000001 || v3 > 500) {
+          alert("PERUBAHAN_DAYA_MIN_P_AND_O harus bernilai antara 0.00000001 sd 500!");
+          return;
+        }
+        if (v4 < 0.001 || v4 > 1.0) {
+          alert("BATAS_ATAS_STEP_P_AND_O harus bernilai antara 0.001 sd 1.0!");
+          return;
+        }
+        if (v5 >= v4) {
+          alert("BATAS_BAWAH_STEP_P_AND_O harus lebih kecil dari BATAS_ATAS_STEP_P_AND_O!");
+          return;
+        }
+
+        database.ref("/mppt_control").update({
+          "PROPORSI_P_AND_O": v1,
+          "PERUBAHAN_TEG_MIN_P_AND_O": v2,
+          "PERUBAHAN_DAYA_MIN_P_AND_O": v3,
+          "BATAS_ATAS_STEP_P_AND_O": v4,
+          "BATAS_BAWAH_STEP_P_AND_O": v5,
+          timestamp: Date.now()
+        }).then(() => {
+          alert("Parameter P&O berhasil disimpan langsung ke mppt_control!");
+          document.body.removeChild(overlay);
+        }).catch((error) => {
+          alert("Gagal menyimpan parameter: " + error.message);
+        });
+      };
+
+      btnContainer.appendChild(btnCancel);
+      btnContainer.appendChild(btnSave);
+      box.appendChild(title);
+      box.appendChild(formContainer);
+      box.appendChild(btnContainer);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+    }
+
+    function openParameterInCModal() {
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
+
+      let box = document.createElement("div");
+      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "520px"; box.style.maxHeight = "90vh"; box.style.overflowY = "auto";
+
+      let title = document.createElement("h3");
+      title.innerText = "Parameter InC (Incremental Conductance)"; title.style.marginBottom = "15px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px"; title.style.textAlign = "center";
+
+      let formContainer = document.createElement("div");
+      formContainer.style.display = "flex"; formContainer.style.flexDirection = "column"; formContainer.style.gap = "12px";
+
+      const inputsConfig = [
+        { id: "inc-proporsi", label: "PROPORSI_INC", firebaseKey: "PROPORSI_INC", type: "number", step: "any" },
+        { id: "inc-batas-atas-step", label: "BATAS_ATAS_STEP_INC", firebaseKey: "BATAS_ATAS_STEP_INC", type: "number", step: "any" },
+        { id: "inc-batas-bawah-step", label: "BATAS_BAWAH_STEP_INC", firebaseKey: "BATAS_BAWAH_STEP_INC", type: "number", step: "any" },
+        { id: "inc-perubahan-teg-min", label: "PERUBAHAN_TEG_MIN_INC", firebaseKey: "PERUBAHAN_TEG_MIN_INC", type: "number", step: "any" },
+        { id: "inc-perubahan-arus-min", label: "PERUBAHAN_ARUS_MIN_INC", firebaseKey: "PERUBAHAN_ARUS_MIN_INC", type: "number", step: "any" },
+        { id: "inc-teg-min", label: "TEG_MIN_INC", firebaseKey: "TEG_MIN_INC", type: "number", step: "any" }
+      ];
+
+      database.ref("/mppt_control").once("value", (snapshot) => {
+        const val = snapshot.val() || {};
+
+        inputsConfig.forEach(item => {
+          let group = document.createElement("div");
+          group.style.display = "flex"; group.style.flexDirection = "column"; group.style.gap = "4px";
+
+          let lbl = document.createElement("label");
+          lbl.innerText = item.label;
+          lbl.style.fontSize = "13px"; lbl.style.fontWeight = "bold"; lbl.style.color = getCssVar('--text-color');
+
+          let rowFlex = document.createElement("div");
+          rowFlex.style.display = "flex"; rowFlex.style.gap = "8px"; rowFlex.style.alignItems = "center";
+
+          let fbValSpan = document.createElement("span");
+          let rawFbVal = val[item.firebaseKey];
+          let formattedFbVal = (rawFbVal !== undefined && !isNaN(rawFbVal)) ? Number(rawFbVal).toFixed(6) : "0.000000";
+          fbValSpan.innerText = formattedFbVal;
+          fbValSpan.style.minWidth = "110px";
+          fbValSpan.style.padding = "8px";
+          fbValSpan.style.background = getCssVar('--card-bg');
+          fbValSpan.style.border = "1px solid " + getCssVar('--border-color');
+          fbValSpan.style.borderRadius = "6px";
+          fbValSpan.style.fontSize = "13px";
+          fbValSpan.style.fontWeight = "bold";
+          fbValSpan.style.color = getCssVar('--realtime-value-color');
+          fbValSpan.style.textAlign = "center";
+          fbValSpan.title = "Data dari Firebase";
+
+          let input = document.createElement("input");
+          input.type = item.type || "text";
+          input.id = item.id;
+          if (item.step) input.step = item.step;
+          input.style.flex = "1";
+          input.style.padding = "8px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color');
+          input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "14px"; input.style.outline = "none";
+
+          if (rawFbVal !== undefined) {
+            input.value = rawFbVal;
+          }
+
+          rowFlex.appendChild(fbValSpan);
+          rowFlex.appendChild(input);
+
+          group.appendChild(lbl);
+          group.appendChild(rowFlex);
+          formContainer.appendChild(group);
+        });
+      });
+
+      let btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex"; btnContainer.style.gap = "10px"; btnContainer.style.marginTop = "15px";
+
+      let btnCancel = document.createElement("button");
+      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
+      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
+      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+
+      let btnSave = document.createElement("button");
+      btnSave.innerText = "Simpan"; btnSave.style.flex = "1"; btnSave.style.padding = "10px"; btnSave.style.borderRadius = "6px"; btnSave.style.border = "none";
+      btnSave.style.background = getCssVar('--btn-blue-bg'); btnSave.style.color = "#ffffff"; btnSave.style.fontWeight = "bold"; btnSave.style.cursor = "pointer";
+      
+      btnSave.onclick = () => {
+        let v1 = parseFloat(document.getElementById("inc-proporsi").value);
+        let v2 = parseFloat(document.getElementById("inc-batas-atas-step").value);
+        let v3 = parseFloat(document.getElementById("inc-batas-bawah-step").value);
+        let v4 = parseFloat(document.getElementById("inc-perubahan-teg-min").value);
+        let v5 = parseFloat(document.getElementById("inc-perubahan-arus-min").value);
+        let v6 = parseFloat(document.getElementById("inc-teg-min").value);
+
+        if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5) || isNaN(v6)) {
+          alert("Semua kolom parameter harus diisi dengan angka yang valid!");
+          return;
+        }
+
+        if (v1 < 0.00000001 || v1 > 1000000) {
+          alert("PROPORSI_INC harus bernilai antara 0.00000001 sd 1000000!");
+          return;
+        }
+        if (v2 < 0.001 || v2 > 1.0) {
+          alert("BATAS_ATAS_STEP_INC harus bernilai antara 0.001 sd 1.0!");
+          return;
+        }
+        if (v3 >= v2) {
+          alert("BATAS_BAWAH_STEP_INC harus lebih kecil dari BATAS_ATAS_STEP_INC!");
+          return;
+        }
+        if (v4 < 0.000001 || v4 > 200) {
+          alert("PERUBAHAN_TEG_MIN_INC harus bernilai antara 0.000001 sd 200!");
+          return;
+        }
+        if (v5 < 0.000001 || v5 > 200) {
+          alert("PERUBAHAN_ARUS_MIN_INC harus bernilai antara 0.000001 sd 200!");
+          return;
+        }
+        if (v6 < 0.000001 || v6 > 200) {
+          alert("TEG_MIN_INC harus bernilai antara 0.000001 sd 200!");
+          return;
+        }
+
+        database.ref("/mppt_control").update({
+          "PROPORSI_INC": v1,
+          "BATAS_ATAS_STEP_INC": v2,
+          "BATAS_BAWAH_STEP_INC": v3,
+          "PERUBAHAN_TEG_MIN_INC": v4,
+          "PERUBAHAN_ARUS_MIN_INC": v5,
+          "TEG_MIN_INC": v6,
+          timestamp: Date.now()
+        }).then(() => {
+          alert("Parameter InC berhasil disimpan langsung ke folder mppt_control!");
+          document.body.removeChild(overlay);
+        }).catch((error) => {
+          alert("Gagal menyimpan parameter: " + error.message);
+        });
+      };
+
+      btnContainer.appendChild(btnCancel);
+      btnContainer.appendChild(btnSave);
+      box.appendChild(title);
+      box.appendChild(formContainer);
+      box.appendChild(btnContainer);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+    }
+
+    function openParameterStatistikSensorModal() {
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
+
+      let box = document.createElement("div");
+      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "420px";
+
+      let title = document.createElement("h3");
+      title.innerText = "Parameter Statistik Sensor"; title.style.marginBottom = "15px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px"; title.style.textAlign = "center";
+
+      let formContainer = document.createElement("div");
+      formContainer.style.display = "flex"; formContainer.style.flexDirection = "column"; formContainer.style.gap = "12px";
+
+      const inputsConfig = [
+        { id: "stat-jumlah-sampel", label: "JUMLAH_SAMPEL", firebaseKey: "JUMLAH_SAMPEL", type: "number" },
+        { id: "stat-varians-maks", label: "VARIANS MAKS", firebaseKey: "VARIANS_MAKS", type: "number" }
+      ];
+
+      database.ref("/mppt_control").once("value", (snapshot) => {
+        const val = snapshot.val() || {};
+
+        inputsConfig.forEach(item => {
+          let group = document.createElement("div");
+          group.style.display = "flex"; group.style.flexDirection = "column"; group.style.gap = "4px";
+
+          let lbl = document.createElement("label");
+          lbl.innerText = item.label;
+          lbl.style.fontSize = "13px"; lbl.style.fontWeight = "bold"; lbl.style.color = getCssVar('--text-color');
+
+          let input = document.createElement("input");
+          input.type = item.type;
+          input.id = item.id;
+          input.style.width = "100%";
+          input.style.padding = "8px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color');
+          input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "14px"; input.style.outline = "none";
+
+          if (val[item.firebaseKey] !== undefined) {
+            input.value = val[item.firebaseKey];
+          }
+
+          group.appendChild(lbl);
+          group.appendChild(input);
+          formContainer.appendChild(group);
+        });
+      });
+
+      let btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex"; btnContainer.style.gap = "10px"; btnContainer.style.marginTop = "15px";
+
+      let btnCancel = document.createElement("button");
+      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
+      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
+      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+
+      let btnSave = document.createElement("button");
+      btnSave.innerText = "Simpan"; btnSave.style.flex = "1"; btnSave.style.padding = "10px"; btnSave.style.borderRadius = "6px"; btnSave.style.border = "none";
+      btnSave.style.background = getCssVar('--btn-blue-bg'); btnSave.style.color = "#ffffff"; btnSave.style.fontWeight = "bold"; btnSave.style.cursor = "pointer";
+      
+      btnSave.onclick = () => {
+        let v1 = parseFloat(document.getElementById("stat-jumlah-sampel").value);
+        let v2 = parseFloat(document.getElementById("stat-varians-maks").value);
+
+        if (isNaN(v1) || isNaN(v2)) {
+          alert("Semua kolom harus diisi dengan angka yang valid!");
+          return;
+        }
+
+        if (v1 < 1 || v1 > 10000) {
+          alert("JUMLAH_SAMPEL harus bernilai antara 30 sd 1000!");
+          return;
+        }
+
+        if (v2 < 1 || v2 > 9999999999999) {
+          alert("VARIANS MAKS harus bernilai antara 50 sd 9999999999!");
+          return;
+        }
+
+        database.ref("/mppt_control").update({
+          "JUMLAH_SAMPEL": v1,
+          "VARIANS_MAKS": v2,
+          timestamp: Date.now()
+        }).then(() => {
+          alert("Parameter Statistik Sensor berhasil disimpan di folder mppt_control!");
+          document.body.removeChild(overlay);
+        }).catch((error) => {
+          alert("Gagal menyimpan parameter: " + error.message);
+        });
+      };
+
+      btnContainer.appendChild(btnCancel);
+      btnContainer.appendChild(btnSave);
+      box.appendChild(title);
+      box.appendChild(formContainer);
+      box.appendChild(btnContainer);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+    }
+    
+    function showCustomPasswordPrompt(callback) {
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
+
+      let box = document.createElement("div");
+      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.textAlign = "center"; box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "320px";
+
+      let title = document.createElement("p");
+      title.innerText = "Masukkan Password:"; title.style.marginBottom = "12px"; title.style.fontWeight = "600"; title.style.fontSize = "16px";
+
+      let input = document.createElement("input");
+      input.type = "password"; input.style.width = "100%"; input.style.padding = "10px"; input.style.marginBottom = "18px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color'); input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "16px"; input.style.outline = "none";
+
+      let btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex"; btnContainer.style.justifyContent = "space-between"; btnContainer.style.gap = "10px";
+
+      let btnCancel = document.createElement("button");
+      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none"; btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
+
+      let btnSubmit = document.createElement("button");
+      btnSubmit.innerText = "OK"; btnSubmit.style.flex = "1"; btnSubmit.style.padding = "10px"; btnSubmit.style.borderRadius = "6px"; btnSubmit.style.border = "none"; btnSubmit.style.background = getCssVar('--btn-blue-bg'); btnSubmit.style.color = "#ffffff"; btnSubmit.style.fontWeight = "bold"; btnSubmit.style.cursor = "pointer";
+
+      btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnSubmit);
+      box.appendChild(title); box.appendChild(input); box.appendChild(btnContainer); overlay.appendChild(box);
+      document.body.appendChild(overlay);
+      input.focus();
+
+      function closePrompt(val) { document.body.removeChild(overlay); callback(val); }
+      btnSubmit.onclick = function() { closePrompt(input.value); };
+      btnCancel.onclick = function() { closePrompt(null); };
+      input.onkeydown = function(e) {
+        if (e.key === "Enter") closePrompt(input.value);
+        else if (e.key === "Escape") closePrompt(null);
+      };
+    }
+
+    function updateSliderLabel(val) { document.getElementById("lbl-slider-val").innerText = val + "%"; }
+    function sendDutyToFirebase(val) { controlRef.update({ duty_manual: parseFloat(val) }); }
+
+    const ctxVI = document.getElementById('chartVI').getContext('2d');
+    const chartVI = new Chart(ctxVI, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Tegangan (V)', borderColor: getCssVar('--color-v'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' },
+          { label: 'Arus (A)', borderColor: getCssVar('--color-i'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y1' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-v'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-i'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+          ]
+        }
+      }
+    });
+
+    const ctxDayaIrr = document.getElementById('chartDayaIrradiance').getContext('2d');
+    const chartDayaIrr = new Chart(ctxDayaIrr, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Daya (W)', borderColor: getCssVar('--color-p'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' },
+          { label: 'Iradiansi (W/m²)', borderColor: getCssVar('--color-irr'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y1' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+          ]
+        }
+      }
+    });
+
+    const ctxDutyCycle = document.getElementById('chartDutyCycle').getContext('2d');
+    const chartDutyCycle = new Chart(ctxDutyCycle, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Duty Cycle (%)', borderColor: getCssVar('--warning-color'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--warning-color'), fontStyle: 'bold', beginAtZero: true, max: 100 }, gridLines: { color: getCssVar('--chart-grid') } }
+          ]
+        }
+      }
+    });
+
+    const ctxRealtimeAkumulasi = document.getElementById('chartRealtimeAkumulasi').getContext('2d');
+    const chartRealtimeAkumulasi = new Chart(ctxRealtimeAkumulasi, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Energi Harian (Wh)', borderColor: getCssVar('--color-energy'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' },
+          { label: 'Daya Rata-rata (W)', borderColor: getCssVar('--color-p'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y1' },
+          { label: 'Iradiansi Rata-rata (W/m²)', borderColor: getCssVar('--color-irr'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y2' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-energy'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } },
+            { id: 'y2', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false }, offset: true }
+          ]
+        }
+      }
+    });
+
+    function addDataToRealtimeCharts(label, v, i, p, irr, duty, energyWh, avgPower, avgIrr) {
+      chartVI.data.labels.push(label);
+      chartVI.data.datasets[0].data.push(v);
+      chartVI.data.datasets[1].data.push(i);
+
+      chartDayaIrr.data.labels.push(label);
+      chartDayaIrr.data.datasets[0].data.push(p);
+      chartDayaIrr.data.datasets[1].data.push(irr);
+
+      chartDutyCycle.data.labels.push(label);
+      chartDutyCycle.data.datasets[0].data.push(duty);
+
+      chartRealtimeAkumulasi.data.labels.push(label);
+      chartRealtimeAkumulasi.data.datasets[0].data.push(energyWh);
+      chartRealtimeAkumulasi.data.datasets[1].data.push(avgPower);
+      chartRealtimeAkumulasi.data.datasets[2].data.push(avgIrr);
+
+      const MAX_DATA = 30;
+      if (chartVI.data.labels.length > MAX_DATA) {
+        chartVI.data.labels.shift(); chartVI.data.datasets[0].data.shift(); chartVI.data.datasets[1].data.shift();
+      }
+      if (chartDayaIrr.data.labels.length > MAX_DATA) {
+        chartDayaIrr.data.labels.shift(); chartDayaIrr.data.datasets[0].data.shift(); chartDayaIrr.data.datasets[1].data.shift();
+      }
+      if (chartDutyCycle.data.labels.length > MAX_DATA) {
+        chartDutyCycle.data.labels.shift(); chartDutyCycle.data.datasets[0].data.shift();
+      }
+      if (chartRealtimeAkumulasi.data.labels.length > MAX_DATA) {
+        chartRealtimeAkumulasi.data.labels.shift(); chartRealtimeAkumulasi.data.datasets[0].data.shift(); chartRealtimeAkumulasi.data.datasets[1].data.shift(); chartRealtimeAkumulasi.data.datasets[2].data.shift();
+      }
+
+      chartVI.update(); chartDayaIrr.update(); chartDutyCycle.update(); chartRealtimeAkumulasi.update();
+    }
+
+    const mpptRef = database.ref("/mppt_data");
+    mpptRef.limitToLast(1).on("child_added", (childSnapshot) => {
+      processRealtimeData(childSnapshot.val(), childSnapshot.key);
+    });
+
+    function decodeFirebasePushId(pushId) {
+      if (!pushId || typeof pushId !== 'string') return 0;
+      const PUSH_CHARS = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+      let id = pushId.substring(0, 8);
+      let timestamp = 0;
+      for (let i = 0; i < id.length; i++) {
+        let c = id.charAt(i);
+        let index = PUSH_CHARS.indexOf(c);
+        if (index === -1) return 0;
+        timestamp = timestamp * 64 + index;
+      }
+      return timestamp;
+    }
+
+
+
+    function exportToCSV() {
+      const startVal = document.getElementById("startDate").value;
+      const endVal = document.getElementById("endDate").value;
+
+      database.ref("/mppt_data").once("value", (snapshot) => {
+        let rows = [["stempel_waktu", "waktu_rtc", "tegangan", "arus", "daya", "daya_rata_rata", "energi_watt_jam", "iradiansi", "iradiansi_rata_rata", "siklus_kerja", "mode_operasi"]];
+
+        snapshot.forEach((child) => {
+          let item = child.val();
+          if (!item) return;
+
+          let waktuRtc = item.waktu_rtc || "";
+          let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
+          
+          let formattedTanggalData = tanggalData;
+          if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
+            let parts = tanggalData.split("-");
+            if (parts.length === 3) {
+              formattedTanggalData = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+          }
+
+          if (!startVal || !endVal || (formattedTanggalData >= startVal && formattedTanggalData <= endVal)) {
+            rows.push([
+              item.stempel_waktu || "",
+              item.waktu_rtc || "",
+              item.tegangan !== undefined ? item.tegangan : "",
+              item.arus !== undefined ? item.arus : "",
+              item.daya !== undefined ? item.daya : "",
+              item.daya_rata_rata !== undefined ? item.daya_rata_rata : "",
+              item.energi_watt_jam !== undefined ? item.energi_watt_jam : "",
+              item.iradiansi !== undefined ? item.iradiansi : "",
+              item.iradiansi_rata_rata !== undefined ? item.iradiansi_rata_rata : "",
+              item.siklus_kerja !== undefined ? item.siklus_kerja : "",
+              item.mode_operasi !== undefined ? item.mode_operasi : ""
+            ]);
+          }
+        });
+
+        let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+        let encodedUri = encodeURI(csvContent);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `data_mppt_${startVal}_hingga_${endVal}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    }
+
+    function exportTableToCSV() {
+      let table = document.getElementById("table-rekap-harian");
+      let rows = table.querySelectorAll("tr");
+      let csv = [];
+      
+      rows.forEach(row => {
+        let cols = row.querySelectorAll("td, th");
+        let data = [];
+        cols.forEach(col => data.push('"' + col.innerText.replace(/"/g, '""') + '"'));
+        csv.push(data.join(","));
+      });
+
+      let csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+      let encodedUri = encodeURI(csvContent);
+      let link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "rekapitulasi_harian_mppt.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+
+    function processRealtimeData(data, pushKey) {
+      if (!data) return;
+
+      latestRealtimeData = data;
+
+      const v = data.tegangan !== undefined ? Number(data.tegangan) : 0;
+      const i = data.arus !== undefined ? Number(data.arus) : 0;
+      const p = data.daya !== undefined ? Number(data.daya) : 0;
+      const irr = data.iradiansi !== undefined ? Number(data.iradiansi) : 0;
+      const duty = data.siklus_kerja !== undefined ? Number(data.siklus_kerja) : 0;
+      const energyWh = data.energi_watt_jam !== undefined ? Number(data.energi_watt_jam) : 0;
+      const avgPower = data.daya_rata_rata !== undefined ? Number(data.daya_rata_rata) : 0;
+      const avgIrr = data.iradiansi_rata_rata !== undefined ? Number(data.iradiansi_rata_rata) : 0;
+      const lamaOperasi = data.lama_jam_operasi !== undefined ? Number(data.lama_jam_operasi) : 0;
+      const sisaMemori = data.sisa_memori_ESP !== undefined ? Number(data.sisa_memori_ESP) : 0;
+
+      const now = Date.now();
+      if (lastEspHeartbeatTime > 0 && (now - lastEspHeartbeatTime) <= 12000) {
+        document.getElementById("val-iradiah").innerText = irr.toFixed(0);
+        document.getElementById("val-daya").innerText = p.toFixed(2);
+        document.getElementById("val-tegangan").innerText = v.toFixed(2);
+        document.getElementById("val-arus").innerText = i.toFixed(2);
+        if (data.siklus_kerja !== undefined) {
+          const formattedDuty = Number(data.siklus_kerja).toFixed(1);
+          document.getElementById("val-siklus").innerText = formattedDuty;
+          document.getElementById("val-siklus-control").innerText = formattedDuty;
+        }
+        document.getElementById("val-energi").innerText = energyWh.toFixed(2);
+        document.getElementById("val-daya-rata").innerText = avgPower.toFixed(2);
+        document.getElementById("val-irr-rata").innerText = avgIrr.toFixed(0);
+        document.getElementById("val-lama-operasi").innerText = lamaOperasi.toFixed(2);
+        document.getElementById("rekap-sisa-memori").innerText = sisaMemori.toFixed(2) + "%";
+      }
+
+      let rawTime = data.stempel_waktu ? Number(data.stempel_waktu) : 0;
+      if (!rawTime && pushKey && pushKey.startsWith("-")) {
+        rawTime = decodeFirebasePushId(pushKey);
+      }
+      if (!rawTime) rawTime = Date.now();
+
+      let jamStr = data.waktu_rtc ? data.waktu_rtc.split(" ")[1] : new Date(rawTime).toLocaleTimeString('id-ID');
+      addDataToRealtimeCharts(jamStr, v, i, p, irr, duty, energyWh, avgPower, avgIrr);
+    }
+
+    function initFirebaseStorageAndUsersMonitor() {
+      database.ref("/mppt_data").on("value", (snapshot) => {
+        if (!snapshot.exists()) return;
+        const dataVal = snapshot.val();
+        
+        const jsonStr = JSON.stringify(dataVal);
+        const bytes = new Blob([jsonStr]).size;
+        const maxLimitBytes = 1 * 1024 * 1024 * 1024;
+        const percentageUsed = (bytes / maxLimitBytes) * 100;
+        const percentageRemaining = Math.max(0, 100 - percentageUsed);
+        
+        document.getElementById("rekap-sisa-kuota").innerText = percentageRemaining.toFixed(1) + "%";
+      });
+    }
+
+    const ctxHistVI = document.getElementById('chartHistVI').getContext('2d');
+    const chartHistVI = new Chart(ctxHistVI, {
+      type: 'line',
+      data: {
+        labels: [],
+        boundaryIndices: [],
+        datasets: [
+          { label: 'Tegangan (V)', borderColor: getCssVar('--color-v'), fill: false, data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-v'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
+          { label: 'Arus (A)', borderColor: getCssVar('--color-i'), fill: false, data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-i'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-v'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-i'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+          ]
+        }
+      }
+    });
+
+    const ctxHistPowerIrr = document.getElementById('chartHistPowerIrr').getContext('2d');
+    const chartHistPowerIrr = new Chart(ctxHistPowerIrr, {
+      type: 'line',
+      data: {
+        labels: [],
+        boundaryIndices: [],
+        datasets: [
+          { label: 'Daya (W)', borderColor: getCssVar('--color-p'), fill: false, data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-p'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
+          { label: 'Iradiansi (W/m²)', borderColor: getCssVar('--color-irr'), fill: false, data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-irr'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+          ]
+        }
+      }
+    });
+
+    const ctxHistDayaIrr = document.getElementById('chartHistoryDayaIrr').getContext('2d');
+    const chartHistDayaIrr = new Chart(ctxHistDayaIrr, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Daya Rata-rata Harian (W)', backgroundColor: getCssVar('--color-p'), data: [], yAxisID: 'y' },
+          { label: 'Iradiansi Rata-rata Harian (W/m²)', backgroundColor: getCssVar('--color-irr'), data: [], yAxisID: 'y1' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+          ]
+        }
+      }
+    });
+
+    const ctxHistEnergi = document.getElementById('chartHistoryEnergi').getContext('2d');
+    const chartHistEnergi = new Chart(ctxHistEnergi, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Energi Harian (Wh)', backgroundColor: getCssVar('--color-energy'), data: [], yAxisID: 'y' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-energy'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } }
+          ]
+        }
+      }
+    });
+
+    function loadHistory() {
+      const startVal = document.getElementById("startDate").value;
+      const endVal = document.getElementById("endDate").value;
+      const stepVal = document.getElementById("stepSelect").value;
+      const summaryBox = document.getElementById("history-summary");
+
+      if (!startVal || !endVal) {
+        alert("Pilih tanggal mulai dan selesai terlebih dahulu!");
+        return;
+      }
+
+      const isDifferentDate = startVal !== endVal;
+
+      chartHistVI.data.datasets[0].showLine = true;
+      chartHistVI.data.datasets[1].showLine = true;
+      chartHistPowerIrr.data.datasets[0].showLine = true;
+      chartHistPowerIrr.data.datasets[1].showLine = true;
+
+      let intervalMs = 30 * 60 * 1000;
+      if (stepVal === "5s") intervalMs = 5 * 1000;
+      else if (stepVal === "1m") intervalMs = 60 * 1000;
+      else if (stepVal === "15m") intervalMs = 15 * 60 * 1000;
+      else if (stepVal === "30m") intervalMs = 30 * 60 * 1000;
+      else if (stepVal === "1h") intervalMs = 60 * 60 * 1000;
+
+      let lastSampledTime = 0;
+      let lastDate = null;
+
+      let dailyStatsMap = {};
+
+      const mpptDataRef = database.ref("/mppt_data");
+      mpptDataRef.once("value", (snapshot) => {
+        let rawHistoryList = [];
+        let boundaryIndices = [];
+
+        snapshot.forEach((childSnapshot) => {
+          const item = childSnapshot.val();
+          if (!item) return;
+
+          let waktuRtc = item.waktu_rtc || "";
+          let tanggalData = "";
+          let jamData = "";
+          let rawTime = item.stempel_waktu ? Number(item.stempel_waktu) : decodeFirebasePushId(childSnapshot.key);
+
+          if (waktuRtc.includes(" ")) {
+            let parts = waktuRtc.split(" ");
+            tanggalData = parts[0];
+            jamData = parts[1];
+          } else {
+            if (rawTime) {
+              let d = new Date(rawTime);
+              tanggalData = d.toISOString().split("T")[0];
+              jamData = d.toLocaleTimeString('id-ID');
+            }
+          }
+
+          let formattedTanggalData = tanggalData;
+          if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
+            let parts = tanggalData.split("-");
+            if (parts.length === 3) {
+              formattedTanggalData = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+          }
+
+          if (formattedTanggalData >= startVal && formattedTanggalData <= endVal) {
+            if (!dailyStatsMap[formattedTanggalData]) {
+              dailyStatsMap[formattedTanggalData] = {
+                count: 0,
+                dayaMaks: 0,
+                irrMaks: 0,
+                sumDaya: 0,
+                sumIrr: 0,
+                lastEnergy: 0,
+                lastLamaOperasi: 0,
+                firstTime: rawTime,
+                lastTime: rawTime
+              };
+            }
+            
+            let stat = dailyStatsMap[formattedTanggalData];
+            stat.count += 1;
+            
+            let valDaya = Number(item.daya || 0);
+            let valIrr = Number(item.iradiansi || 0);
+            stat.sumDaya += valDaya;
+            stat.sumIrr += valIrr;
+
+            if (valDaya > stat.dayaMaks) stat.dayaMaks = valDaya;
+            if (valIrr > stat.irrMaks) stat.irrMaks = valIrr;
+
+            if (item.energi_watt_jam !== undefined) stat.lastEnergy = Number(item.energi_watt_jam);
+            if (item.lama_jam_operasi !== undefined && Number(item.lama_jam_operasi) > 0) {
+              stat.lastLamaOperasi = Number(item.lama_jam_operasi);
+            }
+
+            if (rawTime) {
+              if (!stat.firstTime || rawTime < stat.firstTime) stat.firstTime = rawTime;
+              if (!stat.lastTime || rawTime > stat.lastTime) stat.lastTime = rawTime;
+            }
+
+            if (!rawTime) {
+              let dStr = `${formattedTanggalData}T${jamData || "00:00:00"}`;
+              rawTime = new Date(dStr).getTime() || 0;
+            }
+
+            if (lastSampledTime === 0 || Math.abs(rawTime - lastSampledTime) >= intervalMs) {
+              lastSampledTime = rawTime;
+
+              if (lastDate && lastDate !== formattedTanggalData) {
+                for (let k = 0; k < 3; k++) {
+                  rawHistoryList.push({
+                    isoDate: "",
+                    label: "",
+                    tegangan: null,
+                    arus: null,
+                    daya: null,
+                    iradiansi: null
+                  });
+                }
+                boundaryIndices.push(rawHistoryList.length - 2);
+              }
+              lastDate = formattedTanggalData;
+
+              let labelTampil = isDifferentDate ? `${formattedTanggalData} ${jamData}` : jamData;
+              rawHistoryList.push({
+                isoDate: formattedTanggalData,
+                label: labelTampil,
+                tegangan: Number(item.tegangan || 0),
+                arus: Number(item.arus || 0),
+                daya: Number(item.daya || 0),
+                iradiansi: Number(item.iradiansi || 0)
+              });
+            }
+          }
+        });
+
+        chartHistVI.data.labels = rawHistoryList.map(item => item.label);
+        chartHistVI.data.boundaryIndices = boundaryIndices;
+        chartHistVI.data.datasets[0].data = rawHistoryList.map(item => item.tegangan);
+        chartHistVI.data.datasets[1].data = rawHistoryList.map(item => item.arus);
+        chartHistVI.update();
+
+        chartHistPowerIrr.data.labels = rawHistoryList.map(item => item.label);
+        chartHistPowerIrr.data.boundaryIndices = boundaryIndices;
+        chartHistPowerIrr.data.datasets[0].data = rawHistoryList.map(item => item.daya);
+        chartHistPowerIrr.data.datasets[1].data = rawHistoryList.map(item => item.iradiansi);
+        chartHistPowerIrr.update();
+
+        const ringkasanRef = database.ref("/mppt_ringkasan_harian");
+        ringkasanRef.once("value", (ringkasanSnapshot) => {
+          let ringkasanMap = {};
+
+          ringkasanSnapshot.forEach((childSnapshot) => {
+            const item = childSnapshot.val();
+            if (!item) return;
+
+            let rawKey = childSnapshot.key || "";
+            let cleanKey = rawKey.startsWith("tanggal_") ? rawKey.replace("tanggal_", "") : rawKey;
+            let tanggalLog = item.tanggal || cleanKey;
+            
+            let formattedTanggalLog = tanggalLog;
+            if (tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2) {
+              let parts = tanggalLog.split("-");
+              if (parts.length === 3) {
+                formattedTanggalLog = `${parts[2]}-${parts[1]}-${parts[0]}`;
+              }
+            }
+
+            if (formattedTanggalLog >= startVal && formattedTanggalLog <= endVal) {
+              ringkasanMap[formattedTanggalLog] = {
+                energi: Number(item.total_energi_wh || item.energi || 0),
+                lamaOperasi: Number(item.lama_jam_operasi || item.lama_operasi || 0),
+                dayaRata: Number(item.daya_rata_rata || item.daya_rata || 0),
+                iradiansiRata: Number(item.iradiansi_rata_rata || item.iradiansi_rata || 0),
+                dayaMaks: Number(item.daya_maksimum || item.daya_maks || item.daya_max || item.max_daya || 0),
+                iradiansiMaks: Number(item.iradiansi_maksimum || item.iradiansi_maks || item.iradiansi_max || item.max_iradiansi || item.irradian_maks || 0)
+              };
+            }
+          });
+
+          renderLogStatusTable(startVal, endVal, dailyStatsMap, ringkasanMap);
+
+          let historyList = [];
+          let curDateChart = new Date(startVal);
+          let stopDateChart = new Date(endVal);
+
+          while (curDateChart <= stopDateChart) {
+            let yyyy = curDateChart.getFullYear();
+            let mm = String(curDateChart.getMonth() + 1).padStart(2, '0');
+            let dd = String(curDateChart.getDate()).padStart(2, '0');
+            let isoStr = `${yyyy}-${mm}-${dd}`;
+            let displayStr = `${dd}-${mm}-${yyyy}`;
+
+            let ringkasan = ringkasanMap[isoStr];
+            let stat = dailyStatsMap[isoStr];
+
+            if (stat && stat.count > 0) {
+              let eVal = ringkasan ? ringkasan.energi : stat.lastEnergy;
+              let dRataVal = ringkasan ? ringkasan.dayaRata : (stat.sumDaya / stat.count);
+              let iRataVal = ringkasan ? ringkasan.iradiansiRata : (stat.sumIrr / stat.count);
+
+              historyList.push({
+                isoDate: isoStr,
+                label: displayStr,
+                energi: eVal,
+                dayaRata: dRataVal,
+                iradiansiRata: iRataVal
+              });
+            }
+
+            curDateChart.setDate(curDateChart.getDate() + 1);
+          }
+
+          historyList.sort((a, b) => a.isoDate.localeCompare(b.isoDate));
+
+          const labels = historyList.map(item => item.label);
+          const dataAvgPower = historyList.map(item => item.dayaRata);
+          const dataAvgIrr = historyList.map(item => item.iradiansiRata);
+          const dataEnergy = historyList.map(item => item.energi);
+
+          chartHistDayaIrr.data.labels = labels;
+          chartHistDayaIrr.data.datasets[0].data = dataAvgPower;
+          chartHistDayaIrr.data.datasets[1].data = dataAvgIrr;
+          chartHistDayaIrr.update();
+
+          chartHistEnergi.data.labels = labels;
+          chartHistEnergi.data.datasets[0].data = dataEnergy;
+          chartHistEnergi.update();
+
+          let totalHari = historyList.length;
+          let sumEnergi = dataEnergy.reduce((a, b) => a + b, 0);
+          let sumDaya = dataAvgPower.reduce((a, b) => a + b, 0);
+          let sumIrr = dataAvgIrr.reduce((a, b) => a + b, 0);
+
+          if (totalHari === 0) {
+            document.getElementById("sum-hari").innerText = "0";
+            document.getElementById("sum-energi").innerText = "0.00 Wh";
+            document.getElementById("sum-daya").innerText = "0.00 W";
+            document.getElementById("sum-irr").innerText = "0 W/m²";
+          } else {
+            document.getElementById("sum-hari").innerText = totalHari;
+            document.getElementById("sum-energi").innerText = sumEnergi.toFixed(2) + " Wh";
+            document.getElementById("sum-daya").innerText = (sumDaya / totalHari).toFixed(2) + " W";
+            document.getElementById("sum-irr").innerText = (sumIrr / totalHari).toFixed(0) + " W/m²";
+          }
+          
+          summaryBox.style.display = "grid";
+        });
+      });
+    }
+
+    function renderLogStatusTable(startDateStr, endDateStr, statsMap, ringkasanMap) {
+      const tbody = document.getElementById("log-status-tbody");
+      tbody.innerHTML = "";
+
+      let curDate = new Date(startDateStr);
+      let stopDate = new Date(endDateStr);
+      let rowNum = 1;
+
+      let totalHariRentang = 0;
+      let hariAdaLog = 0;
+      let hariTakAdaLog = 0;
+
+      let totalEnergiSum = 0;
+      let totalLamaOperasiSum = 0;
+      let totalDayaRataSum = 0;
+      let totalIrrRataSum = 0;
+      let maxDayaVal = 0;
+      let maxIrrVal = 0;
+
+      while (curDate <= stopDate) {
+        totalHariRentang++;
+        let yyyy = curDate.getFullYear();
+        let mm = String(curDate.getMonth() + 1).padStart(2, '0');
+        let dd = String(curDate.getDate()).padStart(2, '0');
+        let isoStr = `${yyyy}-${mm}-${dd}`;
+        let displayStr = `${dd}-${mm}-${yyyy}`;
+
+        let stat = statsMap[isoStr];
+        let ringkasan = ringkasanMap[isoStr];
+        let count = stat ? stat.count : 0;
+        let hasLog = count > 0;
+
+        let energiText = "-";
+        let lamaOperasiText = "-";
+        let dayaRataText = "-";
+        let irrRataText = "-";
+        let dayaMaksText = "-";
+        let irrMaksText = "-";
+
+        if (hasLog) {
+          hariAdaLog++;
+          
+          let eVal = ringkasan && ringkasan.energi !== undefined ? ringkasan.energi : (stat ? stat.lastEnergy : 0);
+          
+          let rawLamaOp = 0;
+          if (ringkasan && ringkasan.lamaOperasi !== undefined && Number(ringkasan.lamaOperasi) > 0) {
+            rawLamaOp = Number(ringkasan.lamaOperasi);
+          } else if (stat && stat.lastLamaOperasi !== undefined && stat.lastLamaOperasi > 0) {
+            rawLamaOp = Number(stat.lastLamaOperasi);
+          } else if (stat && stat.lastTime && stat.firstTime && stat.lastTime > stat.firstTime) {
+            rawLamaOp = (stat.lastTime - stat.firstTime) / (1000 * 3600);
+          }
+          let lamaOpVal = parseFloat(rawLamaOp) || 0;
+
+          let dRataVal = ringkasan && ringkasan.dayaRata !== undefined ? ringkasan.dayaRata : (stat && stat.count > 0 ? (stat.sumDaya / stat.count) : 0);
+          let iRataVal = ringkasan && ringkasan.iradiansiRata !== undefined ? ringkasan.iradiansiRata : (stat && stat.count > 0 ? (stat.sumIrr / stat.count) : 0);
+          
+          // Perbaikan untuk Daya Maks dan Iradiasi Maks (Fallback ke stat jika di ringkasan bernilai 0/tidak ada)
+          let dMaksVal = 0;
+          if (ringkasan) {
+            dMaksVal = Number(ringkasan.dayaMaks || ringkasan.daya_maksimum || ringkasan.daya_maks || ringkasan.max_daya || 0);
+          }
+          if ((!dMaksVal || dMaksVal === 0) && stat) {
+            dMaksVal = stat.dayaMaks || 0;
+          }
+
+          let iMaksVal = 0;
+          if (ringkasan) {
+            iMaksVal = Number(ringkasan.iradiansiMaks || ringkasan.iradiansi_maksimum || ringkasan.iradiansi_maks || ringkasan.max_iradiansi || ringkasan.irradian_maks || 0);
+          }
+          if ((!iMaksVal || iMaksVal === 0) && stat) {
+            iMaksVal = stat.irrMaks || 0;
+          }
+
+          totalEnergiSum += eVal;
+          totalLamaOperasiSum += lamaOpVal;
+          totalDayaRataSum += dRataVal;
+          totalIrrRataSum += iRataVal;
+          if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
+          if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
+
+          energiText = eVal.toFixed(2) + " Wh";
+          lamaOperasiText = lamaOpVal.toFixed(2) + " Jam";
+          dayaRataText = dRataVal.toFixed(2) + " W";
+          irrRataText = iRataVal.toFixed(0) + " W/m²";
+          dayaMaksText = dMaksVal.toFixed(2) + " W";
+          irrMaksText = iMaksVal.toFixed(0) + " W/m²";
+        } else {
+          hariTakAdaLog++;
+        }
+
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${rowNum++}</td>
+          <td>${displayStr}</td>
+          <td>${energiText}</td>
+          <td>${lamaOperasiText}</td>
+          <td>${dayaRataText}</td>
+          <td>${irrRataText}</td>
+          <td>${dayaMaksText}</td>
+          <td>${irrMaksText}</td>
+        `;
+        tbody.appendChild(tr);
+
+        curDate.setDate(curDate.getDate() + 1);
+      }
+
+      document.getElementById("rekap-total-hari").innerText = totalHariRentang + " Hari";
+      document.getElementById("rekap-hari-ada-log").innerText = hariAdaLog + " Hari";
+      document.getElementById("rekap-hari-tak-ada-log").innerText = hariTakAdaLog + " Hari";
+
+      if (hariAdaLog === 0) {
+        document.getElementById("foot-total-energi").innerText = "0.00 Wh";
+        document.getElementById("foot-total-lama-operasi").innerText = "0.00 Jam";
+        document.getElementById("foot-avg-daya").innerText = "0.00 W";
+        document.getElementById("foot-avg-irr").innerText = "0 W/m²";
+        document.getElementById("foot-max-daya").innerText = "0.00 W";
+        document.getElementById("foot-max-irr").innerText = "0 W/m²";
+      } else {
+        document.getElementById("foot-total-energi").innerText = totalEnergiSum.toFixed(2) + " Wh";
+        document.getElementById("foot-total-lama-operasi").innerText = totalLamaOperasiSum.toFixed(2) + " Jam";
+        document.getElementById("foot-avg-daya").innerText = (totalDayaRataSum / hariAdaLog).toFixed(2) + " W";
+        document.getElementById("foot-avg-irr").innerText = (totalIrrRataSum / hariAdaLog).toFixed(0) + " W/m²";
+        document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2) + " W";
+        document.getElementById("foot-max-irr").innerText = maxIrrVal.toFixed(0) + " W/m²";
+      }
+    }
+  </script>
+</body>
+</html>
