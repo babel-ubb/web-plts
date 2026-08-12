@@ -131,13 +131,12 @@
       transition: color 0.3s;
     }
     
-.status-online {
-      color: #00e676; /* Hapus penggunaan var() karena ini langsung kode warna hex */
+    .status-online {
+      color: #00e676;
     }
     .status-offline {
-      color: var(--danger-color); /* Tetap gunakan var() karena memanggil variabel */
+      color: var(--danger-color);
     }
-
 
     .status-note {
       font-size: 14px;
@@ -645,7 +644,6 @@
         <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT</button>
         <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">MPPT</button>
         <button id="btn-manual" class="btn-mode" onclick="setMode(true)">MANUAL</button>
-	
       </div>
 
       <div class="slider-container" id="slider-container-box">
@@ -1178,38 +1176,37 @@
       }
     });
 
-
-function handleParameterStatistikSensorClick() {
-  showCustomPasswordPrompt((inputPassword) => {
-    if (inputPassword === "hanya kita saja") {
-      openParameterStatistikSensorModal();
-    } else if (inputPassword !== null) {
-      alert(`Password Salah!`);
+    function handleParameterStatistikSensorClick() {
+      showCustomPasswordPrompt((inputPassword) => {
+        if (inputPassword === "hanya kita saja") {
+          openParameterStatistikSensorModal();
+        } else if (inputPassword !== null) {
+          alert(`Password Salah!`);
+        }
+      });
     }
-  });
-}
-
 
     function setMode(isManual) {
       controlRef.update({ mode_manual: isManual });
     }
 
     function handleMpptSelectionClick() {
-  if (currentModeManual) {
-    controlRef.update({ mode_manual: false });
-  }
-  openMpptSelectionModal();
-}
+      if (currentModeManual) {
+        controlRef.update({ mode_manual: false });
+      }
+      openMpptSelectionModal();
+    }
 
     function handleParameterMpptClick() {
-  showCustomPasswordPrompt((inputPassword) => {
-    if (inputPassword === "hanya kita saja") {
-      openParameterMpptModal();
-    } else if (inputPassword !== null) {
-      alert(`Password Salah! Tidak dapat masuk ke jendela Parameter MPPT.`);
+      showCustomPasswordPrompt((inputPassword) => {
+        if (inputPassword === "hanya kita saja") {
+          openParameterMpptModal();
+        } else if (inputPassword !== null) {
+          alert(`Password Salah! Tidak dapat masuk ke jendela Parameter MPPT.`);
+        }
+      });
     }
-  });
-}
+
     function openMpptSelectionModal() {
       let overlay = document.createElement("div");
       overlay.style.position = "fixed";
@@ -1897,8 +1894,6 @@ function handleParameterStatistikSensorClick() {
       return timestamp;
     }
 
-
-
     function exportToCSV() {
       const startVal = document.getElementById("startDate").value;
       const endVal = document.getElementById("endDate").value;
@@ -1970,7 +1965,6 @@ function handleParameterStatistikSensorClick() {
       link.click();
       document.body.removeChild(link);
     }
-
 
     function processRealtimeData(data, pushKey) {
       if (!data) return;
@@ -2388,8 +2382,8 @@ function handleParameterStatistikSensorClick() {
 
       let totalEnergiSum = 0;
       let totalLamaOperasiSum = 0;
-      let totalDayaRataSum = 0;
-      let totalIrrRataSum = 0;
+      let sumDayaRataKaliLamaOp = 0;
+      let sumIrrRataKaliLamaOp = 0;
       let maxDayaVal = 0;
       let maxIrrVal = 0;
 
@@ -2431,7 +2425,6 @@ function handleParameterStatistikSensorClick() {
           let dRataVal = ringkasan && ringkasan.dayaRata !== undefined ? ringkasan.dayaRata : (stat && stat.count > 0 ? (stat.sumDaya / stat.count) : 0);
           let iRataVal = ringkasan && ringkasan.iradiansiRata !== undefined ? ringkasan.iradiansiRata : (stat && stat.count > 0 ? (stat.sumIrr / stat.count) : 0);
           
-          // Perbaikan untuk Daya Maks dan Iradiasi Maks (Fallback ke stat jika di ringkasan bernilai 0/tidak ada)
           let dMaksVal = 0;
           if (ringkasan) {
             dMaksVal = Number(ringkasan.dayaMaks || ringkasan.daya_maksimum || ringkasan.daya_maks || ringkasan.max_daya || 0);
@@ -2442,7 +2435,7 @@ function handleParameterStatistikSensorClick() {
 
           let iMaksVal = 0;
           if (ringkasan) {
-            iMaksVal = Number(ringkasan.iradiansiMaks || ringkasan.iradiansi_maksimum || ringkasan.iradiansi_maks || ringkasan.max_iradiansi || ringkasan.irradian_maks || 0);
+            iMaksVal = Number(ringkasan.iradiansiMaks || ringkasan.iradiansi_maksimum || ringkasan.iradiansi_maks || ringkasan.iradiansi_max || ringkasan.max_iradiansi || ringkasan.irradian_maks || 0);
           }
           if ((!iMaksVal || iMaksVal === 0) && stat) {
             iMaksVal = stat.irrMaks || 0;
@@ -2450,8 +2443,9 @@ function handleParameterStatistikSensorClick() {
 
           totalEnergiSum += eVal;
           totalLamaOperasiSum += lamaOpVal;
-          totalDayaRataSum += dRataVal;
-          totalIrrRataSum += iRataVal;
+          sumDayaRataKaliLamaOp += dRataVal * lamaOpVal;
+          sumIrrRataKaliLamaOp += iRataVal * lamaOpVal;
+
           if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
           if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
 
@@ -2485,20 +2479,65 @@ function handleParameterStatistikSensorClick() {
       document.getElementById("rekap-hari-ada-log").innerText = hariAdaLog + " Hari";
       document.getElementById("rekap-hari-tak-ada-log").innerText = hariTakAdaLog + " Hari";
 
-      if (hariAdaLog === 0) {
-        document.getElementById("foot-total-energi").innerText = "0.00 Wh";
-        document.getElementById("foot-total-lama-operasi").innerText = "0.00 Jam";
-        document.getElementById("foot-avg-daya").innerText = "0.00 W";
-        document.getElementById("foot-avg-irr").innerText = "0 W/m²";
-        document.getElementById("foot-max-daya").innerText = "0.00 W";
-        document.getElementById("foot-max-irr").innerText = "0 W/m²";
-      } else {
-        document.getElementById("foot-total-energi").innerText = totalEnergiSum.toFixed(2) + " Wh";
-        document.getElementById("foot-total-lama-operasi").innerText = totalLamaOperasiSum.toFixed(2) + " Jam";
-        document.getElementById("foot-avg-daya").innerText = (totalDayaRataSum / hariAdaLog).toFixed(2) + " W";
-        document.getElementById("foot-avg-irr").innerText = (totalIrrRataSum / hariAdaLog).toFixed(0) + " W/m²";
-        document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2) + " W";
-        document.getElementById("foot-max-irr").innerText = maxIrrVal.toFixed(0) + " W/m²";
+      let finalAvgDaya = totalLamaOperasiSum > 0 ? (sumDayaRataKaliLamaOp / totalLamaOperasiSum) : 0;
+      let finalAvgIrr = totalLamaOperasiSum > 0 ? (sumIrrRataKaliLamaOp / totalLamaOperasiSum) : 0;
+
+      document.getElementById("foot-total-energi").innerText = totalEnergiSum.toFixed(2) + " Wh";
+      document.getElementById("foot-total-lama-operasi").innerText = totalLamaOperasiSum.toFixed(2) + " Jam";
+      document.getElementById("foot-avg-daya").innerText = finalAvgDaya.toFixed(2) + " W";
+      document.getElementById("foot-avg-irr").innerText = finalAvgIrr.toFixed(0) + " W/m²";
+      document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2) + " W";
+      document.getElementById("foot-max-irr").innerText = maxIrrVal.toFixed(0) + " W/m²";
+    }
+
+    function sortTable(n) {
+      let table = document.getElementById("table-rekap-harian");
+      let tbody = document.getElementById("log-status-tbody");
+      let rows = Array.from(tbody.querySelectorAll("tr"));
+      if (rows.length === 0 || rows[0].innerText.includes("Silakan klik")) return;
+
+      let switching = true;
+      let dir = "asc";
+      let switchcount = 0;
+
+      while (switching) {
+        switching = false;
+        for (let i = 0; i < (rows.length - 1); i++) {
+          let shouldSwitch = false;
+          let x = rows[i].getElementsByTagName("TD")[n];
+          let y = rows[i+1].getElementsByTagName("TD")[n];
+          let xVal = x.innerText.replace(/[^\d.-]/g, '');
+          let yVal = y.innerText.replace(/[^\d.-]/g, '');
+          let xNum = parseFloat(xVal);
+          let yNum = parseFloat(yVal);
+
+          if (isNaN(xNum) || isNaN(yNum)) {
+            xNum = x.innerText.toLowerCase();
+            yNum = y.innerText.toLowerCase();
+          }
+
+          if (dir === "asc") {
+            if (xNum > yNum) {
+              shouldSwitch = true;
+              break;
+            }
+          } else if (dir === "desc") {
+            if (xNum < yNum) {
+              shouldSwitch = true;
+              break;
+            }
+          }
+        }
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+          switchcount++;
+        } else {
+          if (switchcount === 0 && dir === "asc") {
+            dir = "desc";
+            switching = true;
+          }
+        }
       }
     }
   </script>
