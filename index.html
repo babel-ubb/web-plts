@@ -703,7 +703,7 @@
         </div>
 
         <div class="card energy">
-          <h3>Energi Harian</h3>
+          <h3>Energi PLTS</h3>
           <div class="value" id="val-energi">0.00</div>
           <div class="unit">Wh</div>
         </div>
@@ -747,7 +747,7 @@
     </div>
 
     <div class="chart-box">
-      <h2>Energi Harian, Daya Rata-rata & Iradiansi Rata-rata</h2>
+      <h2>Energi PLTS, Daya Rata-rata & Iradiansi Rata-rata</h2>
       <canvas id="chartRealtimeAkumulasi" style="max-height: 400px;"></canvas>
     </div>
   </div>
@@ -784,22 +784,22 @@
         <strong id="sum-hari">0</strong>
       </div>
       <div class="summary-card">
-        <span>Total Energi</span>
+        <span>Energi PLTS</span>
         <strong id="sum-energi">0.00 Wh</strong>
       </div>
       <div class="summary-card">
-        <span>Rata-rata Daya Harian</span>
+        <span>DAYA RATA-RATA</span>
         <strong id="sum-daya">0.00 W</strong>
       </div>
       <div class="summary-card">
-        <span>Rata-rata Iradiansi Harian</span>
+        <span>IRADIAN RATA-RATA</span>
         <strong id="sum-irr">0 W/m²</strong>
       </div>
     </div>
 
     <div class="history-charts-grid">
       <div class="history-chart-box">
-        <h3>Energi Harian (Wh)</h3>
+        <h3>Energi PLTS (Wh)</h3>
         <canvas id="chartHistoryEnergi" style="max-height: 380px;"></canvas>
       </div>
 
@@ -850,7 +850,7 @@
             <tr>
               <th onclick="sortTable(0)">No <span id="sort-icon-0">↕</span></th>
               <th onclick="sortTable(1)">Tgl <span id="sort-icon-1">↕</span></th>
-              <th onclick="sortTable(2)">Energi Harian <span id="sort-icon-2">↕</span></th>
+              <th onclick="sortTable(2)">Energi PLTS <span id="sort-icon-2">↕</span></th>
               <th onclick="sortTable(3)">Lama Operasi <span id="sort-icon-3">↕</span></th>
               <th onclick="sortTable(4)">Daya Rata-rata <span id="sort-icon-4">↕</span></th>
               <th onclick="sortTable(5)">Iradian Rata-rata <span id="sort-icon-5">↕</span></th>
@@ -934,26 +934,31 @@
     let currentModeManual = false; 
     let latestRealtimeData = null; 
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const labelEl = document.getElementById("interval-label");
-      if (labelEl) labelEl.innerText = INTERVAL_DETIK;
+document.addEventListener("DOMContentLoaded", () => {
+  const labelEl = document.getElementById("interval-label");
+  if (labelEl) labelEl.innerText = INTERVAL_DETIK;
 
-      const now = new Date();
-      const prevWeek = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+  const today = new Date();
+  
+  // Tanggal Akhir adalah kemarin (1 hari sebelum hari ini)
+  const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
+  
+  // Tanggal Awal adalah 3 hari sebelum tanggal kemarin (total mencakup 3 hari ke belakang)
+  const startDateObj = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
 
-      const formatDateOnly = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
+  const formatDateOnly = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-      document.getElementById("startDate").value = formatDateOnly(prevWeek);
-      document.getElementById("endDate").value = formatDateOnly(now);
+  document.getElementById("startDate").value = formatDateOnly(startDateObj);
+  document.getElementById("endDate").value = formatDateOnly(endDateObj);
 
-      loadHistory();
-      initFirebaseStorageAndUsersMonitor();
-    });
+  loadHistory();
+  initFirebaseStorageAndUsersMonitor();
+});
 
     const firebaseConfig = {
       apiKey: "AIzaSyBaa5YhfXUag4Acq5Xjs7iZHCTpJA8tDAQ",
@@ -1414,27 +1419,6 @@
           return;
         }
 
-        if (v1 < 0.00000001 || v1 > 1000000) {
-          alert("PROPORSI_P_AND_O harus bernilai antara 0.00000001 sd 1000000!");
-          return;
-        }
-        if (v2 < 0.00000001 || v2 > 100) {
-          alert("PERUBAHAN_TEG_MIN_P_AND_O harus bernilai antara 0.00000001 sd 100!");
-          return;
-        }
-        if (v3 < 0.00000001 || v3 > 500) {
-          alert("PERUBAHAN_DAYA_MIN_P_AND_O harus bernilai antara 0.00000001 sd 500!");
-          return;
-        }
-        if (v4 < 0.001 || v4 > 1.0) {
-          alert("BATAS_ATAS_STEP_P_AND_O harus bernilai antara 0.001 sd 1.0!");
-          return;
-        }
-        if (v5 >= v4) {
-          alert("BATAS_BAWAH_STEP_P_AND_O harus lebih kecil dari BATAS_ATAS_STEP_P_AND_O!");
-          return;
-        }
-
         database.ref("/mppt_control").update({
           "PROPORSI_P_AND_O": v1,
           "PERUBAHAN_TEG_MIN_P_AND_O": v2,
@@ -1558,31 +1542,6 @@
           return;
         }
 
-        if (v1 < 0.00000001 || v1 > 1000000) {
-          alert("PROPORSI_INC harus bernilai antara 0.00000001 sd 1000000!");
-          return;
-        }
-        if (v2 < 0.001 || v2 > 1.0) {
-          alert("BATAS_ATAS_STEP_INC harus bernilai antara 0.001 sd 1.0!");
-          return;
-        }
-        if (v3 >= v2) {
-          alert("BATAS_BAWAH_STEP_INC harus lebih kecil dari BATAS_ATAS_STEP_INC!");
-          return;
-        }
-        if (v4 < 0.000001 || v4 > 200) {
-          alert("PERUBAHAN_TEG_MIN_INC harus bernilai antara 0.000001 sd 200!");
-          return;
-        }
-        if (v5 < 0.000001 || v5 > 200) {
-          alert("PERUBAHAN_ARUS_MIN_INC harus bernilai antara 0.000001 sd 200!");
-          return;
-        }
-        if (v6 < 0.000001 || v6 > 200) {
-          alert("TEG_MIN_INC harus bernilai antara 0.000001 sd 200!");
-          return;
-        }
-
         database.ref("/mppt_control").update({
           "PROPORSI_INC": v1,
           "BATAS_ATAS_STEP_INC": v2,
@@ -1674,16 +1633,6 @@
 
         if (isNaN(v1) || isNaN(v2)) {
           alert("Semua kolom harus diisi dengan angka yang valid!");
-          return;
-        }
-
-        if (v1 < 1 || v1 > 10000) {
-          alert("JUMLAH_SAMPEL harus bernilai antara 30 sd 1000!");
-          return;
-        }
-
-        if (v2 < 1 || v2 > 9999999999999) {
-          alert("VARIANS MAKS harus bernilai antara 50 sd 9999999999!");
           return;
         }
 
@@ -1822,7 +1771,7 @@
       data: {
         labels: [],
         datasets: [
-          { label: 'Energi Harian (Wh)', borderColor: getCssVar('--color-energy'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' },
+          { label: 'Energi PLTS (Wh)', borderColor: getCssVar('--color-energy'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' },
           { label: 'Daya Rata-rata (W)', borderColor: getCssVar('--color-p'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y1' },
           { label: 'Iradiansi Rata-rata (W/m²)', borderColor: getCssVar('--color-irr'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y2' }
         ]
@@ -1899,7 +1848,7 @@
       const endVal = document.getElementById("endDate").value;
 
       database.ref("/mppt_data").once("value", (snapshot) => {
-        let rows = [["stempel_waktu", "waktu_rtc", "tegangan", "arus", "daya", "daya_rata_rata", "energi_watt_jam", "iradiansi", "iradiansi_rata_rata", "siklus_kerja", "mode_operasi"]];
+        let rows = [["stempel_waktu", "waktu_rtc", "tegangan", "arus", "daya", "daya_rata_rata", "energi_plts_watt_jam", "iradiansi", "iradiansi_rata_rata", "siklus_kerja", "mode_operasi"]];
 
         snapshot.forEach((child) => {
           let item = child.val();
@@ -1924,7 +1873,7 @@
               item.arus !== undefined ? item.arus : "",
               item.daya !== undefined ? item.daya : "",
               item.daya_rata_rata !== undefined ? item.daya_rata_rata : "",
-              item.energi_watt_jam !== undefined ? item.energi_watt_jam : "",
+              item.energi_plts_watt_jam !== undefined ? item.energi_plts_watt_jam : "",
               item.iradiansi !== undefined ? item.iradiansi : "",
               item.iradiansi_rata_rata !== undefined ? item.iradiansi_rata_rata : "",
               item.siklus_kerja !== undefined ? item.siklus_kerja : "",
@@ -1976,7 +1925,7 @@
       const p = data.daya !== undefined ? Number(data.daya) : 0;
       const irr = data.iradiansi !== undefined ? Number(data.iradiansi) : 0;
       const duty = data.siklus_kerja !== undefined ? Number(data.siklus_kerja) : 0;
-      const energyWh = data.energi_watt_jam !== undefined ? Number(data.energi_watt_jam) : 0;
+      const energyWh = data.energi_plts_watt_jam !== undefined ? Number(data.energi_plts_watt_jam) : 0;
       const avgPower = data.daya_rata_rata !== undefined ? Number(data.daya_rata_rata) : 0;
       const avgIrr = data.iradiansi_rata_rata !== undefined ? Number(data.iradiansi_rata_rata) : 0;
       const lamaOperasi = data.lama_jam_operasi !== undefined ? Number(data.lama_jam_operasi) : 0;
@@ -2102,7 +2051,7 @@
       data: {
         labels: [],
         datasets: [
-          { label: 'Energi Harian (Wh)', backgroundColor: getCssVar('--color-energy'), data: [], yAxisID: 'y' }
+          { label: 'Energi PLTS (Wh)', backgroundColor: getCssVar('--color-energy'), data: [], yAxisID: 'y' }
         ]
       },
       options: {
@@ -2207,7 +2156,7 @@
             if (valDaya > stat.dayaMaks) stat.dayaMaks = valDaya;
             if (valIrr > stat.irrMaks) stat.irrMaks = valIrr;
 
-            if (item.energi_watt_jam !== undefined) stat.lastEnergy = Number(item.energi_watt_jam);
+            if (item.energi_plts_watt_jam !== undefined) stat.lastEnergy = Number(item.energi_plts_watt_jam);
             if (item.lama_jam_operasi !== undefined && Number(item.lama_jam_operasi) > 0) {
               stat.lastLamaOperasi = Number(item.lama_jam_operasi);
             }
@@ -2297,7 +2246,8 @@
             }
           });
 
-          renderLogStatusTable(startVal, endVal, dailyStatsMap, ringkasanMap);
+          // Mengambil hasil perhitungan total/rata-rata persis seperti pada fungsi tabel rekapitulasi harian
+          let calcResult = renderLogStatusTable(startVal, endVal, dailyStatsMap, ringkasanMap);
 
           let historyList = [];
           let curDateChart = new Date(startVal);
@@ -2346,22 +2296,11 @@
           chartHistEnergi.data.datasets[0].data = dataEnergy;
           chartHistEnergi.update();
 
-          let totalHari = historyList.length;
-          let sumEnergi = dataEnergy.reduce((a, b) => a + b, 0);
-          let sumDaya = dataAvgPower.reduce((a, b) => a + b, 0);
-          let sumIrr = dataAvgIrr.reduce((a, b) => a + b, 0);
-
-          if (totalHari === 0) {
-            document.getElementById("sum-hari").innerText = "0";
-            document.getElementById("sum-energi").innerText = "0.00 Wh";
-            document.getElementById("sum-daya").innerText = "0.00 W";
-            document.getElementById("sum-irr").innerText = "0 W/m²";
-          } else {
-            document.getElementById("sum-hari").innerText = totalHari;
-            document.getElementById("sum-energi").innerText = sumEnergi.toFixed(2) + " Wh";
-            document.getElementById("sum-daya").innerText = (sumDaya / totalHari).toFixed(2) + " W";
-            document.getElementById("sum-irr").innerText = (sumIrr / totalHari).toFixed(0) + " W/m²";
-          }
+          // Menetapkan nilai kartu ringkasan sesuai dengan perhitungan pada footer tabel rekapitulasi harian
+          document.getElementById("sum-hari").innerText = calcResult.hariAdaLog;
+          document.getElementById("sum-energi").innerText = calcResult.totalEnergiSum.toFixed(2) + " Wh";
+          document.getElementById("sum-daya").innerText = calcResult.avgDayaVal.toFixed(2) + " W";
+          document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
           
           summaryBox.style.display = "grid";
         });
@@ -2443,8 +2382,8 @@
 
           totalEnergiSum += eVal;
           totalLamaOperasiSum += lamaOpVal;
-          sumDayaRataKaliLamaOp += dRataVal * lamaOpVal;
-          sumIrrRataKaliLamaOp += iRataVal * lamaOpVal;
+          sumDayaRataKaliLamaOp += (dRataVal * lamaOpVal);
+          sumIrrRataKaliLamaOp += (iRataVal * lamaOpVal);
 
           if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
           if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
@@ -2488,57 +2427,53 @@
       document.getElementById("foot-avg-irr").innerText = finalAvgIrr.toFixed(0) + " W/m²";
       document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2) + " W";
       document.getElementById("foot-max-irr").innerText = maxIrrVal.toFixed(0) + " W/m²";
+
+      return {
+        hariAdaLog: hariAdaLog,
+        totalEnergiSum: totalEnergiSum,
+        avgDayaVal: finalAvgDaya,
+        avgIrrVal: finalAvgIrr
+      };
     }
 
-    function sortTable(n) {
-      let table = document.getElementById("table-rekap-harian");
-      let tbody = document.getElementById("log-status-tbody");
-      let rows = Array.from(tbody.querySelectorAll("tr"));
-      if (rows.length === 0 || rows[0].innerText.includes("Silakan klik")) return;
+    let sortDirection = false;
+    function sortTable(columnIndex) {
+      const table = document.getElementById("table-rekap-harian");
+      const tbody = table.querySelector("#log-status-tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
 
-      let switching = true;
-      let dir = "asc";
-      let switchcount = 0;
+      if (rows.length === 1 && rows[0].cells.length === 1) return;
 
-      while (switching) {
-        switching = false;
-        for (let i = 0; i < (rows.length - 1); i++) {
-          let shouldSwitch = false;
-          let x = rows[i].getElementsByTagName("TD")[n];
-          let y = rows[i+1].getElementsByTagName("TD")[n];
-          let xVal = x.innerText.replace(/[^\d.-]/g, '');
-          let yVal = y.innerText.replace(/[^\d.-]/g, '');
-          let xNum = parseFloat(xVal);
-          let yNum = parseFloat(yVal);
+      sortDirection = !sortDirection;
 
-          if (isNaN(xNum) || isNaN(yNum)) {
-            xNum = x.innerText.toLowerCase();
-            yNum = y.innerText.toLowerCase();
-          }
+      rows.sort((a, b) => {
+        let cellA = a.cells[columnIndex].innerText.trim();
+        let cellB = b.cells[columnIndex].innerText.trim();
 
-          if (dir === "asc") {
-            if (xNum > yNum) {
-              shouldSwitch = true;
-              break;
-            }
-          } else if (dir === "desc") {
-            if (xNum < yNum) {
-              shouldSwitch = true;
-              break;
-            }
+        if (cellA === "-") cellA = "0";
+        if (cellB === "-") cellB = "0";
+
+        let valA = parseFloat(cellA.replace(/[^0-9.-]+/g, ""));
+        let valB = parseFloat(cellB.replace(/[^0-9.-]+/g, ""));
+
+        if (isNaN(valA)) valA = cellA;
+        if (isNaN(valB)) valB = cellB;
+
+        if (columnIndex === 1) {
+          let partsA = cellA.split("-");
+          let partsB = cellB.split("-");
+          if (partsA.length === 3 && partsB.length === 3) {
+            valA = `${partsA[2]}-${partsA[1]}-${partsA[0]}`;
+            valB = `${partsB[2]}-${partsB[1]}-${partsB[0]}`;
           }
         }
-        if (shouldSwitch) {
-          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-          switching = true;
-          switchcount++;
-        } else {
-          if (switchcount === 0 && dir === "asc") {
-            dir = "desc";
-            switching = true;
-          }
-        }
-      }
+
+        if (valA < valB) return sortDirection ? -1 : 1;
+        if (valA > valB) return sortDirection ? 1 : -1;
+        return 0;
+      });
+
+      rows.forEach(row => tbody.appendChild(row));
     }
   </script>
 </body>
