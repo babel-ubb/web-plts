@@ -890,7 +890,7 @@
       <strong id="rekap-sisa-kuota" style="color: var(--primary-color);">100.0%</strong>
     </div>
     <div class="esp-memory-item" style="flex-direction: row; justify-content: center; gap: 10px;">
-      <button class="btn-action-custom" onclick="handleParameterStatistikSensorClick()">Parameter Statistik Sensor</button>
+      <button class="btn-action-custom" onclick="handleParameterStatistikSensorClick()">Jumlah Sampel Sensor</button>
     </div>
   </div>
 
@@ -1568,95 +1568,91 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function openParameterStatistikSensorModal() {
-      let overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
-      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
+  let overlay = document.createElement("div");
+  overlay.style.position = "fixed";
+  overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
+  overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
 
-      let box = document.createElement("div");
-      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "420px";
+  let box = document.createElement("div");
+  box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "420px";
 
-      let title = document.createElement("h3");
-      title.innerText = "Parameter Statistik Sensor"; title.style.marginBottom = "15px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px"; title.style.textAlign = "center";
+  let title = document.createElement("h3");
+  title.innerText = "Jumlah Sampel Sensor"; title.style.marginBottom = "15px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px"; title.style.textAlign = "center";
 
-      let formContainer = document.createElement("div");
-      formContainer.style.display = "flex"; formContainer.style.flexDirection = "column"; formContainer.style.gap = "12px";
+  let formContainer = document.createElement("div");
+  formContainer.style.display = "flex"; formContainer.style.flexDirection = "column"; formContainer.style.gap = "12px";
 
-      const inputsConfig = [
-        { id: "stat-jumlah-sampel", label: "JUMLAH_SAMPEL", firebaseKey: "JUMLAH_SAMPEL", type: "number" },
-        { id: "stat-varians-maks", label: "VARIANS MAKS", firebaseKey: "VARIANS_MAKS", type: "number" }
-      ];
+  const inputsConfig = [
+    { id: "stat-jumlah-sampel", label: "JUMLAH_SAMPEL", firebaseKey: "JUMLAH_SAMPEL", type: "number" }
+  ];
 
-      database.ref("/mppt_control").once("value", (snapshot) => {
-        const val = snapshot.val() || {};
+  database.ref("/mppt_control").once("value", (snapshot) => {
+    const val = snapshot.val() || {};
 
-        inputsConfig.forEach(item => {
-          let group = document.createElement("div");
-          group.style.display = "flex"; group.style.flexDirection = "column"; group.style.gap = "4px";
+    inputsConfig.forEach(item => {
+      let group = document.createElement("div");
+      group.style.display = "flex"; group.style.flexDirection = "column"; group.style.gap = "4px";
 
-          let lbl = document.createElement("label");
-          lbl.innerText = item.label;
-          lbl.style.fontSize = "13px"; lbl.style.fontWeight = "bold"; lbl.style.color = getCssVar('--text-color');
+      let lbl = document.createElement("label");
+      lbl.innerText = item.label;
+      lbl.style.fontSize = "13px"; lbl.style.fontWeight = "bold"; lbl.style.color = getCssVar('--text-color');
 
-          let input = document.createElement("input");
-          input.type = item.type;
-          input.id = item.id;
-          input.style.width = "100%";
-          input.style.padding = "8px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color');
-          input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "14px"; input.style.outline = "none";
+      let input = document.createElement("input");
+      input.type = item.type;
+      input.id = item.id;
+      input.style.width = "100%";
+      input.style.padding = "8px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color');
+      input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "14px"; input.style.outline = "none";
 
-          if (val[item.firebaseKey] !== undefined) {
-            input.value = val[item.firebaseKey];
-          }
+      if (val[item.firebaseKey] !== undefined) {
+        input.value = val[item.firebaseKey];
+      }
 
-          group.appendChild(lbl);
-          group.appendChild(input);
-          formContainer.appendChild(group);
-        });
-      });
+      group.appendChild(lbl);
+      group.appendChild(input);
+      formContainer.appendChild(group);
+    });
+  });
 
-      let btnContainer = document.createElement("div");
-      btnContainer.style.display = "flex"; btnContainer.style.gap = "10px"; btnContainer.style.marginTop = "15px";
+  let btnContainer = document.createElement("div");
+  btnContainer.style.display = "flex"; btnContainer.style.gap = "10px"; btnContainer.style.marginTop = "15px";
 
-      let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
-      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
-      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+  let btnCancel = document.createElement("button");
+  btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
+  btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
+  btnCancel.onclick = () => { document.body.removeChild(overlay); };
 
-      let btnSave = document.createElement("button");
-      btnSave.innerText = "Simpan"; btnSave.style.flex = "1"; btnSave.style.padding = "10px"; btnSave.style.borderRadius = "6px"; btnSave.style.border = "none";
-      btnSave.style.background = getCssVar('--btn-blue-bg'); btnSave.style.color = "#ffffff"; btnSave.style.fontWeight = "bold"; btnSave.style.cursor = "pointer";
-      
-      btnSave.onclick = () => {
-        let v1 = parseFloat(document.getElementById("stat-jumlah-sampel").value);
-        let v2 = parseFloat(document.getElementById("stat-varians-maks").value);
+  let btnSave = document.createElement("button");
+  btnSave.innerText = "Simpan"; btnSave.style.flex = "1"; btnSave.style.padding = "10px"; btnSave.style.borderRadius = "6px"; btnSave.style.border = "none";
+  btnSave.style.background = getCssVar('--btn-blue-bg'); btnSave.style.color = "#ffffff"; btnSave.style.fontWeight = "bold"; btnSave.style.cursor = "pointer";
+  
+  btnSave.onclick = () => {
+    let v1 = parseFloat(document.getElementById("stat-jumlah-sampel").value);
 
-        if (isNaN(v1) || isNaN(v2)) {
-          alert("Semua kolom harus diisi dengan angka yang valid!");
-          return;
-        }
-
-        database.ref("/mppt_control").update({
-          "JUMLAH_SAMPEL": v1,
-          "VARIANS_MAKS": v2,
-          timestamp: Date.now()
-        }).then(() => {
-          alert("Parameter Statistik Sensor berhasil disimpan di folder mppt_control!");
-          document.body.removeChild(overlay);
-        }).catch((error) => {
-          alert("Gagal menyimpan parameter: " + error.message);
-        });
-      };
-
-      btnContainer.appendChild(btnCancel);
-      btnContainer.appendChild(btnSave);
-      box.appendChild(title);
-      box.appendChild(formContainer);
-      box.appendChild(btnContainer);
-      overlay.appendChild(box);
-      document.body.appendChild(overlay);
+    if (isNaN(v1)) {
+      alert("Kolom jumlah sampel harus diisi dengan angka yang valid!");
+      return;
     }
-    
+
+    database.ref("/mppt_control").update({
+      "JUMLAH_SAMPEL": v1,
+      timestamp: Date.now()
+    }).then(() => {
+      alert("Jumlah Sampel Sensor berhasil disimpan di folder mppt_control!");
+      document.body.removeChild(overlay);
+    }).catch((error) => {
+      alert("Gagal menyimpan parameter: " + error.message);
+    });
+  };
+
+  btnContainer.appendChild(btnCancel);
+  btnContainer.appendChild(btnSave);
+  box.appendChild(title);
+  box.appendChild(formContainer);
+  box.appendChild(btnContainer);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}    
     function showCustomPasswordPrompt(callback) {
       let overlay = document.createElement("div");
       overlay.style.position = "fixed";
