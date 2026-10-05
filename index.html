@@ -850,39 +850,34 @@
             <tr>
               <th onclick="sortTable(0)">No <span id="sort-icon-0">↕</span></th>
               <th onclick="sortTable(1)">Tgl <span id="sort-icon-1">↕</span></th>
-              <th onclick="sortTable(2)">Energi Matahari (Wh) <span id="sort-icon-2">↕</span></th>
+              <th onclick="sortTable(2)">Lama Operasi (Jam) <span id="sort-icon-2">↕</span></th>
               <th onclick="sortTable(3)">Energi PLTS (Wh) <span id="sort-icon-3">↕</span></th>
-              <th onclick="sortTable(4)">Lama Operasi (Jam) <span id="sort-icon-4">↕</span></th>
-              <th onclick="sortTable(5)">Daya Rata-rata (Watt) <span id="sort-icon-5">↕</span></th>
+              <th onclick="sortTable(4)">Daya Rata-rata (Watt) <span id="sort-icon-4">↕</span></th>
+              <th onclick="sortTable(5)">Daya Maks (Watt) <span id="sort-icon-5">↕</span></th>
               <th onclick="sortTable(6)">Iradian Rata-rata (W/m²) <span id="sort-icon-6">↕</span></th>
-              <th onclick="sortTable(7)">Daya Maks (Watt) <span id="sort-icon-7">↕</span></th>
-              <th onclick="sortTable(8)">Iradian Maks (W/m²) <span id="sort-icon-8">↕</span></th>
+              <th onclick="sortTable(7)">Iradian Maks (W/m²) <span id="sort-icon-7">↕</span></th>
+              <th onclick="sortTable(8)">Energi Matahari (Wh/m²) <span id="sort-icon-8">↕</span></th>
             </tr>
           </thead>
           <tbody id="log-status-tbody">
             <tr>
-              <td colspan="8" style="color: var(--text-muted); font-style: italic;">Silakan klik "Tampilkan Data" untuk memuat info rekapitulasi harian.</td>
+              <td colspan="9" style="color: var(--text-muted); font-style: italic;">Silakan klik "Tampilkan Data" untuk memuat info rekapitulasi harian.</td>
             </tr>
           </tbody>
-          <tfoot id="log-status-tfoot">
-  <tr>
-    <td colspan="2" style="text-align: right;">TOTAL / RATA-RATA / MAKS:</td>
-    <!-- Tambahkan baris penampung total energi matahari di bawah ini -->
-    <td id="foot-total-energi-matahari">0.00</td>
-    <td id="foot-total-energi">0.00</td>
-    <td id="foot-total-lama-operasi">0.00</td>
-    <td id="foot-avg-daya">0.00</td>
-    <td id="foot-avg-irr">0</td>
-    <td id="foot-max-daya">0.00</td>
-    <td id="foot-max-irr">0</td>
-  </tr>
-</tfoot>
-
+         <tfoot id="log-status-tfoot">
+            <tr>
+              <td colspan="2" style="text-align: right;">TOTAL / RATA-RATA / MAKS:</td>
+              <td id="foot-total-lama-operasi">0.00</td>
+              <td id="foot-total-energi">0.00</td>
+              <td id="foot-avg-daya">0.00</td>
+              <td id="foot-max-daya">0.00</td>
+              <td id="foot-avg-irr">0</td>
+              <td id="foot-max-irr">0</td>
+              <td id="foot-total-energi-matahari">0.00</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
-    </div>
-  </div>
-
   <!-- Sisa Memori ESP & Sisa Penyimpanan Database + Tombol Tambahan sebaris -->
   <div class="esp-memory-box" style="margin-top: 30px; flex-wrap: wrap;">
     <div class="esp-memory-item">
@@ -1893,15 +1888,44 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    function exportTableToCSV() {
+    
+function exportTableToCSV() {
       let table = document.getElementById("table-rekap-harian");
       let rows = table.querySelectorAll("tr");
       let csv = [];
       
-      rows.forEach(row => {
+      rows.forEach((row, rowIndex) => {
         let cols = row.querySelectorAll("td, th");
         let data = [];
-        cols.forEach(col => data.push('"' + col.innerText.replace(/"/g, '""') + '"'));
+        
+        // Cek apakah ini baris footer (TOTAL / RATA-RATA / MAKS)
+        if (row.parentElement.tagName === "TFOOT") {
+          data.push('"TOTAL / RATA-RATA / MAKS"'); // Kolom No
+          data.push('""');                        // Kolom Tgl (dikosongkan karena colspan=2)
+          
+          // Ambil nilai dari ID footer masing-masing dan susun ulang urutannya
+          let lamaOp = document.getElementById("foot-total-lama-operasi").innerText;
+          let ePlts = document.getElementById("foot-total-energi").innerText;
+          let dRata = document.getElementById("foot-avg-daya").innerText;
+          let dMaks = document.getElementById("foot-max-daya").innerText;
+          let iRata = document.getElementById("foot-avg-irr").innerText;
+          let iMaks = document.getElementById("foot-max-irr").innerText;
+          let eMat = document.getElementById("foot-total-energi-matahari").innerText;
+
+          data.push('"' + lamaOp + '"');
+          data.push('"' + ePlts + '"');
+          data.push('"' + dRata + '"');
+          data.push('"' + dMaks + '"');
+          data.push('"' + iRata + '"');
+          data.push('"' + iMaks + '"');
+          data.push('"' + eMat + '"');
+        } else {
+          // Untuk baris Header (th) dan Body (td) biasa
+          cols.forEach(col => {
+            data.push('"' + col.innerText.replace(/"/g, '""') + '"');
+          });
+        }
+        
         csv.push(data.join(","));
       });
 
@@ -1914,6 +1938,7 @@ document.addEventListener("DOMContentLoaded", () => {
       link.click();
       document.body.removeChild(link);
     }
+
 
     function processRealtimeData(data, pushKey) {
       if (!data) return;
@@ -2395,17 +2420,18 @@ function renderLogStatusTable(startDateStr, endDateStr, statsMap, ringkasanMap) 
     }
 
     // Buat elemen baris tabel baru dengan menyisipkan kolom Energi Matahari sebelum Energi PLTS
+    // Buat elemen baris tabel baru dengan urutan kolom yang sudah disesuaikan
     let tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${rowNum++}</td>
       <td>${displayStr}</td>
-      <td>${energiMatahariText}</td>
-      <td>${energiText}</td>
       <td>${lamaOperasiText}</td>
+      <td>${energiText}</td>
       <td>${dayaRataText}</td>
-      <td>${irrRataText}</td>
       <td>${dayaMaksText}</td>
+      <td>${irrRataText}</td>
       <td>${irrMaksText}</td>
+      <td>${energiMatahariText}</td>
     `;
     tbody.appendChild(tr);
 
