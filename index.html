@@ -880,10 +880,7 @@
       </div>
   <!-- Sisa Memori ESP & Sisa Penyimpanan Database + Tombol Tambahan sebaris -->
   <div class="esp-memory-box" style="margin-top: 30px; flex-wrap: wrap;">
-    <div class="esp-memory-item">
-      <span>SISA MEMORI ESP</span>
-      <strong id="rekap-sisa-memori">PLTS Offline</strong>
-    </div>
+    
     <div class="esp-memory-item">
       <span>SISA PENYIMPANAN DATABASE</span>
       <strong id="rekap-sisa-kuota" style="color: var(--primary-color);">100.0%</strong>
@@ -1954,7 +1951,7 @@ function exportTableToCSV() {
       const avgPower = data.daya_rata_rata !== undefined ? Number(data.daya_rata_rata) : 0;
       const avgIrr = data.iradiansi_rata_rata !== undefined ? Number(data.iradiansi_rata_rata) : 0;
       const lamaOperasi = data.lama_jam_operasi !== undefined ? Number(data.lama_jam_operasi) : 0;
-      const sisaMemori = data.sisa_memori_ESP !== undefined ? Number(data.sisa_memori_ESP) : 0;
+      
 
       const now = Date.now();
       if (lastEspHeartbeatTime > 0 && (now - lastEspHeartbeatTime) <= 12000) {
