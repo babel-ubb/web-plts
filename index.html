@@ -880,7 +880,6 @@
       </div>
   <!-- Sisa Memori ESP & Sisa Penyimpanan Database + Tombol Tambahan sebaris -->
   <div class="esp-memory-box" style="margin-top: 30px; flex-wrap: wrap;">
-    
     <div class="esp-memory-item">
       <span>SISA PENYIMPANAN DATABASE</span>
       <strong id="rekap-sisa-kuota" style="color: var(--primary-color);">100.0%</strong>
@@ -889,7 +888,6 @@
       <button class="btn-action-custom" onclick="handleParameterStatistikSensorClick()">Jumlah Sampel Sensor</button>
     </div>
   </div>
-
   <footer-toggle-container style="max-width: 1200px; margin: 20px auto 0 auto; display: flex; justify-content: flex-end;">
     <button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar">☀️</button>
   </footer-toggle-container>
@@ -1086,7 +1084,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("val-daya-rata").innerText = "0.00";
         document.getElementById("val-irr-rata").innerText = "0";
         document.getElementById("val-lama-operasi").innerText = "0.00";
-        document.getElementById("rekap-sisa-memori").innerText = "PLTS Offline";
+        
       }
 
       updateSliderState(isConnected, currentModeManual);
@@ -1951,7 +1949,7 @@ function exportTableToCSV() {
       const avgPower = data.daya_rata_rata !== undefined ? Number(data.daya_rata_rata) : 0;
       const avgIrr = data.iradiansi_rata_rata !== undefined ? Number(data.iradiansi_rata_rata) : 0;
       const lamaOperasi = data.lama_jam_operasi !== undefined ? Number(data.lama_jam_operasi) : 0;
-      
+      const sisaMemori = data.sisa_memori_ESP !== undefined ? Number(data.sisa_memori_ESP) : 0;
 
       const now = Date.now();
       if (lastEspHeartbeatTime > 0 && (now - lastEspHeartbeatTime) <= 12000) {
@@ -1968,7 +1966,7 @@ function exportTableToCSV() {
         document.getElementById("val-daya-rata").innerText = avgPower.toFixed(2);
         document.getElementById("val-irr-rata").innerText = avgIrr.toFixed(0);
         document.getElementById("val-lama-operasi").innerText = lamaOperasi.toFixed(2);
-        document.getElementById("rekap-sisa-memori").innerText = sisaMemori.toFixed(2) + "%";
+        
       }
 
       let rawTime = data.stempel_waktu ? Number(data.stempel_waktu) : 0;
