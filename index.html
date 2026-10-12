@@ -2086,10 +2086,9 @@ function exportTableToCSV() {
       }
     });
 
-    function loadHistory() {
+function loadHistory() {
       const startVal = document.getElementById("startDate").value;
       const endVal = document.getElementById("endDate").value;
-      const stepVal = document.getElementById("stepSelect").value;
       const summaryBox = document.getElementById("history-summary");
 
       if (!startVal || !endVal) {
@@ -2097,50 +2096,112 @@ function exportTableToCSV() {
         return;
       }
 
-      const isDifferentDate = startVal !== endVal;
+      // 1. Ambil data Ringkasan Harian untuk Tabel dan Grafik Batangan
+      database.ref("/mppt_ringkasan_harian").once("value", (ringkasanSnapshot) => {
+        let ringkasanMap = {};
 
-      chartHistVI.data.datasets[0].showLine = true;
-      chartHistVI.data.datasets[1].showLine = true;
-      chartHistPowerIrr.data.datasets[0].showLine = true;
-      chartHistPowerIrr.data.datasets[1].showLine = true;
-
-      let intervalMs = 30 * 60 * 1000;
-      if (stepVal === "5s") intervalMs = 5 * 1000;
-      else if (stepVal === "1m") intervalMs = 60 * 1000;
-      else if (stepVal === "15m") intervalMs = 15 * 60 * 1000;
-      else if (stepVal === "30m") intervalMs = 30 * 60 * 1000;
-      else if (stepVal === "1h") intervalMs = 60 * 60 * 1000;
-
-      let lastSampledTime = 0;
-      let lastDate = null;
-
-      let dailyStatsMap = {};
-
-      const mpptDataRef = database.ref("/mppt_data");
-      mpptDataRef.once("value", (snapshot) => {
-        let rawHistoryList = [];
-        let boundaryIndices = [];
-
-        snapshot.forEach((childSnapshot) => {
+        ringkasanSnapshot.forEach((childSnapshot) => {
           const item = childSnapshot.val();
           if (!item) return;
 
-          let waktuRtc = item.waktu_rtc || "";
-          let tanggalData = "";
-          let jamData = "";
-          let rawTime = item.stempel_waktu ? Number(item.stempel_waktu) : decodeFirebasePushId(childSnapshot.key);
-
-          if (waktuRtc.includes(" ")) {
-            let parts = waktuRtc.split(" ");
-            tanggalData = parts[0];
-            jamData = parts[1];
-          } else {
-            if (rawTime) {
-              let d = new Date(rawTime);
-              tanggalData = d.toISOString().split("T")[0];
-              jamData = d.toLocaleTimeString('id-ID');
+          let rawKey = childSnapshot.key || "";
+          let cleanKey = rawKey.startsWith("tanggal_") ? rawKey.replace("tanggal_", "") : rawKey;
+          let tanggalLog = item.tanggal || cleanKey;
+          
+          let formattedTanggalLog = tanggalLog;
+          if (tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2) {
+            let parts = tanggalLog.split("-");
+            if (parts.length === 3) {
+              formattedTanggalLog = `${parts[2]}-${parts[1]}-${parts[0]}`;
             }
           }
+
+          if (formattedTanggalLog >= startVal && formattedTanggalLog <= endVal) {
+            ringkasanMap[formattedTanggalLog] = {
+              energiMatahari: Number(item.energi_matahari_watt_jam || 0),
+              energi: Number(item.energi_plts_watt_jam || 0),
+              lamaOperasi: Number(item.lama_jam_operasi || 0), 
+              dayaRata: Number(item.daya_rata_rata || 0),
+              iradiansiRata: Number(item.iradiansi_rata_rata || 0),
+              dayaMaks: Number(item.daya_maksimum || 0),
+              iradiansiMaks: Number(item.iradian_maksimum || 0)
+            };
+          }
+        });
+
+        // Render tabel rekapitulasi murni berdasarkan ringkasan harian
+        let calcResult = renderLogStatusTable(startVal, endVal, ringkasanMap);
+
+        let historyList = [];
+        let curDateChart = new Date(startVal);
+        let stopDateChart = new Date(endVal);
+
+        while (curDateChart <= stopDateChart) {
+          let yyyy = curDateChart.getFullYear();
+          let mm = String(curDateChart.getMonth() + 1).padStart(2, '0');
+          let dd = String(curDateChart.getDate()).padStart(2, '0');
+          let isoStr = `${yyyy}-${mm}-${dd}`;
+          let displayStr = `${dd}-${mm}-${yyyy}`;
+
+          let ringkasan = ringkasanMap[isoStr];
+
+          if (ringkasan) {
+            historyList.push({
+              isoDate: isoStr,
+              label: displayStr,
+              energi: ringkasan.energi,
+              dayaRata: ringkasan.dayaRata,
+              iradiansiRata: ringkasan.iradiansiRata
+            });
+          }
+
+          curDateChart.setDate(curDateChart.getDate() + 1);
+        }
+
+        historyList.sort((a, b) => a.isoDate.localeCompare(b.isoDate));
+
+        const labels = historyList.map(item => item.label);
+        const dataAvgPower = historyList.map(item => item.dayaRata);
+        const dataAvgIrr = historyList.map(item => item.iradiansiRata);
+        const dataEnergy = historyList.map(item => item.energi);
+
+        chartHistDayaIrr.data.labels = labels;
+        chartHistDayaIrr.data.datasets[0].data = dataAvgPower;
+        chartHistDayaIrr.data.datasets[1].data = dataAvgIrr;
+        chartHistDayaIrr.update();
+
+        chartHistEnergi.data.labels = labels;
+        chartHistEnergi.data.datasets[0].data = dataEnergy;
+        chartHistEnergi.update();
+
+        // Tetapkan nilai kartu ringkasan atas
+        document.getElementById("sum-hari").innerText = calcResult.hariAdaLog;
+        document.getElementById("sum-energi").innerText = calcResult.totalEnergiSum.toFixed(2) + " Wh";
+        document.getElementById("sum-daya").innerText = calcResult.avgDayaVal.toFixed(2) + " W";
+        document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
+        
+        summaryBox.style.display = "grid";
+      });
+
+      // 2. Ambil data Mentah untuk Grafik Historis Garis (V, I, P, Irradiance per waktu)
+      database.ref("/mppt_data").once("value", (snapshot) => {
+        let histLabels = [];
+        let histV = [];
+        let histI = [];
+        let histP = [];
+        let histIrr = [];
+        let boundaryIndices = [];
+
+        let currentActiveDate = "";
+        let sampleIndex = 0;
+
+        snapshot.forEach((child) => {
+          let item = child.val();
+          if (!item) return;
+
+          let waktuRtc = item.waktu_rtc || "";
+          let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
+          let jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
 
           let formattedTanggalData = tanggalData;
           if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
@@ -2151,312 +2212,145 @@ function exportTableToCSV() {
           }
 
           if (formattedTanggalData >= startVal && formattedTanggalData <= endVal) {
-            if (!dailyStatsMap[formattedTanggalData]) {
-              dailyStatsMap[formattedTanggalData] = {
-                count: 0,
-                dayaMaks: 0,
-                irrMaks: 0,
-                sumDaya: 0,
-                sumIrr: 0,
-                lastEnergy: 0,
-                lastLamaOperasi: 0,
-                firstTime: rawTime,
-                lastTime: rawTime
-              };
-            }
-            
-            let stat = dailyStatsMap[formattedTanggalData];
-            stat.count += 1;
-            
-            let valDaya = Number(item.daya || 0);
-            let valIrr = Number(item.iradiansi || 0);
-            stat.sumDaya += valDaya;
-            stat.sumIrr += valIrr;
-
-            if (valDaya > stat.dayaMaks) stat.dayaMaks = valDaya;
-            if (valIrr > stat.irrMaks) stat.irrMaks = valIrr;
-
-            if (item.energi_plts_watt_jam !== undefined) stat.lastEnergy = Number(item.energi_plts_watt_jam);
-            if (item.lama_jam_operasi !== undefined && Number(item.lama_jam_operasi) > 0) {
-              stat.lastLamaOperasi = Number(item.lama_jam_operasi);
-            }
-
-            if (rawTime) {
-              if (!stat.firstTime || rawTime < stat.firstTime) stat.firstTime = rawTime;
-              if (!stat.lastTime || rawTime > stat.lastTime) stat.lastTime = rawTime;
-            }
-
-            if (!rawTime) {
-              let dStr = `${formattedTanggalData}T${jamData || "00:00:00"}`;
-              rawTime = new Date(dStr).getTime() || 0;
-            }
-
-            if (lastSampledTime === 0 || Math.abs(rawTime - lastSampledTime) >= intervalMs) {
-              lastSampledTime = rawTime;
-
-              if (lastDate && lastDate !== formattedTanggalData) {
-                for (let k = 0; k < 3; k++) {
-                  rawHistoryList.push({
-                    isoDate: "",
-                    label: "",
-                    tegangan: null,
-                    arus: null,
-                    daya: null,
-                    iradiansi: null
-                  });
-                }
-                boundaryIndices.push(rawHistoryList.length - 2);
+            if (formattedTanggalData !== currentActiveDate) {
+              currentActiveDate = formattedTanggalData;
+              if (sampleIndex > 0) {
+                boundaryIndices.push(sampleIndex);
               }
-              lastDate = formattedTanggalData;
-
-              let labelTampil = isDifferentDate ? `${formattedTanggalData} ${jamData}` : jamData;
-              rawHistoryList.push({
-                isoDate: formattedTanggalData,
-                label: labelTampil,
-                tegangan: Number(item.tegangan || 0),
-                arus: Number(item.arus || 0),
-                daya: Number(item.daya || 0),
-                iradiansi: Number(item.iradiansi || 0)
-              });
             }
+
+            histLabels.push(jamData ? `${formattedTanggalData} ${jamData}` : formattedTanggalData);
+            histV.value = Number(item.tegangan || 0);
+            histV.push(Number(item.tegangan || 0));
+            histI.push(Number(item.arus || 0));
+            histP.push(Number(item.daya || 0));
+            histIrr.push(Number(item.iradiansi || 0));
+            sampleIndex++;
           }
         });
 
-        chartHistVI.data.labels = rawHistoryList.map(item => item.label);
-        chartHistVI.data.boundaryIndices = boundaryIndices;
-        chartHistVI.data.datasets[0].data = rawHistoryList.map(item => item.tegangan);
-        chartHistVI.data.datasets[1].data = rawHistoryList.map(item => item.arus);
+        chartHistVI.data.labels = histLabels;
+        chartHistVI.data.datasets[0].data = histV;
+        chartHistVI.data.datasets[1].data = histI;
+        chartHistVI.config.data.boundaryIndices = boundaryIndices;
         chartHistVI.update();
 
-        chartHistPowerIrr.data.labels = rawHistoryList.map(item => item.label);
-        chartHistPowerIrr.data.boundaryIndices = boundaryIndices;
-        chartHistPowerIrr.data.datasets[0].data = rawHistoryList.map(item => item.daya);
-        chartHistPowerIrr.data.datasets[1].data = rawHistoryList.map(item => item.iradiansi);
+        chartHistPowerIrr.data.labels = histLabels;
+        chartHistPowerIrr.data.datasets[0].data = histP;
+        chartHistPowerIrr.data.datasets[1].data = histIrr;
+        chartHistPowerIrr.config.data.boundaryIndices = boundaryIndices;
         chartHistPowerIrr.update();
-
-        const ringkasanRef = database.ref("/mppt_ringkasan_harian");
-        ringkasanRef.once("value", (ringkasanSnapshot) => {
-          let ringkasanMap = {};
-
-          ringkasanSnapshot.forEach((childSnapshot) => {
-            const item = childSnapshot.val();
-            if (!item) return;
-
-            let rawKey = childSnapshot.key || "";
-            let cleanKey = rawKey.startsWith("tanggal_") ? rawKey.replace("tanggal_", "") : rawKey;
-            let tanggalLog = item.tanggal || cleanKey;
-            
-            let formattedTanggalLog = tanggalLog;
-            if (tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2) {
-              let parts = tanggalLog.split("-");
-              if (parts.length === 3) {
-                formattedTanggalLog = `${parts[2]}-${parts[1]}-${parts[0]}`;
-              }
-            }
-
-            if (formattedTanggalLog >= startVal && formattedTanggalLog <= endVal) {
-              ringkasanMap[formattedTanggalLog] = {
-		energiMatahari: Number(item.energi_matahari_watt_jam || 0),
-                energi: Number(item.energi_plts_watt_jam || 0),
-                lamaOperasi: Number(item.lama_jam_operasi || item.lama_operasi || 0),
-                dayaRata: Number(item.daya_rata_rata || item.daya_rata || 0),
-                iradiansiRata: Number(item.iradiansi_rata_rata || item.iradiansi_rata || 0),
-                dayaMaks: Number(item.daya_maksimum || item.daya_maks || item.daya_max || item.max_daya || 0),
-                iradiansiMaks: Number(item.iradiansi_maksimum || item.iradiansi_maks || item.iradiansi_max || item.max_iradiansi || item.irradian_maks || 0)
-              };
-            }
-          });
-
-          // Mengambil hasil perhitungan total/rata-rata persis seperti pada fungsi tabel rekapitulasi harian
-          let calcResult = renderLogStatusTable(startVal, endVal, dailyStatsMap, ringkasanMap);
-
-          let historyList = [];
-          let curDateChart = new Date(startVal);
-          let stopDateChart = new Date(endVal);
-
-          while (curDateChart <= stopDateChart) {
-            let yyyy = curDateChart.getFullYear();
-            let mm = String(curDateChart.getMonth() + 1).padStart(2, '0');
-            let dd = String(curDateChart.getDate()).padStart(2, '0');
-            let isoStr = `${yyyy}-${mm}-${dd}`;
-            let displayStr = `${dd}-${mm}-${yyyy}`;
-
-            let ringkasan = ringkasanMap[isoStr];
-            let stat = dailyStatsMap[isoStr];
-
-            if (stat && stat.count > 0) {
-              let eVal = ringkasan ? ringkasan.energi : stat.lastEnergy;
-              let dRataVal = ringkasan ? ringkasan.dayaRata : (stat.sumDaya / stat.count);
-              let iRataVal = ringkasan ? ringkasan.iradiansiRata : (stat.sumIrr / stat.count);
-
-              historyList.push({
-                isoDate: isoStr,
-                label: displayStr,
-                energi: eVal,
-                dayaRata: dRataVal,
-                iradiansiRata: iRataVal
-              });
-            }
-
-            curDateChart.setDate(curDateChart.getDate() + 1);
-          }
-
-          historyList.sort((a, b) => a.isoDate.localeCompare(b.isoDate));
-
-          const labels = historyList.map(item => item.label);
-          const dataAvgPower = historyList.map(item => item.dayaRata);
-          const dataAvgIrr = historyList.map(item => item.iradiansiRata);
-          const dataEnergy = historyList.map(item => item.energi);
-
-          chartHistDayaIrr.data.labels = labels;
-          chartHistDayaIrr.data.datasets[0].data = dataAvgPower;
-          chartHistDayaIrr.data.datasets[1].data = dataAvgIrr;
-          chartHistDayaIrr.update();
-
-          chartHistEnergi.data.labels = labels;
-          chartHistEnergi.data.datasets[0].data = dataEnergy;
-          chartHistEnergi.update();
-
-          // Menetapkan nilai kartu ringkasan sesuai dengan perhitungan pada footer tabel rekapitulasi harian
-          document.getElementById("sum-hari").innerText = calcResult.hariAdaLog;
-          document.getElementById("sum-energi").innerText = calcResult.totalEnergiSum.toFixed(2) + " Wh";
-          document.getElementById("sum-daya").innerText = calcResult.avgDayaVal.toFixed(2) + " W";
-          document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
-          
-          summaryBox.style.display = "grid";
-        });
       });
     }
+function renderLogStatusTable(startDateStr, endDateStr, ringkasanMap) {
+      const tbody = document.getElementById("log-status-tbody");
+      tbody.innerHTML = "";
 
-function renderLogStatusTable(startDateStr, endDateStr, statsMap, ringkasanMap) {
-  const tbody = document.getElementById("log-status-tbody");
-  tbody.innerHTML = "";
+      let curDate = new Date(startDateStr);
+      let stopDate = new Date(endDateStr);
+      let rowNum = 1;
 
-  let curDate = new Date(startDateStr);
-  let stopDate = new Date(endDateStr);
-  let rowNum = 1;
+      let totalHariRentang = 0;
+      let hariAdaLog = 0;
+      let hariTakAdaLog = 0;
 
-  let totalHariRentang = 0;
-  let hariAdaLog = 0;
-  let hariTakAdaLog = 0;
+      let totalEnergiMatahariSum = 0; 
+      let totalEnergiSum = 0;
+      let totalLamaOperasiSum = 0;
+      let sumDayaRataKaliLamaOp = 0;
+      let sumIrrRataKaliLamaOp = 0;
+      let maxDayaVal = 0;
+      let maxIrrVal = 0;
 
-  // 1. Definisikan variabel total akumulasi energi matahari
-  let totalEnergiMatahariSum = 0; 
-  let totalEnergiSum = 0;
-  let totalLamaOperasiSum = 0;
-  let sumDayaRataKaliLamaOp = 0;
-  let sumIrrRataKaliLamaOp = 0;
-  let maxDayaVal = 0;
-  let maxIrrVal = 0;
+      while (curDate <= stopDate) {
+        totalHariRentang++;
+        let yyyy = curDate.getFullYear();
+        let mm = String(curDate.getMonth() + 1).padStart(2, '0');
+        let dd = String(curDate.getDate()).padStart(2, '0');
+        let isoStr = `${yyyy}-${mm}-${dd}`;
+        let displayStr = `${dd}-${mm}-${yyyy}`;
 
-  while (curDate <= stopDate) {
-    totalHariRentang++;
-    let yyyy = curDate.getFullYear();
-    let mm = String(curDate.getMonth() + 1).padStart(2, '0');
-    let dd = String(curDate.getDate()).padStart(2, '0');
-    let isoStr = `${yyyy}-${mm}-${dd}`;
-    let displayStr = `${dd}-${mm}-${yyyy}`;
+        let ringkasan = ringkasanMap[isoStr];
+        let hasLog = (ringkasan !== undefined && ringkasan !== null);
 
-    let stat = statsMap[isoStr];
-    let ringkasan = ringkasanMap[isoStr];
-    let count = stat ? stat.count : 0;
-    let hasLog = count > 0;
+        let energiMatahariText = "-";
+        let energiText = "-";
+        let lamaOperasiText = "-";
+        let dayaRataText = "-";
+        let irrRataText = "-";
+        let dayaMaksText = "-";
+        let irrMaksText = "-";
 
-    // Tambahkan variabel text untuk Energi Matahari
-    let energiMatahariText = "-";
-    let energiText = "-";
-    let lamaOperasiText = "-";
-    let dayaRataText = "-";
-    let irrRataText = "-";
-    let dayaMaksText = "-";
-    let irrMaksText = "-";
+        if (hasLog) {
+          hariAdaLog++;
+          
+          let eMatVal = Number(ringkasan.energiMatahari || 0);
+          let eVal = Number(ringkasan.energi || 0);
+          let lamaOpVal = Number(ringkasan.lamaOperasi || 0);
+          let dRataVal = Number(ringkasan.dayaRata || 0);
+          let iRataVal = Number(ringkasan.iradiansiRata || 0);
+          let dMaksVal = Number(ringkasan.dayaMaks || 0);
+          let iMaksVal = Number(ringkasan.iradiansiMaks || 0);
 
-    if (hasLog) {
-      hariAdaLog++;
-      
-      // Ambil nilai energi matahari (jika dari ringkasan tidak ada, bisa ambil dari data sampel terakhir di folder stats)
-      let eMatVal = ringkasan && ringkasan.energiMatahari !== undefined ? ringkasan.energiMatahari : (stat && stat.lastEnergyMatahari ? stat.lastEnergyMatahari : 0);
-      let eVal = ringkasan && ringkasan.energi !== undefined ? ringkasan.energi : (stat ? stat.lastEnergy : 0);
-      
-      let rawLamaOp = 0;
-      if (ringkasan && ringkasan.lamaOperasi !== undefined && Number(ringkasan.lamaOperasi) > 0) {
-        rawLamaOp = Number(ringkasan.lamaOperasi);
-      } else if (stat && stat.lastLamaOperasi !== undefined && stat.lastLamaOperasi > 0) {
-        rawLamaOp = Number(stat.lastLamaOperasi);
+          totalEnergiMatahariSum += eMatVal;
+          totalEnergiSum += eVal;
+          totalLamaOperasiSum += lamaOpVal;
+          sumDayaRataKaliLamaOp += (dRataVal * lamaOpVal);
+          sumIrrRataKaliLamaOp += (iRataVal * lamaOpVal);
+
+          if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
+          if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
+
+          energiMatahariText = eMatVal.toFixed(2);
+          energiText = eVal.toFixed(2);
+          lamaOperasiText = lamaOpVal.toFixed(2);
+          dayaRataText = dRataVal.toFixed(2);
+          irrRataText = iRataVal.toFixed(2);
+          dayaMaksText = dMaksVal.toFixed(2);
+          irrMaksText = iMaksVal.toFixed(0);
+        } else {
+          hariTakAdaLog++;
+        }
+
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${rowNum++}</td>
+          <td>${displayStr}</td>
+          <td>${lamaOperasiText}</td>
+          <td>${energiText}</td>
+          <td>${dayaRataText}</td>
+          <td>${dayaMaksText}</td>
+          <td>${irrRataText}</td>
+          <td>${irrMaksText}</td>
+          <td>${energiMatahariText}</td>
+        `;
+        tbody.appendChild(tr);
+
+        curDate.setDate(curDate.getDate() + 1);
       }
-      let lamaOpVal = parseFloat(rawLamaOp) || 0;
 
-      let dRataVal = ringkasan && ringkasan.dayaRata !== undefined ? ringkasan.dayaRata : (stat && stat.count > 0 ? (stat.sumDaya / stat.count) : 0);
-      let iRataVal = ringkasan && ringkasan.iradiansiRata !== undefined ? ringkasan.iradiansiRata : (stat && stat.count > 0 ? (stat.sumIrr / stat.count) : 0);
-      
-      let dMaksVal = (ringkasan && ringkasan.dayaMaks) ? ringkasan.dayaMaks : (stat ? stat.dayaMaks : 0);
-      let iMaksVal = (ringkasan && ringkasan.iradiansiMaks) ? ringkasan.iradiansiMaks : (stat ? stat.irrMaks : 0);
+      document.getElementById("rekap-total-hari").innerText = totalHariRentang + " Hari";
+      document.getElementById("rekap-hari-ada-log").innerText = hariAdaLog + " Hari";
+      document.getElementById("rekap-hari-tak-ada-log").innerText = hariTakAdaLog + " Hari";
 
-      // Hitung akumulasi total
-      totalEnergiMatahariSum += eMatVal;
-      totalEnergiSum += eVal;
-      totalLamaOperasiSum += lamaOpVal;
-      sumDayaRataKaliLamaOp += (dRataVal * lamaOpVal);
-      sumIrrRataKaliLamaOp += (iRataVal * lamaOpVal);
+      let finalAvgDaya = totalLamaOperasiSum > 0 ? (sumDayaRataKaliLamaOp / totalLamaOperasiSum) : 0;
+      let finalAvgIrr = totalLamaOperasiSum > 0 ? (sumIrrRataKaliLamaOp / totalLamaOperasiSum) : 0;
 
-      if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
-      if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
+      document.getElementById("foot-total-energi-matahari").innerText = totalEnergiMatahariSum.toFixed(2);
+      document.getElementById("foot-total-energi").innerText = totalEnergiSum.toFixed(2);
+      document.getElementById("foot-total-lama-operasi").innerText = totalLamaOperasiSum.toFixed(2);
+      document.getElementById("foot-avg-daya").innerText = finalAvgDaya.toFixed(2);
+      document.getElementById("foot-avg-irr").innerText = finalAvgIrr.toFixed(2);
+      document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2);
+      document.getElementById("foot-max-irr").innerText = maxIrrVal.toFixed(0);
 
-      // Konversi data menjadi string angka bersih tanpa tambahan satuan text
-      energiMatahariText = eMatVal.toFixed(2);
-      energiText = eVal.toFixed(2);
-      lamaOperasiText = lamaOpVal.toFixed(2);
-      dayaRataText = dRataVal.toFixed(2);
-      irrRataText = iRataVal.toFixed(2);
-      dayaMaksText = dMaksVal.toFixed(2);
-      irrMaksText = iMaksVal.toFixed(0);
-    } else {
-      hariTakAdaLog++;
+      return {
+        hariAdaLog: hariAdaLog,
+        totalEnergiSum: totalEnergiSum,
+        avgDayaVal: finalAvgDaya,
+        avgIrrVal: finalAvgIrr
+      };
     }
-
-    // Buat elemen baris tabel baru dengan menyisipkan kolom Energi Matahari sebelum Energi PLTS
-    // Buat elemen baris tabel baru dengan urutan kolom yang sudah disesuaikan
-    let tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${rowNum++}</td>
-      <td>${displayStr}</td>
-      <td>${lamaOperasiText}</td>
-      <td>${energiText}</td>
-      <td>${dayaRataText}</td>
-      <td>${dayaMaksText}</td>
-      <td>${irrRataText}</td>
-      <td>${irrMaksText}</td>
-      <td>${energiMatahariText}</td>
-    `;
-    tbody.appendChild(tr);
-
-    curDate.setDate(curDate.getDate() + 1);
-  }
-
-  document.getElementById("rekap-total-hari").innerText = totalHariRentang + " Hari";
-  document.getElementById("rekap-hari-ada-log").innerText = hariAdaLog + " Hari";
-  document.getElementById("rekap-hari-tak-ada-log").innerText = hariTakAdaLog + " Hari";
-
-  let finalAvgDaya = totalLamaOperasiSum > 0 ? (sumDayaRataKaliLamaOp / totalLamaOperasiSum) : 0;
-  let finalAvgIrr = totalLamaOperasiSum > 0 ? (sumIrrRataKaliLamaOp / totalLamaOperasiSum) : 0;
-
-  // 2. Tampilkan hasil akumulasi ke bagian footer tabel (tanpa satuan teks)
-  document.getElementById("foot-total-energi-matahari").innerText = totalEnergiMatahariSum.toFixed(2);
-  document.getElementById("foot-total-energi").innerText = totalEnergiSum.toFixed(2);
-  document.getElementById("foot-total-lama-operasi").innerText = totalLamaOperasiSum.toFixed(2);
-  document.getElementById("foot-avg-daya").innerText = finalAvgDaya.toFixed(2);
-  document.getElementById("foot-avg-irr").innerText = finalAvgIrr.toFixed(2);
-  document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2);
-  document.getElementById("foot-max-irr").innerText = maxIrrVal.toFixed(0);
-
-  return {
-    hariAdaLog: hariAdaLog,
-    totalEnergiSum: totalEnergiSum,
-    avgDayaVal: finalAvgDaya,
-    avgIrrVal: finalAvgIrr
-  };
-}
-
 
     let sortDirection = false;
     function sortTable(columnIndex) {
