@@ -2089,6 +2089,7 @@ function exportTableToCSV() {
 function loadHistory() {
       const startVal = document.getElementById("startDate").value;
       const endVal = document.getElementById("endDate").value;
+      const stepValue = document.getElementById("stepSelect").value
       const summaryBox = document.getElementById("history-summary");
 
       if (!startVal || !endVal) {
@@ -2184,65 +2185,85 @@ function loadHistory() {
       });
 
       // 2. Ambil data Mentah untuk Grafik Historis Garis (V, I, P, Irradiance per waktu)
-      database.ref("/mppt_data").once("value", (snapshot) => {
-        let histLabels = [];
-        let histV = [];
-        let histI = [];
-        let histP = [];
-        let histIrr = [];
-        let boundaryIndices = [];
+      // 2. Ambil data Mentah untuk Grafik Historis Garis (V, I, P, Irradiance per waktu)
+  database.ref("/mppt_data").once("value", (snapshot) => {
+    let histLabels = [];
+    let histV = [];
+    let histI = [];
+    let histP = [];
+    let histIrr = [];
+    let boundaryIndices = [];
 
-        let currentActiveDate = "";
-        let sampleIndex = 0;
+    let currentActiveDate = "";
+    let sampleIndex = 0;
 
-        snapshot.forEach((child) => {
-          let item = child.val();
-          if (!item) return;
+    // Tentukan batasan interval dalam milidetik berdasarkan pilihan user
+    let intervalMs = 5 * 1000; // default 5 detik
+    if (stepValue === "1m") intervalMs = 60 * 1000;
+    else if (stepValue === "15m") intervalMs = 15 * 60 * 1000;
+    else if (stepValue === "30m") intervalMs = 30 * 60 * 1000;
+    else if (stepValue === "1h") intervalMs = 60 * 60 * 1000;
 
-          let waktuRtc = item.waktu_rtc || "";
-          let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
-          let jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
+    let lastRecordedTime = 0; // Variabel untuk tracking waktu sampel terakhir yang dimasukkan
 
-          let formattedTanggalData = tanggalData;
-          if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
-            let parts = tanggalData.split("-");
-            if (parts.length === 3) {
-              formattedTanggalData = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
+    snapshot.forEach((child) => {
+      let item = child.val();
+      if (!item) return;
+
+      let waktuRtc = item.waktu_rtc || "";
+      let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
+      let jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
+
+      let formattedTanggalData = tanggalData;
+      if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
+        let parts = tanggalData.split("-");
+        if (parts.length === 3) {
+          formattedTanggalData = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+      }
+
+      if (formattedTanggalData >= startVal && formattedTanggalData <= endVal) {
+        // Konversi stempel waktu atau waktu rtc menjadi milidetik untuk perbandingan interval
+        let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : new Date(`${formattedTanggalData}T${jamData || "00:00:00"}`).getTime();
+
+        // Filter / Sampling berdasarkan interval yang dipilih (kecuali untuk interval 5s / data mentah)
+        if (stepValue !== "5s" && lastRecordedTime > 0 && (itemTime - lastRecordedTime < intervalMs)) {
+          return; // Lewati data jika belum melewati batas interval waktu
+        }
+
+        if (formattedTanggalData !== currentActiveDate) {
+          currentActiveDate = formattedTanggalData;
+          if (sampleIndex > 0) {
+            boundaryIndices.push(sampleIndex);
           }
+        }
 
-          if (formattedTanggalData >= startVal && formattedTanggalData <= endVal) {
-            if (formattedTanggalData !== currentActiveDate) {
-              currentActiveDate = formattedTanggalData;
-              if (sampleIndex > 0) {
-                boundaryIndices.push(sampleIndex);
-              }
-            }
+        lastRecordedTime = itemTime; // Perbarui waktu sampel terakhir
 
-            histLabels.push(jamData ? `${formattedTanggalData} ${jamData}` : formattedTanggalData);
-            histV.value = Number(item.tegangan || 0);
-            histV.push(Number(item.tegangan || 0));
-            histI.push(Number(item.arus || 0));
-            histP.push(Number(item.daya || 0));
-            histIrr.push(Number(item.iradiansi || 0));
-            sampleIndex++;
-          }
-        });
+        histLabels.push(jamData ? `${formattedTanggalData} ${jamData}` : formattedTanggalData);
+        histV.push(Number(item.tegangan || 0));
+        histI.push(Number(item.arus || 0));
+        histP.push(Number(item.daya || 0));
+        histIrr.push(Number(item.iradiansi || 0));
+        sampleIndex++;
+      }
+    });
 
-        chartHistVI.data.labels = histLabels;
-        chartHistVI.data.datasets[0].data = histV;
-        chartHistVI.data.datasets[1].data = histI;
-        chartHistVI.config.data.boundaryIndices = boundaryIndices;
-        chartHistVI.update();
+    // Update data ke Chart Historis Garis
+    chartHistVI.data.labels = histLabels;
+    chartHistVI.data.datasets[0].data = histV;
+    chartHistVI.data.datasets[1].data = histI;
+    chartHistVI.config.data.boundaryIndices = boundaryIndices;
+    chartHistVI.update();
 
-        chartHistPowerIrr.data.labels = histLabels;
-        chartHistPowerIrr.data.datasets[0].data = histP;
-        chartHistPowerIrr.data.datasets[1].data = histIrr;
-        chartHistPowerIrr.config.data.boundaryIndices = boundaryIndices;
-        chartHistPowerIrr.update();
-      });
-    }
-function renderLogStatusTable(startDateStr, endDateStr, ringkasanMap) {
+    chartHistPowerIrr.data.labels = histLabels;
+    chartHistPowerIrr.data.datasets[0].data = histP;
+    chartHistPowerIrr.data.datasets[1].data = histIrr;
+    chartHistPowerIrr.config.data.boundaryIndices = boundaryIndices;
+    chartHistPowerIrr.update();
+  });
+}
+      function renderLogStatusTable(startDateStr, endDateStr, ringkasanMap) {
       const tbody = document.getElementById("log-status-tbody");
       tbody.innerHTML = "";
 
