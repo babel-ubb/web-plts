@@ -817,6 +817,11 @@
         <h3>Tegangan (V) & Arus (A)</h3>
         <canvas id="chartHistVI" style="max-height: 380px;"></canvas>
       </div>
+
+       <div class="history-chart-box">
+        <h3>Siklus Kerja (%)</h3>
+        <canvas id="chartHistSiklusKerja" style="max-height: 380px;"></canvas>
+      </div>
     </div>
 
     <!-- Tabel Rekapitulasi Harian -->
@@ -984,7 +989,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return document.body.classList.contains("light-mode") ? "#0f172a" : "#ffffff";
     }
 
-    function updateChartThemeColors() {
+function updateChartThemeColors() {
       const textColor = getLegendTextColor();
       const gridColor = getCssVar('--chart-grid');
 
@@ -994,8 +999,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const colorIrr = getCssVar('--color-irr');
       const colorEnergy = getCssVar('--color-energy');
 
-      const allCharts = [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartHistVI, chartHistPowerIrr, chartHistDayaIrr, chartHistEnergi];
-
+      // TAMBAHKAN chartHistSiklusKerja di sini agar ikut berubah saat ganti tema
+      const allCharts = [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartHistVI, chartHistPowerIrr, chartHistDayaIrr, chartHistEnergi, chartHistSiklusKerja];
+      
       allCharts.forEach((chart) => {
         if (!chart) return;
         chart.options.legend.labels.fontColor = textColor;
@@ -1030,12 +1036,28 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (chart === chartHistEnergi) {
           chart.data.datasets[0].backgroundColor = colorEnergy;
           chart.options.scales.yAxes[0].ticks.fontColor = colorEnergy;
+        } else if (chart === chartHistSiklusKerja) {
+          // Khusus siklus kerja, warnai teks sumbu Y dengan warna warning/kuning
+          chart.options.scales.yAxes[0].ticks.fontColor = getCssVar('--warning-color');
         }
 
         chart.update();
       });
-    }
+       
 
+      // Pengaturan khusus untuk Chart Siklus Kerja (agar teks legendanya tetap mengikuti tema terang/gelap tanpa merubah warna garisnya)
+      if (chartHistSiklusKerja) {
+        chartHistSiklusKerja.options.legend.labels.fontColor = textColor;
+        chartHistSiklusKerja.options.scales.xAxes.forEach(axis => {
+          if (axis.ticks) axis.ticks.fontColor = textColor;
+          if (axis.gridLines) axis.gridLines.color = gridColor;
+        });
+        chartHistSiklusKerja.options.scales.yAxes.forEach(axis => {
+          if (axis.gridLines) axis.gridLines.color = gridColor;
+        });
+        chartHistSiklusKerja.update();
+      }
+    }
     const statusRef = database.ref("/mppt_status/last_seen");
     statusRef.on("value", (snapshot) => {
       if (snapshot.exists()) {
@@ -2018,6 +2040,69 @@ function exportTableToCSV() {
       }
     });
 
+
+const ctxHistSiklus = document.getElementById('chartHistSiklusKerja').getContext('2d');
+    const chartHistSiklusKerja = new Chart(ctxHistSiklus, {
+      type: 'line',
+      data: {
+        labels: [],
+        boundaryIndices: [],
+        datasets: [
+          {
+            label: 'Manual',
+            borderColor: '#ff5252', // Warna Merah
+            backgroundColor: 'transparent',
+            fill: false,
+            data: [],
+            borderWidth: 2,
+            pointRadius: 2,
+            pointHoverRadius: 4,
+            pointBackgroundColor: '#ff5252',
+            showLine: true,
+            lineTension: 0,
+            spanGaps: false
+          },
+          {
+            label: 'P&O',
+            borderColor: '#0284c7', // Warna Biru
+            backgroundColor: 'transparent',
+            fill: false,
+            data: [],
+            borderWidth: 2,
+            pointRadius: 2,
+            pointHoverRadius: 4,
+            pointBackgroundColor: '#0284c7',
+            showLine: true,
+            lineTension: 0,
+            spanGaps: false
+          },
+          {
+            label: 'InC',
+            borderColor: '#00e676', // Warna Hijau
+            backgroundColor: 'transparent',
+            fill: false,
+            data: [],
+            borderWidth: 2,
+            pointRadius: 2,
+            pointHoverRadius: 4,
+            pointBackgroundColor: '#00e676',
+            showLine: true,
+            lineTension: 0,
+            spanGaps: false
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getCssVar('--warning-color'), fontStyle: 'bold', beginAtZero: true, max: 100 }, gridLines: { color: getCssVar('--chart-grid') } }]
+        }
+      }
+    });
+
+
     const ctxHistPowerIrr = document.getElementById('chartHistPowerIrr').getContext('2d');
     const chartHistPowerIrr = new Chart(ctxHistPowerIrr, {
       type: 'line',
@@ -2184,85 +2269,143 @@ function loadHistory() {
         summaryBox.style.display = "grid";
       });
 
-      // 2. Ambil data Mentah untuk Grafik Historis Garis (V, I, P, Irradiance per waktu)
-      // 2. Ambil data Mentah untuk Grafik Historis Garis (V, I, P, Irradiance per waktu)
-  database.ref("/mppt_data").once("value", (snapshot) => {
-    let histLabels = [];
-    let histV = [];
-    let histI = [];
-    let histP = [];
-    let histIrr = [];
-    let boundaryIndices = [];
+      // 2. Ambil data Mentah untuk Grafik Historis Garis (V, I, P, Irradiance & Siklus Kerja per waktu)
+      database.ref("/mppt_data").once("value", (snapshot) => {
+        let histLabels = [];
+        let histV = [];
+        let histI = [];
+        let histP = [];
+        let histIrr = [];
+        
+        // 3 Array terpisah untuk masing-masing dataset legenda (Manual, P&O, InC)
+        let dataManual = [];
+        let dataPO = [];
+        let dataInC = [];
 
-    let currentActiveDate = "";
-    let sampleIndex = 0;
+        let boundaryIndices = [];
 
-    // Tentukan batasan interval dalam milidetik berdasarkan pilihan user
-    let intervalMs = 5 * 1000; // default 5 detik
-    if (stepValue === "1m") intervalMs = 60 * 1000;
-    else if (stepValue === "15m") intervalMs = 15 * 60 * 1000;
-    else if (stepValue === "30m") intervalMs = 30 * 60 * 1000;
-    else if (stepValue === "1h") intervalMs = 60 * 60 * 1000;
+        let currentActiveDate = "";
+        let sampleIndex = 0;
 
-    let lastRecordedTime = 0; // Variabel untuk tracking waktu sampel terakhir yang dimasukkan
+        let intervalMs = 5 * 1000; // default 5 detik
+        if (stepValue === "1m") intervalMs = 60 * 1000;
+        else if (stepValue === "15m") intervalMs = 15 * 60 * 1000;
+        else if (stepValue === "30m") intervalMs = 30 * 60 * 1000;
+        else if (stepValue === "1h") intervalMs = 60 * 60 * 1000;
 
-    snapshot.forEach((child) => {
-      let item = child.val();
-      if (!item) return;
+        let lastRecordedTime = 0;
+        let lastMode = null;
 
-      let waktuRtc = item.waktu_rtc || "";
-      let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
-      let jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
+snapshot.forEach((child) => {
+          let item = child.val();
+          if (!item) return;
 
-      let formattedTanggalData = tanggalData;
-      if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
-        let parts = tanggalData.split("-");
-        if (parts.length === 3) {
-          formattedTanggalData = `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-      }
+          let waktuRtc = item.waktu_rtc || "";
+          let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
+          let jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
 
-      if (formattedTanggalData >= startVal && formattedTanggalData <= endVal) {
-        // Konversi stempel waktu atau waktu rtc menjadi milidetik untuk perbandingan interval
-        let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : new Date(`${formattedTanggalData}T${jamData || "00:00:00"}`).getTime();
-
-        // Filter / Sampling berdasarkan interval yang dipilih (kecuali untuk interval 5s / data mentah)
-        if (stepValue !== "5s" && lastRecordedTime > 0 && (itemTime - lastRecordedTime < intervalMs)) {
-          return; // Lewati data jika belum melewati batas interval waktu
-        }
-
-        if (formattedTanggalData !== currentActiveDate) {
-          currentActiveDate = formattedTanggalData;
-          if (sampleIndex > 0) {
-            boundaryIndices.push(sampleIndex);
+          let formattedTanggalData = tanggalData;
+          if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
+            let parts = tanggalData.split("-");
+            if (parts.length === 3) {
+              formattedTanggalData = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
           }
-        }
 
-        lastRecordedTime = itemTime; // Perbarui waktu sampel terakhir
+          if (formattedTanggalData >= startVal && formattedTanggalData <= endVal) {
+            let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : new Date(`${formattedTanggalData}T${jamData || "00:00:00"}`).getTime();
 
-        histLabels.push(jamData ? `${formattedTanggalData} ${jamData}` : formattedTanggalData);
-        histV.push(Number(item.tegangan || 0));
-        histI.push(Number(item.arus || 0));
-        histP.push(Number(item.daya || 0));
-        histIrr.push(Number(item.iradiansi || 0));
-        sampleIndex++;
-      }
-    });
+            if (stepValue !== "5s" && lastRecordedTime > 0 && (itemTime - lastRecordedTime < intervalMs)) {
+              return;
+            }
 
-    // Update data ke Chart Historis Garis
-    chartHistVI.data.labels = histLabels;
-    chartHistVI.data.datasets[0].data = histV;
-    chartHistVI.data.datasets[1].data = histI;
-    chartHistVI.config.data.boundaryIndices = boundaryIndices;
-    chartHistVI.update();
+            if (formattedTanggalData !== currentActiveDate) {
+              currentActiveDate = formattedTanggalData;
+              if (sampleIndex > 0) {
+                boundaryIndices.push(sampleIndex);
+              }
+            }
 
-    chartHistPowerIrr.data.labels = histLabels;
-    chartHistPowerIrr.data.datasets[0].data = histP;
-    chartHistPowerIrr.data.datasets[1].data = histIrr;
-    chartHistPowerIrr.config.data.boundaryIndices = boundaryIndices;
-    chartHistPowerIrr.update();
-  });
+            lastRecordedTime = itemTime;
+
+            let labelTime = jamData ? `${formattedTanggalData} ${jamData}` : formattedTanggalData;
+            histLabels.push(labelTime);
+            histV.push(Number(item.tegangan || 0));
+            histI.push(Number(item.arus || 0));
+            histP.push(Number(item.daya || 0));
+            histIrr.push(Number(item.iradiansi || 0));
+
+            // --- DETEKSI MODE OPERASI ---
+            let valSiklus = Number(item.siklus_kerja || 0);
+            let dbMode = item.mode_operasi || "";
+            
+            let currentMode = "PO"; // Default P&O
+            if (dbMode === "Man" || item.mode_manual === true) {
+              currentMode = "MANUAL";
+            } else if (dbMode === "InC") {
+              currentMode = "INC";
+            } else {
+              currentMode = "PO"; // Untuk "P&O" atau lainnya
+            }
+
+            // Inisialisasi nilai NaN (kosong) untuk ketiga dataset
+            let vManual = NaN;
+            let vPO = NaN;
+            let vInC = NaN;
+
+            // Masukkan nilai hanya ke dataset yang sedang aktif
+            if (currentMode === "MANUAL") {
+              vManual = valSiklus;
+              if (lastMode && lastMode !== "MANUAL") {
+                if (lastMode === "PO" && dataPO.length > 0) dataPO[dataPO.length - 1] = valSiklus;
+                if (lastMode === "INC" && dataInC.length > 0) dataInC[dataInC.length - 1] = valSiklus;
+              }
+            } else if (currentMode === "INC") {
+              vInC = valSiklus;
+              if (lastMode && lastMode !== "INC") {
+                if (lastMode === "MANUAL" && dataManual.length > 0) dataManual[dataManual.length - 1] = valSiklus;
+                if (lastMode === "PO" && dataPO.length > 0) dataPO[dataPO.length - 1] = valSiklus;
+              }
+            } else {
+              vPO = valSiklus;
+              if (lastMode && lastMode !== "PO") {
+                if (lastMode === "MANUAL" && dataManual.length > 0) dataManual[dataManual.length - 1] = valSiklus;
+                if (lastMode === "INC" && dataInC.length > 0) dataInC[dataInC.length - 1] = valSiklus;
+              }
+            }
+
+            dataManual.push(vManual);
+            dataPO.push(vPO);
+            dataInC.push(vInC);
+
+            lastMode = currentMode;
+            sampleIndex++;
+          }
+        });        
+        // Update data ke Chart Historis V & I
+        chartHistVI.data.labels = histLabels;
+        chartHistVI.data.datasets[0].data = histV;
+        chartHistVI.data.datasets[1].data = histI;
+        chartHistVI.config.data.boundaryIndices = boundaryIndices;
+        chartHistVI.update();
+
+        // Update data ke Chart Historis Daya & Irradiasi
+        chartHistPowerIrr.data.labels = histLabels;
+        chartHistPowerIrr.data.datasets[0].data = histP;
+        chartHistPowerIrr.data.datasets[1].data = histIrr;
+        chartHistPowerIrr.config.data.boundaryIndices = boundaryIndices;
+        chartHistPowerIrr.update();
+
+        // --- UPDATE DATA KE CHART HISTORIS SIKLUS KERJA ---
+        chartHistSiklusKerja.data.labels = histLabels;
+        chartHistSiklusKerja.data.datasets[0].data = dataManual;
+        chartHistSiklusKerja.data.datasets[1].data = dataPO;
+        chartHistSiklusKerja.data.datasets[2].data = dataInC;
+        chartHistSiklusKerja.config.data.boundaryIndices = boundaryIndices;
+        chartHistSiklusKerja.update();
+      });
 }
+
       function renderLogStatusTable(startDateStr, endDateStr, ringkasanMap) {
       const tbody = document.getElementById("log-status-tbody");
       tbody.innerHTML = "";
