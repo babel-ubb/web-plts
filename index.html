@@ -765,16 +765,20 @@
         <label for="endDate">AKHIR:</label>
         <input type="date" id="endDate">
       </div>
+      
       <div class="filter-group">
         <label for="stepSelect">Interval Data:</label>
         <select id="stepSelect">
           <option value="5s">5 detik</option>
           <option value="1m">1 menit</option>
+          <option value="5m">5 menit</option>
+          <option value="10m">10 menit</option>
           <option value="15m">15 menit</option>
           <option value="30m" selected>30 menit</option>
           <option value="1h">1 jam</option>
         </select>
       </div>
+
       <button class="btn-search" onclick="loadHistory()">Tampilkan Data</button>
     </div>
 
@@ -933,6 +937,43 @@
 
     Chart.plugins.register(annotationLinePlugin);
 
+    // Plugin untuk menggambar garis kontinu (tak terputus) dengan perubahan warna per segmen mode operasi
+    const continuousDutyPlugin = {
+      afterDatasetsDraw: function(chart) {
+        if (!chart.config.options.customSegmentColoring) return;
+        var ctx = chart.ctx;
+        var meta = chart.getDatasetMeta(3); // Dataset index 3 adalah DutyCycleData
+        if (!meta || !meta.data || meta.data.length < 2) return;
+
+        var dataset = chart.data.datasets[3];
+        var dataPoints = meta.data;
+        var modes = dataset.modes || [];
+        var modeColors = {
+          'MANUAL': '#ff5252',
+          'PO': '#0284c7',
+          'INC': '#00e676'
+        };
+
+        ctx.save();
+        ctx.lineWidth = dataset.borderWidth || 2;
+
+        for (var i = 0; i < dataPoints.length - 1; i++) {
+          var p0 = dataPoints[i];
+          var p1 = dataPoints[i+1];
+          if (p0 && p1 && !isNaN(p0._view.y) && !isNaN(p1._view.y) && !isNaN(p0._view.x) && !isNaN(p1._view.x)) {
+            var mode = modes[i+1] || modes[i] || 'PO';
+            ctx.strokeStyle = modeColors[mode] || '#0284c7';
+            ctx.beginPath();
+            ctx.moveTo(p0._view.x, p0._view.y);
+            ctx.lineTo(p1._view.x, p1._view.y);
+            ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+    };
+    Chart.plugins.register(continuousDutyPlugin);
+
     let INTERVAL_DETIK = 5; 
     let currentModeManual = false; 
     let latestRealtimeData = null; 
@@ -1020,7 +1061,7 @@
         } else if (chart === chartDayaIrr || chart === chartHistPowerIrr) {
           chart.data.datasets[0].borderColor = colorP;
           chart.data.datasets[1].borderColor = colorIrr;
-        } else if (chart === chartDutyCycle) {
+        } else if (chart === chartDutyCycle || chart === chartHistSiklusKerja) {
           chart.options.scales.yAxes[0].ticks.fontColor = getCssVar('--warning-color');
         } else if (chart === chartRealtimeAkumulasi) {
           chart.data.datasets[1].borderColor = colorP;
@@ -1033,8 +1074,6 @@
         } else if (chart === chartHistEnergi) {
           chart.data.datasets[0].backgroundColor = colorEnergy;
           chart.options.scales.yAxes[0].ticks.fontColor = colorEnergy;
-        } else if (chart === chartHistSiklusKerja) {
-          chart.options.scales.yAxes[0].ticks.fontColor = getCssVar('--warning-color');
         }
 
         chart.update();
@@ -1718,6 +1757,7 @@
       }
     });
 
+    // Grafik Duty Cycle Real-Time (Kontinu & Berwarna sesuai mode)
     const ctxDutyCycle = document.getElementById('chartDutyCycle').getContext('2d');
     const chartDutyCycle = new Chart(ctxDutyCycle, {
       type: 'line',
@@ -1725,14 +1765,42 @@
         labels: [],
         boundaryIndices: [],
         datasets: [
-          { label: 'Manual', borderColor: '#ff5252', backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, pointBackgroundColor: '#ff5252', showLine: true, lineTension: 0, spanGaps: false },
-          { label: 'P&O', borderColor: '#0284c7', backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, pointBackgroundColor: '#0284c7', showLine: true, lineTension: 0, spanGaps: false },
-          { label: 'InC', borderColor: '#00e676', backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, pointBackgroundColor: '#00e676', showLine: true, lineTension: 0, spanGaps: false }
+          { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', fill: false, data: [], pointRadius: 0, showLine: false },
+          { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', fill: false, data: [], pointRadius: 0, showLine: false },
+          { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', fill: false, data: [], pointRadius: 0, showLine: false },
+          { 
+            label: 'DutyCycleData', 
+            borderColor: '#0284c7', 
+            backgroundColor: 'transparent', 
+            fill: false, 
+            data: [], 
+            modes: [],
+            borderWidth: 2, 
+            pointRadius: 2, 
+            pointHoverRadius: 4, 
+            showLine: false, 
+            pointBackgroundColor: function(context) {
+              var idx = context.dataIndex;
+              var mode = context.dataset.modes && context.dataset.modes[idx];
+              if (mode === 'MANUAL') return '#ff5252';
+              if (mode === 'INC') return '#00e676';
+              return '#0284c7';
+            } 
+          }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        customSegmentColoring: true,
+        legend: { 
+          labels: { 
+            fontColor: getLegendTextColor(), 
+            fontStyle: 'bold',
+            filter: function(legendItem, data) {
+              return legendItem.text !== 'DutyCycleData';
+            }
+          } 
+        },
         scales: {
           xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
           yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getCssVar('--warning-color'), fontStyle: 'bold', beginAtZero: true, max: 100 }, gridLines: { color: getCssVar('--chart-grid') } }]
@@ -1786,14 +1854,9 @@
         }
       }
 
-      let vManual = currentMode === "MANUAL" ? duty : NaN;
-      let vPO = currentMode === "PO" ? duty : NaN;
-      let vInC = currentMode === "INC" ? duty : NaN;
-
       chartDutyCycle.data.labels.push(label);
-      chartDutyCycle.data.datasets[0].data.push(vManual);
-      chartDutyCycle.data.datasets[1].data.push(vPO);
-      chartDutyCycle.data.datasets[2].data.push(vInC);
+      chartDutyCycle.data.datasets[3].data.push(duty);
+      chartDutyCycle.data.datasets[3].modes.push(currentMode);
 
       chartRealtimeAkumulasi.data.labels.push(label);
       chartRealtimeAkumulasi.data.datasets[0].data.push(avgPower);
@@ -1811,9 +1874,8 @@
       }
       if (chartDutyCycle.data.labels.length > MAX_DATA) {
         chartDutyCycle.data.labels.shift(); 
-        chartDutyCycle.data.datasets[0].data.shift(); 
-        chartDutyCycle.data.datasets[1].data.shift(); 
-        chartDutyCycle.data.datasets[2].data.shift();
+        chartDutyCycle.data.datasets[3].data.shift(); 
+        chartDutyCycle.data.datasets[3].modes.shift();
       }
       if (chartRealtimeAkumulasi.data.labels.length > MAX_DATA) {
         chartRealtimeAkumulasi.data.labels.shift(); 
@@ -2025,6 +2087,7 @@
       }
     });
 
+    // Grafik Duty Cycle Historis (Kontinu & Berwarna sesuai mode)
     const ctxHistSiklus = document.getElementById('chartHistSiklusKerja').getContext('2d');
     const chartHistSiklusKerja = new Chart(ctxHistSiklus, {
       type: 'line',
@@ -2032,14 +2095,42 @@
         labels: [],
         boundaryIndices: [],
         datasets: [
-          { label: 'Manual', borderColor: '#ff5252', backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, pointBackgroundColor: '#ff5252', showLine: true, lineTension: 0, spanGaps: false },
-          { label: 'P&O', borderColor: '#0284c7', backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, pointBackgroundColor: '#0284c7', showLine: true, lineTension: 0, spanGaps: false },
-          { label: 'InC', borderColor: '#00e676', backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, pointBackgroundColor: '#00e676', showLine: true, lineTension: 0, spanGaps: false }
+          { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', fill: false, data: [], pointRadius: 0, showLine: false },
+          { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', fill: false, data: [], pointRadius: 0, showLine: false },
+          { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', fill: false, data: [], pointRadius: 0, showLine: false },
+          { 
+            label: 'DutyCycleData', 
+            borderColor: '#0284c7', 
+            backgroundColor: 'transparent', 
+            fill: false, 
+            data: [], 
+            modes: [],
+            borderWidth: 2, 
+            pointRadius: 2, 
+            pointHoverRadius: 4, 
+            showLine: false, 
+            pointBackgroundColor: function(context) {
+              var idx = context.dataIndex;
+              var mode = context.dataset.modes && context.dataset.modes[idx];
+              if (mode === 'MANUAL') return '#ff5252';
+              if (mode === 'INC') return '#00e676';
+              return '#0284c7';
+            } 
+          }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        customSegmentColoring: true,
+        legend: { 
+          labels: { 
+            fontColor: getLegendTextColor(), 
+            fontStyle: 'bold',
+            filter: function(legendItem, data) {
+              return legendItem.text !== 'DutyCycleData';
+            }
+          } 
+        },
         scales: {
           xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
           yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getCssVar('--warning-color'), fontStyle: 'bold', beginAtZero: true, max: 100 }, gridLines: { color: getCssVar('--chart-grid') } }]
@@ -2115,7 +2206,8 @@
       }
     });
 
-    function loadHistory() {
+    
+function loadHistory() {
       const startVal = document.getElementById("startDate").value;
       const endVal = document.getElementById("endDate").value;
       const stepValue = document.getElementById("stepSelect").value;
@@ -2210,7 +2302,7 @@
         summaryBox.style.display = "grid";
       });
 
-      // --- LOGIKA PEMUTUS GARIS (NaN) YANG BENAR DI DALAM loadHistory() ---
+      // --- LOGIKA PENYISIPAN 2 TITIK KOSONG (NaN) SAAT BERGANTI HARI ---
       database.ref("/mppt_data").once("value", (snapshot) => {
         let histLabels = [];
         let histV = [];
@@ -2218,9 +2310,8 @@
         let histP = [];
         let histIrr = [];
         
-        let dataManual = [];
-        let dataPO = [];
-        let dataInC = [];
+        let histSiklusData = [];
+        let histSiklusModes = [];
 
         let boundaryIndices = [];
         let currentActiveDate = "";
@@ -2228,12 +2319,13 @@
 
         let intervalMs = 5 * 1000; 
         if (stepValue === "1m") intervalMs = 60 * 1000;
+        else if (stepValue === "5m") intervalMs = 5 * 60 * 1000;
+        else if (stepValue === "10m") intervalMs = 10 * 60 * 1000;
         else if (stepValue === "15m") intervalMs = 15 * 60 * 1000;
         else if (stepValue === "30m") intervalMs = 30 * 60 * 1000;
         else if (stepValue === "1h") intervalMs = 60 * 60 * 1000;
 
         let lastRecordedTime = 0;
-        let lastMode = null;
 
         snapshot.forEach((child) => {
           let item = child.val();
@@ -2258,20 +2350,19 @@
               return;
             }
 
-            // DETEKSI PERGANTIAN HARI & SISIPKAN NaN AGAR GARIS TERPUTUS
             if (formattedTanggalData !== currentActiveDate) {
               if (currentActiveDate !== "") {
-                histLabels.push("");
-                histV.push(NaN);
-                histI.push(NaN);
-                histP.push(NaN);
-                histIrr.push(NaN);
-                
-                dataManual.push(NaN);
-                dataPO.push(NaN);
-                dataInC.push(NaN);
-                
-                sampleIndex++;
+                // Sisipkan 2 titik kosong (NaN) saat berganti hari agar grafik terputus
+                for (let k = 0; k < 2; k++) {
+                  histLabels.push("");
+                  histV.push(NaN);
+                  histI.push(NaN);
+                  histP.push(NaN);
+                  histIrr.push(NaN);
+                  histSiklusData.push(NaN);
+                  histSiklusModes.push("PO");
+                  sampleIndex++;
+                }
               }
               currentActiveDate = formattedTanggalData;
               boundaryIndices.push(sampleIndex);
@@ -2298,15 +2389,9 @@
               currentMode = "PO"; 
             }
 
-            let vManual = currentMode === "MANUAL" ? valSiklus : NaN;
-            let vPO = currentMode === "PO" ? valSiklus : NaN;
-            let vInC = currentMode === "INC" ? valSiklus : NaN;
+            histSiklusData.push(valSiklus);
+            histSiklusModes.push(currentMode);
 
-            dataManual.push(vManual);
-            dataPO.push(vPO);
-            dataInC.push(vInC);
-
-            lastMode = currentMode;
             sampleIndex++;
           }
         });        
@@ -2324,9 +2409,8 @@
         chartHistPowerIrr.update();
 
         chartHistSiklusKerja.data.labels = histLabels;
-        chartHistSiklusKerja.data.datasets[0].data = dataManual;
-        chartHistSiklusKerja.data.datasets[1].data = dataPO;
-        chartHistSiklusKerja.data.datasets[2].data = dataInC;
+        chartHistSiklusKerja.data.datasets[3].data = histSiklusData;
+        chartHistSiklusKerja.data.datasets[3].modes = histSiklusModes;
         chartHistSiklusKerja.config.data.boundaryIndices = boundaryIndices;
         chartHistSiklusKerja.update();
       });
