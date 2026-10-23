@@ -12,6 +12,10 @@
   <!-- Chart.js Library untuk Grafik (Versi 2.9.4) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
+  <!-- Flatpickr Library untuk Custom Datepicker -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+
   <style>
     :root {
       --bg-color: #121212;
@@ -447,7 +451,7 @@
     .filter-group { display: flex; align-items: center; gap: 8px; }
     .filter-group label { font-size: 15px; font-weight: 600; color: var(--text-muted); }
     
-    .filter-group input[type="date"], .filter-group select {
+    .filter-group input[type="text"], .filter-group select {
       background: var(--card-inner-bg);
       border: 1px solid var(--border-color);
       color: var(--text-color);
@@ -458,9 +462,30 @@
       outline: none;
     }
 
-    .filter-group input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(39%) sepia(97%) saturate(1478%) hue-rotate(175deg) brightness(94%) contrast(97%);
-      cursor: pointer;
+    /* Kustomisasi Flatpickr: Warna huruf tanggal kalender (termasuk saat dipilih/awal/akhir diklik) berwarna hitam */
+    .flatpickr-calendar .flatpickr-day,
+    .flatpickr-calendar .flatpickr-day.selected,
+    .flatpickr-calendar .flatpickr-day.startRange,
+    .flatpickr-calendar .flatpickr-day.endRange,
+    .flatpickr-calendar .flatpickr-day.inRange,
+    .flatpickr-calendar .flatpickr-day.today {
+      color: #000 !important;
+    }
+    .flatpickr-calendar .flatpickr-day.prevMonthDay,
+    .flatpickr-calendar .flatpickr-day.nextMonthDay {
+      color: rgba(0, 0, 0, 0.35) !important;
+    }
+    .flatpickr-day.has-data {
+      background: rgba(0, 230, 118, 0.4) !important;
+      border-color: #00e676 !important;
+      color: #000 !important;
+      font-weight: bold !important;
+    }
+    body.light-mode .flatpickr-day.has-data {
+      background: rgba(13, 148, 136, 0.3) !important;
+      border-color: #0d9488 !important;
+      color: #000 !important;
+      font-weight: bold !important;
     }
 
     .btn-search, .btn-export, .btn-clear, .btn-action-custom {
@@ -643,7 +668,7 @@
       <div class="mode-buttons">
         <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT</button>
         <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">MPPT</button>
-        <button id="btn-manual" class="btn-mode" onclick="setMode(true)">MANUAL</button>
+        <button id="btn-manual" class="btn-mode" onclick="handleManualClick()">MANUAL</button>
       </div>
 
       <div class="slider-container" id="slider-container-box">
@@ -759,11 +784,11 @@
     <div class="filter-box">
       <div class="filter-group">
         <label for="startDate">AWAL:</label>
-        <input type="date" id="startDate">
+        <input type="text" id="startDate" placeholder="Pilih Tanggal Awal">
       </div>
       <div class="filter-group">
         <label for="endDate">AKHIR:</label>
-        <input type="date" id="endDate">
+        <input type="text" id="endDate" placeholder="Pilih Tanggal Akhir">
       </div>
       
       <div class="filter-group">
@@ -870,7 +895,7 @@
           </thead>
           <tbody id="log-status-tbody">
             <tr>
-              <td colspan="9" style="color: var(--text-muted); font-style: italic;">Silakan klik "Tampilkan Data" untuk memuat info rekapitulasi harian.</td>
+              <td colspan="9" style="color: var(--text-muted); font-style: italic;">Memuat data historis...</td>
             </tr>
           </tbody>
           <tfoot id="log-status-tfoot">
@@ -937,12 +962,11 @@
 
     Chart.plugins.register(annotationLinePlugin);
 
-    // Plugin untuk menggambar garis kontinu (tak terputus) dengan perubahan warna per segmen mode operasi
     const continuousDutyPlugin = {
       afterDatasetsDraw: function(chart) {
         if (!chart.config.options.customSegmentColoring) return;
         var ctx = chart.ctx;
-        var meta = chart.getDatasetMeta(3); // Dataset index 3 adalah DutyCycleData
+        var meta = chart.getDatasetMeta(3);
         if (!meta || !meta.data || meta.data.length < 2) return;
 
         var dataset = chart.data.datasets[3];
@@ -977,26 +1001,16 @@
     let INTERVAL_DETIK = 5; 
     let currentModeManual = false; 
     let latestRealtimeData = null; 
+    let availableDatesSet = new Set();
+    let startDatePickerInstance = null;
+    let endDatePickerInstance = null;
+    let mpptAdminUnlocked = false;
 
     document.addEventListener("DOMContentLoaded", () => {
       const labelEl = document.getElementById("interval-label");
       if (labelEl) labelEl.innerText = INTERVAL_DETIK;
 
-      const today = new Date();
-      const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
-      const startDateObj = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
-
-      const formatDateOnly = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-
-      document.getElementById("startDate").value = formatDateOnly(startDateObj);
-      document.getElementById("endDate").value = formatDateOnly(endDateObj);
-
-      loadHistory();
+      initHistoricalDateRange();
       initFirebaseStorageAndUsersMonitor();
     });
 
@@ -1012,6 +1026,81 @@
 
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+
+    function initHistoricalDateRange() {
+      database.ref("/mppt_ringkasan_harian").once("value", (snapshot) => {
+        let dates = [];
+        snapshot.forEach((child) => {
+          let item = child.val();
+          if (!item) return;
+          let rawKey = child.key || "";
+          let cleanKey = rawKey.startsWith("tanggal_") ? rawKey.replace("tanggal_", "") : rawKey;
+          let tanggalLog = item.tanggal || cleanKey;
+          
+          let formattedDate = tanggalLog;
+          if (tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2) {
+            let parts = tanggalLog.split("-");
+            if (parts.length === 3) {
+              formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+          }
+          if (formattedDate) {
+            dates.push(formattedDate);
+            availableDatesSet.add(formattedDate);
+          }
+        });
+
+        let defaultStart = "";
+        let defaultEnd = "";
+
+        if (dates.length > 0) {
+          dates.sort();
+          defaultStart = dates[0];
+          defaultEnd = dates[dates.length - 1];
+        } else {
+          const today = new Date();
+          const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
+          const startDateObj = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
+          const formatDateOnly = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          };
+          defaultStart = formatDateOnly(startDateObj);
+          defaultEnd = formatDateOnly(endDateObj);
+        }
+
+        initFlatpickrPickers(defaultStart, defaultEnd);
+        loadHistory();
+      });
+    }
+
+    function initFlatpickrPickers(defaultStart, defaultEnd) {
+      const fpConfig = {
+        dateFormat: "Y-m-d",
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+          const year = dayElem.dateObj.getFullYear();
+          const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
+          const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
+          const dateStr = `${year}-${month}-${day}`;
+
+          if (availableDatesSet.has(dateStr)) {
+            dayElem.classList.add("has-data");
+          }
+        }
+      };
+
+      startDatePickerInstance = flatpickr("#startDate", {
+        ...fpConfig,
+        defaultDate: defaultStart
+      });
+
+      endDatePickerInstance = flatpickr("#endDate", {
+        ...fpConfig,
+        defaultDate: defaultEnd
+      });
+    }
 
     let lastEspHeartbeatTime = 0;
 
@@ -1207,13 +1296,24 @@
       }
     });
 
+    function checkAdminAccess(callback) {
+      if (mpptAdminUnlocked) {
+        callback();
+      } else {
+        showCustomPasswordPrompt((inputPassword) => {
+          if (inputPassword === "hanya kita saja") {
+            mpptAdminUnlocked = true;
+            callback();
+          } else if (inputPassword !== null) {
+            alert("Password Salah!");
+          }
+        });
+      }
+    }
+
     function handleParameterStatistikSensorClick() {
-      showCustomPasswordPrompt((inputPassword) => {
-        if (inputPassword === "hanya kita saja") {
-          openParameterStatistikSensorModal();
-        } else if (inputPassword !== null) {
-          alert(`Password Salah!`);
-        }
+      checkAdminAccess(() => {
+        openParameterStatistikSensorModal();
       });
     }
 
@@ -1221,20 +1321,24 @@
       controlRef.update({ mode_manual: isManual });
     }
 
+    function handleManualClick() {
+      checkAdminAccess(() => {
+        setMode(true);
+      });
+    }
+
     function handleMpptSelectionClick() {
-      if (currentModeManual) {
-        controlRef.update({ mode_manual: false });
-      }
-      openMpptSelectionModal();
+      checkAdminAccess(() => {
+        if (currentModeManual) {
+          controlRef.update({ mode_manual: false });
+        }
+        openMpptSelectionModal();
+      });
     }
 
     function handleParameterMpptClick() {
-      showCustomPasswordPrompt((inputPassword) => {
-        if (inputPassword === "hanya kita saja") {
-          openParameterMpptModal();
-        } else if (inputPassword !== null) {
-          alert(`Password Salah! Tidak dapat masuk ke jendela Parameter MPPT.`);
-        }
+      checkAdminAccess(() => {
+        openParameterMpptModal();
       });
     }
 
@@ -1757,7 +1861,6 @@
       }
     });
 
-    // Grafik Duty Cycle Real-Time (Kontinu & Berwarna sesuai mode)
     const ctxDutyCycle = document.getElementById('chartDutyCycle').getContext('2d');
     const chartDutyCycle = new Chart(ctxDutyCycle, {
       type: 'line',
@@ -1908,7 +2011,6 @@
       return timestamp;
     }
 
-    // --- FUNGSI EXPORT CSV YANG BERSIH DAN NORMAL ---
     function exportToCSV() {
       const startVal = document.getElementById("startDate").value;
       const endVal = document.getElementById("endDate").value;
@@ -2087,7 +2189,6 @@
       }
     });
 
-    // Grafik Duty Cycle Historis (Kontinu & Berwarna sesuai mode)
     const ctxHistSiklus = document.getElementById('chartHistSiklusKerja').getContext('2d');
     const chartHistSiklusKerja = new Chart(ctxHistSiklus, {
       type: 'line',
@@ -2207,7 +2308,7 @@
     });
 
     
-function loadHistory() {
+    function loadHistory() {
       const startVal = document.getElementById("startDate").value;
       const endVal = document.getElementById("endDate").value;
       const stepValue = document.getElementById("stepSelect").value;
@@ -2302,7 +2403,6 @@ function loadHistory() {
         summaryBox.style.display = "grid";
       });
 
-      // --- LOGIKA PENYISIPAN 2 TITIK KOSONG (NaN) SAAT BERGANTI HARI ---
       database.ref("/mppt_data").once("value", (snapshot) => {
         let histLabels = [];
         let histV = [];
@@ -2352,7 +2452,6 @@ function loadHistory() {
 
             if (formattedTanggalData !== currentActiveDate) {
               if (currentActiveDate !== "") {
-                // Sisipkan 2 titik kosong (NaN) saat berganti hari agar grafik terputus
                 for (let k = 0; k < 2; k++) {
                   histLabels.push("");
                   histV.push(NaN);
@@ -2447,14 +2546,6 @@ function loadHistory() {
         let ringkasan = ringkasanMap[isoStr];
         let hasLog = (ringkasan !== undefined && ringkasan !== null);
 
-        let energiMatahariText = "-";
-        let energiText = "-";
-        let lamaOperasiText = "-";
-        let dayaRataText = "-";
-        let irrRataText = "-";
-        let dayaMaksText = "-";
-        let irrMaksText = "-";
-
         if (hasLog) {
           hariAdaLog++;
           
@@ -2475,32 +2566,28 @@ function loadHistory() {
           if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
           if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
 
-          energiMatahariText = eMatVal.toFixed(2);
-          energiText = eVal.toFixed(2);
-          lamaOperasiText = lamaOpVal.toFixed(2);
-          dayaRataText = dRataVal.toFixed(2);
-          irrRataText = iRataVal.toFixed(2);
-          dayaMaksText = dMaksVal.toFixed(2);
-          irrMaksText = iMaksVal.toFixed(0);
+          let tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${rowNum++}</td>
+            <td>${displayStr}</td>
+            <td>${lamaOpVal.toFixed(2)}</td>
+            <td>${eVal.toFixed(2)}</td>
+            <td>${dRataVal.toFixed(2)}</td>
+            <td>${dMaksVal.toFixed(2)}</td>
+            <td>${iRataVal.toFixed(2)}</td>
+            <td>${iMaksVal.toFixed(0)}</td>
+            <td>${eMatVal.toFixed(2)}</td>
+          `;
+          tbody.appendChild(tr);
         } else {
           hariTakAdaLog++;
         }
 
-        let tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${rowNum++}</td>
-          <td>${displayStr}</td>
-          <td>${lamaOperasiText}</td>
-          <td>${energiText}</td>
-          <td>${dayaRataText}</td>
-          <td>${dayaMaksText}</td>
-          <td>${irrRataText}</td>
-          <td>${irrMaksText}</td>
-          <td>${energiMatahariText}</td>
-        `;
-        tbody.appendChild(tr);
-
         curDate.setDate(curDate.getDate() + 1);
+      }
+
+      if (rowNum === 1) {
+        tbody.innerHTML = `<tr><td colspan="9" style="color: var(--text-muted); font-style: italic;">Tidak ada data historis pada rentang tanggal ini.</td></tr>`;
       }
 
       document.getElementById("rekap-total-hari").innerText = totalHariRentang + " Hari";
