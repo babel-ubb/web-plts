@@ -462,7 +462,7 @@
       outline: none;
     }
 
-    /* Kustomisasi Flatpickr: Warna huruf tanggal kalender (termasuk saat dipilih/awal/akhir diklik) berwarna hitam */
+    /* Kustomisasi Flatpickr: Warna huruf tanggal kalender berwarna hitam */
     .flatpickr-calendar .flatpickr-day,
     .flatpickr-calendar .flatpickr-day.selected,
     .flatpickr-calendar .flatpickr-day.startRange,
@@ -545,7 +545,8 @@
       border-radius: 8px;
       padding: 18px;
       border: 1px solid var(--border-color);
-      margin-top: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
 
     .history-table-header {
@@ -638,6 +639,20 @@
       background: var(--border-color);
     }
 
+    .log-status-table tbody tr {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .log-status-table tbody tr:hover {
+      background: rgba(2, 132, 199, 0.15);
+    }
+
+    .log-status-table tbody tr.selected-row {
+      background: rgba(2, 132, 199, 0.35) !important;
+      font-weight: bold;
+    }
+
     .log-status-table tfoot td {
       background: var(--card-bg);
       font-weight: 800;
@@ -646,6 +661,19 @@
       position: sticky;
       bottom: 0;
       z-index: 2;
+    }
+
+    .interval-bar-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 15px 0 10px 0;
+      padding: 10px 16px;
+      background: var(--card-inner-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 10px;
     }
   </style>
 </head>
@@ -790,19 +818,6 @@
         <label for="endDate">AKHIR:</label>
         <input type="text" id="endDate" placeholder="Pilih Tanggal Akhir">
       </div>
-      
-      <div class="filter-group">
-        <label for="stepSelect">Interval Data:</label>
-        <select id="stepSelect">
-          <option value="5s">5 detik</option>
-          <option value="1m">1 menit</option>
-          <option value="5m">5 menit</option>
-          <option value="10m">10 menit</option>
-          <option value="15m">15 menit</option>
-          <option value="30m" selected>30 menit</option>
-          <option value="1h">1 jam</option>
-        </select>
-      </div>
 
       <button class="btn-search" onclick="loadHistory()">Tampilkan Data</button>
     </div>
@@ -837,92 +852,108 @@
         <canvas id="chartHistoryDayaIrr" style="max-height: 380px;"></canvas>
       </div>
 
+      <!-- Tabel Rekapitulasi Harian -->
+      <div class="history-table-box">
+        <div class="history-table-header">
+          <h3 style="text-align: left;">Rekapitulasi Harian</h3>
+          <div class="table-action-btns">
+            <button class="btn-export" onclick="exportToCSV()">UNDUH SEMUA DATA</button>
+            <button class="btn-export" onclick="exportTableToCSV()">UNDUH REKAPITULASI</button>
+          </div>
+        </div>
+        
+        <div class="log-rekap-grid">
+          <div class="log-rekap-card">
+            <span>Jumlah Hari</span>
+            <strong id="rekap-total-hari" style="color: var(--box-blue-color);">0 Hari</strong>
+          </div>
+          <div class="log-rekap-card">
+            <span>JUMLAH HARI BEROPERASI</span>
+            <strong id="rekap-hari-ada-log" style="color: var(--primary-color);">0 Hari</strong>
+          </div>
+          <div class="log-rekap-card">
+            <span>Tak Beroperasi</span>
+            <strong id="rekap-hari-tak-ada-log" style="color: var(--danger-color);">0 Hari</strong>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="log-status-table" id="table-rekap-harian">
+            <thead>
+              <tr>
+                <th onclick="sortTable(0)">No <span id="sort-icon-0">↕</span></th>
+                <th onclick="sortTable(1)">Tgl <span id="sort-icon-1">↕</span></th>
+                <th onclick="sortTable(2)">Lama Operasi (Jam) <span id="sort-icon-2">↕</span></th>
+                <th onclick="sortTable(3)">Energi PLTS (Wh) <span id="sort-icon-3">↕</span></th>
+                <th onclick="sortTable(4)">Daya Rata-rata (Watt) <span id="sort-icon-4">↕</span></th>
+                <th onclick="sortTable(5)">Daya Maks (Watt) <span id="sort-icon-5">↕</span></th>
+                <th onclick="sortTable(6)">Iradian Rata-rata (W/m²) <span id="sort-icon-6">↕</span></th>
+                <th onclick="sortTable(7)">Iradian Maks (W/m²) <span id="sort-icon-7">↕</span></th>
+                <th onclick="sortTable(8)">Energi Matahari (Wh/m²) <span id="sort-icon-8">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="log-status-tbody">
+              <tr>
+                <td colspan="9" style="color: var(--text-muted); font-style: italic;">Memuat data historis...</td>
+              </tr>
+            </tbody>
+            <tfoot id="log-status-tfoot">
+              <tr>
+                <td colspan="2" style="text-align: right;">TOTAL / RATA-RATA / MAKS:</td>
+                <td id="foot-total-lama-operasi">0.00</td>
+                <td id="foot-total-energi">0.00</td>
+                <td id="foot-avg-daya">0.00</td>
+                <td id="foot-max-daya">0.00</td>
+                <td id="foot-avg-irr">0</td>
+                <td id="foot-max-irr">0</td>
+                <td id="foot-total-energi-matahari">0.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Baris Interval Data & Keterangan di Sebelah Kanan -->
+      <div class="interval-bar-box">
+        <div class="filter-group">
+          <label for="stepSelect">Interval Data Detail:</label>
+          <select id="stepSelect" onchange="reloadSingleDayDetail()">
+            <option value="5s">5 detik</option>
+            <option value="1m">1 menit</option>
+            <option value="5m">5 menit</option>
+            <option value="10m">10 menit</option>
+            <option value="15m">15 menit</option>
+            <option value="30m" selected>30 menit</option>
+            <option value="1h">1 jam</option>
+          </select>
+        </div>
+        <div style="font-size: 16px; font-weight: 600; color: var(--text-muted); font-style: regular;">
+  		Double-click baris tanggal untuk melihat grafik harian detail
+	</div>
+      </div>
+
       <div class="history-chart-box">
-        <h3>Daya (W) & Iradiansi (W/m²)</h3>
+        <h3>Daya (W) & Iradiansi (W/m²) <span id="title-day-power" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
         <canvas id="chartHistPowerIrr" style="max-height: 380px;"></canvas>
       </div>
 
       <div class="history-chart-box">
-        <h3>Siklus Kerja (%)</h3>
+        <h3>Siklus Kerja (%) <span id="title-day-duty" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
         <canvas id="chartHistSiklusKerja" style="max-height: 380px;"></canvas>
       </div>
 
       <div class="history-chart-box">
-        <h3>Tegangan (V) & Arus (A)</h3>
+        <h3>Tegangan (V) & Arus (A) <span id="title-day-vi" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
         <canvas id="chartHistVI" style="max-height: 380px;"></canvas>
-      </div>
-    </div>
-
-    <!-- Tabel Rekapitulasi Harian -->
-    <div class="history-table-box">
-      <div class="history-table-header">
-        <h3 style="text-align: left;">Rekapitulasi Harian</h3>
-        <div class="table-action-btns">
-          <button class="btn-export" onclick="exportToCSV()">UNDUH SEMUA DATA</button>
-          <button class="btn-export" onclick="exportTableToCSV()">UNDUH REKAPITULASI</button>
-        </div>
-      </div>
-      
-      <div class="log-rekap-grid">
-        <div class="log-rekap-card">
-          <span>Jumlah Hari</span>
-          <strong id="rekap-total-hari" style="color: var(--box-blue-color);">0 Hari</strong>
-        </div>
-        <div class="log-rekap-card">
-          <span>JUMLAH HARI BEROPERASI</span>
-          <strong id="rekap-hari-ada-log" style="color: var(--primary-color);">0 Hari</strong>
-        </div>
-        <div class="log-rekap-card">
-          <span>Tak Beroperasi</span>
-          <strong id="rekap-hari-tak-ada-log" style="color: var(--danger-color);">0 Hari</strong>
-        </div>
-      </div>
-
-      <div class="table-responsive">
-        <table class="log-status-table" id="table-rekap-harian">
-          <thead>
-            <tr>
-              <th onclick="sortTable(0)">No <span id="sort-icon-0">↕</span></th>
-              <th onclick="sortTable(1)">Tgl <span id="sort-icon-1">↕</span></th>
-              <th onclick="sortTable(2)">Lama Operasi (Jam) <span id="sort-icon-2">↕</span></th>
-              <th onclick="sortTable(3)">Energi PLTS (Wh) <span id="sort-icon-3">↕</span></th>
-              <th onclick="sortTable(4)">Daya Rata-rata (Watt) <span id="sort-icon-4">↕</span></th>
-              <th onclick="sortTable(5)">Daya Maks (Watt) <span id="sort-icon-5">↕</span></th>
-              <th onclick="sortTable(6)">Iradian Rata-rata (W/m²) <span id="sort-icon-6">↕</span></th>
-              <th onclick="sortTable(7)">Iradian Maks (W/m²) <span id="sort-icon-7">↕</span></th>
-              <th onclick="sortTable(8)">Energi Matahari (Wh/m²) <span id="sort-icon-8">↕</span></th>
-            </tr>
-          </thead>
-          <tbody id="log-status-tbody">
-            <tr>
-              <td colspan="9" style="color: var(--text-muted); font-style: italic;">Memuat data historis...</td>
-            </tr>
-          </tbody>
-          <tfoot id="log-status-tfoot">
-            <tr>
-              <td colspan="2" style="text-align: right;">TOTAL / RATA-RATA / MAKS:</td>
-              <td id="foot-total-lama-operasi">0.00</td>
-              <td id="foot-total-energi">0.00</td>
-              <td id="foot-avg-daya">0.00</td>
-              <td id="foot-max-daya">0.00</td>
-              <td id="foot-avg-irr">0</td>
-              <td id="foot-max-irr">0</td>
-              <td id="foot-total-energi-matahari">0.00</td>
-            </tr>
-          </tfoot>
-        </table>
       </div>
     </div>
   </div>
 
-  <!-- Sisa Memori ESP & Sisa Penyimpanan Database + Tombol Tambahan sebaris -->
+  <!-- Sisa Memori ESP & Sisa Penyimpanan Database -->
   <div class="esp-memory-box" style="margin-top: 30px; flex-wrap: wrap;">
     <div class="esp-memory-item">
       <span>SISA PENYIMPANAN DATABASE</span>
       <strong id="rekap-sisa-kuota" style="color: var(--primary-color);">100.0%</strong>
-    </div>
-    <div class="esp-memory-item" style="flex-direction: row; justify-content: center; gap: 10px;">
-      <button class="btn-action-custom" onclick="handleParameterStatistikSensorClick()">Jumlah Sampel Sensor</button>
     </div>
   </div>
 
@@ -1005,6 +1036,7 @@
     let startDatePickerInstance = null;
     let endDatePickerInstance = null;
     let mpptAdminUnlocked = false;
+    let selectedSingleDateIso = ""; 
 
     document.addEventListener("DOMContentLoaded", () => {
       const labelEl = document.getElementById("interval-label");
@@ -1311,12 +1343,6 @@
       }
     }
 
-    function handleParameterStatistikSensorClick() {
-      checkAdminAccess(() => {
-        openParameterStatistikSensorModal();
-      });
-    }
-
     function setMode(isManual) {
       controlRef.update({ mode_manual: isManual });
     }
@@ -1398,7 +1424,7 @@
       overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
 
       let box = document.createElement("div");
-      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.textAlign = "center"; box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "320px";
+      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.textAlign = "center"; box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "340px";
 
       let title = document.createElement("h3");
       title.innerText = "Parameter MPPT"; title.style.marginBottom = "20px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px";
@@ -1419,6 +1445,13 @@
           action: () => {
             document.body.removeChild(overlay);
             openParameterInCModal();
+          }
+        },
+        { 
+          label: "Jumlah Sampel Sensor",
+          action: () => {
+            document.body.removeChild(overlay);
+            openParameterStatistikSensorModal();
           }
         }
       ];
@@ -2307,11 +2340,9 @@
       }
     });
 
-    
     function loadHistory() {
       const startVal = document.getElementById("startDate").value;
       const endVal = document.getElementById("endDate").value;
-      const stepValue = document.getElementById("stepSelect").value;
       const summaryBox = document.getElementById("history-summary");
 
       if (!startVal || !endVal) {
@@ -2401,7 +2432,52 @@
         document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
         
         summaryBox.style.display = "grid";
+
+        if (historyList.length > 0) {
+          loadSingleDayHistory(historyList[0].isoDate);
+        } else {
+          clearSingleDayCharts();
+        }
       });
+    }
+
+    function reloadSingleDayDetail() {
+      if (selectedSingleDateIso) {
+        loadSingleDayHistory(selectedSingleDateIso);
+      }
+    }
+
+    function clearSingleDayCharts() {
+      chartHistVI.data.labels = [];
+      chartHistVI.data.datasets[0].data = [];
+      chartHistVI.data.datasets[1].data = [];
+      chartHistVI.update();
+
+      chartHistPowerIrr.data.labels = [];
+      chartHistPowerIrr.data.datasets[0].data = [];
+      chartHistPowerIrr.data.datasets[1].data = [];
+      chartHistPowerIrr.update();
+
+      chartHistSiklusKerja.data.labels = [];
+      chartHistSiklusKerja.data.datasets[3].data = [];
+      chartHistSiklusKerja.data.datasets[3].modes = [];
+      chartHistSiklusKerja.update();
+
+      document.getElementById("title-day-power").innerText = "";
+      document.getElementById("title-day-duty").innerText = "";
+      document.getElementById("title-day-vi").innerText = "";
+    }
+
+    function loadSingleDayHistory(targetIsoDate) {
+      selectedSingleDateIso = targetIsoDate;
+      const stepValue = document.getElementById("stepSelect").value;
+
+      let parts = targetIsoDate.split("-");
+      let displayDate = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : targetIsoDate;
+      
+      document.getElementById("title-day-power").innerText = `(${displayDate})`;
+      document.getElementById("title-day-duty").innerText = `(${displayDate})`;
+      document.getElementById("title-day-vi").innerText = `(${displayDate})`;
 
       database.ref("/mppt_data").once("value", (snapshot) => {
         let histLabels = [];
@@ -2409,13 +2485,8 @@
         let histI = [];
         let histP = [];
         let histIrr = [];
-        
         let histSiklusData = [];
         let histSiklusModes = [];
-
-        let boundaryIndices = [];
-        let currentActiveDate = "";
-        let sampleIndex = 0;
 
         let intervalMs = 5 * 1000; 
         if (stepValue === "1m") intervalMs = 60 * 1000;
@@ -2437,39 +2508,20 @@
 
           let formattedTanggalData = tanggalData;
           if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
-            let parts = tanggalData.split("-");
-            if (parts.length === 3) {
-              formattedTanggalData = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
+            let p = tanggalData.split("-");
+            if (p.length === 3) formattedTanggalData = `${p[2]}-${p[1]}-${p[0]}`;
           }
 
-          if (formattedTanggalData >= startVal && formattedTanggalData <= endVal) {
+          if (formattedTanggalData === targetIsoDate) {
             let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : new Date(`${formattedTanggalData}T${jamData || "00:00:00"}`).getTime();
 
             if (stepValue !== "5s" && lastRecordedTime > 0 && (itemTime - lastRecordedTime < intervalMs)) {
               return;
             }
 
-            if (formattedTanggalData !== currentActiveDate) {
-              if (currentActiveDate !== "") {
-                for (let k = 0; k < 2; k++) {
-                  histLabels.push("");
-                  histV.push(NaN);
-                  histI.push(NaN);
-                  histP.push(NaN);
-                  histIrr.push(NaN);
-                  histSiklusData.push(NaN);
-                  histSiklusModes.push("PO");
-                  sampleIndex++;
-                }
-              }
-              currentActiveDate = formattedTanggalData;
-              boundaryIndices.push(sampleIndex);
-            }
-
             lastRecordedTime = itemTime;
 
-            let labelTime = jamData ? `${formattedTanggalData} ${jamData}` : formattedTanggalData;
+            let labelTime = jamData ? jamData : formattedTanggalData;
             histLabels.push(labelTime);
             histV.push(Number(item.tegangan || 0));
             histI.push(Number(item.arus || 0));
@@ -2478,39 +2530,31 @@
 
             let valSiklus = Number(item.siklus_kerja || 0);
             let dbMode = item.mode_operasi || "";
-            
             let currentMode = "PO"; 
-            if (dbMode === "Man" || item.mode_manual === true) {
-              currentMode = "MANUAL";
-            } else if (dbMode === "InC") {
-              currentMode = "INC";
-            } else {
-              currentMode = "PO"; 
-            }
+            if (dbMode === "Man" || item.mode_manual === true) currentMode = "MANUAL";
+            else if (dbMode === "InC") currentMode = "INC";
 
             histSiklusData.push(valSiklus);
             histSiklusModes.push(currentMode);
-
-            sampleIndex++;
           }
-        });        
+        });
 
         chartHistVI.data.labels = histLabels;
         chartHistVI.data.datasets[0].data = histV;
         chartHistVI.data.datasets[1].data = histI;
-        chartHistVI.config.data.boundaryIndices = boundaryIndices;
+        chartHistVI.config.data.boundaryIndices = [];
         chartHistVI.update();
 
         chartHistPowerIrr.data.labels = histLabels;
         chartHistPowerIrr.data.datasets[0].data = histP;
         chartHistPowerIrr.data.datasets[1].data = histIrr;
-        chartHistPowerIrr.config.data.boundaryIndices = boundaryIndices;
+        chartHistPowerIrr.config.data.boundaryIndices = [];
         chartHistPowerIrr.update();
 
         chartHistSiklusKerja.data.labels = histLabels;
         chartHistSiklusKerja.data.datasets[3].data = histSiklusData;
         chartHistSiklusKerja.data.datasets[3].modes = histSiklusModes;
-        chartHistSiklusKerja.config.data.boundaryIndices = boundaryIndices;
+        chartHistSiklusKerja.config.data.boundaryIndices = [];
         chartHistSiklusKerja.update();
       });
     }
@@ -2567,6 +2611,20 @@
           if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
 
           let tr = document.createElement("tr");
+          tr.setAttribute("data-iso-date", isoStr);
+          
+          if (selectedSingleDateIso === isoStr || (!selectedSingleDateIso && hariAdaLog === 1)) {
+            tr.classList.add("selected-row");
+            selectedSingleDateIso = isoStr;
+          }
+
+          tr.ondblclick = function() {
+            let allRows = tbody.querySelectorAll("tr");
+            allRows.forEach(r => r.classList.remove("selected-row"));
+            tr.classList.add("selected-row");
+            loadSingleDayHistory(isoStr);
+          };
+
           tr.innerHTML = `
             <td>${rowNum++}</td>
             <td>${displayStr}</td>
