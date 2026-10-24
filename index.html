@@ -488,7 +488,7 @@
       font-weight: bold !important;
     }
 
-    .btn-search, .btn-export, .btn-clear, .btn-action-custom {
+    .btn-export, .btn-clear, .btn-action-custom {
       padding: 10px 18px;
       border-radius: 6px;
       font-weight: 700;
@@ -499,7 +499,7 @@
       color: #ffffff;
       transition: 0.2s;
     }
-    .btn-search:hover, .btn-export:hover, .btn-clear:hover, .btn-action-custom:hover { background: var(--btn-blue-hover); }
+    .btn-export:hover, .btn-clear:hover, .btn-action-custom:hover { background: var(--btn-blue-hover); }
 
     .history-summary-grid {
       display: grid;
@@ -819,8 +819,6 @@
         <label for="endDate">AKHIR:</label>
         <input type="text" id="endDate" placeholder="Pilih Tanggal Akhir">
       </div>
-
-      <button class="btn-search" onclick="loadHistory()">Tampilkan Data</button>
     </div>
 
     <div class="history-summary-grid" id="history-summary">
@@ -1112,6 +1110,10 @@
     function initFlatpickrPickers(defaultStart, defaultEnd) {
       const fpConfig = {
         dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr, instance) {
+          // Otomatis muat ulang data historis saat tanggal awal atau akhir selesai dipilih
+          loadHistory();
+        },
         onDayCreate: function(dObj, dStr, fp, dayElem) {
           const year = dayElem.dateObj.getFullYear();
           const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
@@ -2347,7 +2349,6 @@
       const summaryBox = document.getElementById("history-summary");
 
       if (!startVal || !endVal) {
-        alert("Pilih tanggal mulai dan selesai terlebih dahulu!");
         return;
       }
 
@@ -2619,15 +2620,12 @@
             selectedSingleDateIso = isoStr;
           }
 
-          
-          let lastTapTime = 0;
-          
-	tr.onclick = function() {
-  		let allRows = tbody.querySelectorAll("tr");
-  		allRows.forEach(r => r.classList.remove("selected-row"));
-  		tr.classList.add("selected-row");
-  		loadSingleDayHistory(isoStr);
-	};
+          tr.onclick = function() {
+            let allRows = tbody.querySelectorAll("tr");
+            allRows.forEach(r => r.classList.remove("selected-row"));
+            tr.classList.add("selected-row");
+            loadSingleDayHistory(isoStr);
+          };
 
           tr.innerHTML = `
             <td>${rowNum++}</td>
