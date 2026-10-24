@@ -642,6 +642,7 @@
     .log-status-table tbody tr {
       cursor: pointer;
       transition: background-color 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .log-status-table tbody tr:hover {
@@ -928,8 +929,8 @@
           </select>
         </div>
         <div style="font-size: 16px; font-weight: 600; color: var(--text-muted); font-style: regular;">
-  		Double-click baris tanggal untuk melihat grafik harian detail
-	</div>
+          *Double-click baris tanggal untuk melihat grafik harian detail
+        </div>
       </div>
 
       <div class="history-chart-box">
@@ -1829,7 +1830,7 @@
       btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none"; btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
 
       let btnSubmit = document.createElement("button");
-      btnSubmit.innerText = "OK"; btnSubmit.style.flex = "1"; btnSubmit.style.padding = "10px"; btnSubmit.style.borderRadius = "6px"; btnSubmit.style.border = "none"; btnSubmit.style.background = getCssVar('--btn-blue-bg'); btnSubmit.style.color = "#ffffff"; btnSubmit.style.fontWeight = "bold"; btnSubmit.style.cursor = "pointer";
+      btnSubmit.innerText = "OK"; btnSubmit.style.flex = "1"; btnSubmit.style.padding = "10px"; btnSubmit.style.borderRadius = "6px"; btnSubmit.style.border = "none"; btnSubmit.style.background = document.body.classList.contains('light-mode') ? '#0284c7' : '#0284c7'; btnSubmit.style.color = "#ffffff"; btnSubmit.style.fontWeight = "bold"; btnSubmit.style.cursor = "pointer";
 
       btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnSubmit);
       box.appendChild(title); box.appendChild(input); box.appendChild(btnContainer); overlay.appendChild(box);
@@ -2617,6 +2618,21 @@
             tr.classList.add("selected-row");
             selectedSingleDateIso = isoStr;
           }
+
+          // Handler ganda untuk mendukung Double-Click di Desktop & Double-Tap di HP Android
+          let lastTapTime = 0;
+          tr.onclick = function(e) {
+            let currentTime = new Date().getTime();
+            let tapLength = currentTime - lastTapTime;
+            if (tapLength < 400 && tapLength > 0) {
+              let allRows = tbody.querySelectorAll("tr");
+              allRows.forEach(r => r.classList.remove("selected-row"));
+              tr.classList.add("selected-row");
+              loadSingleDayHistory(isoStr);
+              e.preventDefault();
+            }
+            lastTapTime = currentTime;
+          };
 
           tr.ondblclick = function() {
             let allRows = tbody.querySelectorAll("tr");
