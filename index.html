@@ -928,8 +928,8 @@
             <option value="1h">1 jam</option>
           </select>
         </div>
-        <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); font-style: regular;">
-          *Double-click baris tanggal untuk melihat grafik harian detail
+        <div style="font-size: 16px; font-weight: 600; color: var(--text-muted); font-style: regular;">
+          Klik baris tanggal untuk melihat grafik harian detail
         </div>
       </div>
 
@@ -2619,27 +2619,15 @@
             selectedSingleDateIso = isoStr;
           }
 
-          // Handler ganda untuk mendukung Double-Click di Desktop & Double-Tap di HP Android
+          
           let lastTapTime = 0;
-          tr.onclick = function(e) {
-            let currentTime = new Date().getTime();
-            let tapLength = currentTime - lastTapTime;
-            if (tapLength < 400 && tapLength > 0) {
-              let allRows = tbody.querySelectorAll("tr");
-              allRows.forEach(r => r.classList.remove("selected-row"));
-              tr.classList.add("selected-row");
-              loadSingleDayHistory(isoStr);
-              e.preventDefault();
-            }
-            lastTapTime = currentTime;
-          };
-
-          tr.ondblclick = function() {
-            let allRows = tbody.querySelectorAll("tr");
-            allRows.forEach(r => r.classList.remove("selected-row"));
-            tr.classList.add("selected-row");
-            loadSingleDayHistory(isoStr);
-          };
+          
+	tr.onclick = function() {
+  		let allRows = tbody.querySelectorAll("tr");
+  		allRows.forEach(r => r.classList.remove("selected-row"));
+  		tr.classList.add("selected-row");
+  		loadSingleDayHistory(isoStr);
+	};
 
           tr.innerHTML = `
             <td>${rowNum++}</td>
