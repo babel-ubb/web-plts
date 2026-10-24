@@ -462,7 +462,32 @@
       outline: none;
     }
 
-    /* Kustomisasi Flatpickr: Warna huruf tanggal kalender berwarna hitam */
+    /* Kustomisasi kontras khusus untuk Tombol Pilih Jam */
+    .select-time-kontras {
+      background: #0284c7 !important;
+      border: 2px solid #38bdf8 !important;
+      color: #ffffff !important;
+      padding: 8px 14px !important;
+      border-radius: 8px !important;
+      font-size: 15px !important;
+      font-weight: 800 !important;
+      outline: none !important;
+      cursor: pointer !important;
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.5);
+      transition: all 0.2s ease-in-out;
+    }
+    .select-time-kontras:hover {
+      background: #0369a1 !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+    }
+    .select-time-kontras option {
+      background-color: #1e1e1e !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    /* Kustomisasi Flatpickr */
     .flatpickr-calendar .flatpickr-day,
     .flatpickr-calendar .flatpickr-day.selected,
     .flatpickr-calendar .flatpickr-day.startRange,
@@ -669,12 +694,12 @@
       justify-content: space-between;
       align-items: center;
       margin: 15px 0 10px 0;
-      padding: 10px 16px;
+      padding: 12px 18px;
       background: var(--card-inner-bg);
       border-radius: 8px;
       border: 1px solid var(--border-color);
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
   </style>
 </head>
@@ -912,22 +937,61 @@
         </div>
       </div>
 
-      <!-- Baris Interval Data & Keterangan di Sebelah Kanan -->
+      <!-- Baris Interval Data, Keterangan & Jam Awal/Akhir di Sebelah Kanan -->
       <div class="interval-bar-box">
-        <div class="filter-group">
-          <label for="stepSelect">Interval Data Detail:</label>
-          <select id="stepSelect" onchange="reloadSingleDayDetail()">
-            <option value="5s">5 detik</option>
-            <option value="1m">1 menit</option>
-            <option value="5m">5 menit</option>
-            <option value="10m">10 menit</option>
-            <option value="15m">15 menit</option>
-            <option value="30m" selected>30 menit</option>
-            <option value="1h">1 jam</option>
-          </select>
+        <div style="font-size: 15px; font-weight: 700; color: var(--sub-heading-color); display: flex; align-items: center; gap: 6px;">
+          <span>ℹ️</span> Pilih baris tanggal pada tabel
         </div>
-        <div style="font-size: 16px; font-weight: 600; color: var(--text-muted); font-style: regular;">
-          Klik baris tanggal untuk melihat grafik harian detail
+
+        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+          <div class="filter-group">
+            <label for="stepSelect">Interval Data Detail:</label>
+            <select id="stepSelect" onchange="reloadSingleDayDetail()">
+              <option value="5s">5 detik</option>
+              <option value="1m">1 menit</option>
+              <option value="5m">5 menit</option>
+              <option value="10m">10 menit</option>
+              <option value="15m">15 menit</option>
+              <option value="30m" selected>30 menit</option>
+              <option value="1h">1 jam</option>
+            </select>
+          </div>
+
+          <div class="filter-group" style="display: flex; gap: 10px; align-items: center;">
+            <label for="startTime">Jam Awal:</label>
+            <select id="startTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+            </select>
+
+            <label for="endTime" style="margin-left: 4px;">Jam Akhir:</label>
+            <select id="endTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18" selected>18</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -944,6 +1008,11 @@
       <div class="history-chart-box">
         <h3>Tegangan (V) & Arus (A) <span id="title-day-vi" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
         <canvas id="chartHistVI" style="max-height: 380px;"></canvas>
+      </div>
+
+      <div class="history-chart-box">
+        <h3>Daya Rata-rata & Iradiansi Rata-rata <span id="title-day-avg-power-irr" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
+        <canvas id="chartHistAvgPowerIrr" style="max-height: 380px;"></canvas>
       </div>
     </div>
   </div>
@@ -1111,7 +1180,6 @@
       const fpConfig = {
         dateFormat: "Y-m-d",
         onChange: function(selectedDates, dateStr, instance) {
-          // Otomatis muat ulang data historis saat tanggal awal atau akhir selesai dipilih
           loadHistory();
         },
         onDayCreate: function(dObj, dStr, fp, dayElem) {
@@ -1164,7 +1232,7 @@
       const colorIrr = getCssVar('--color-irr');
       const colorEnergy = getCssVar('--color-energy');
 
-      const allCharts = [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartHistVI, chartHistPowerIrr, chartHistDayaIrr, chartHistEnergi, chartHistSiklusKerja];
+      const allCharts = [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartHistVI, chartHistPowerIrr, chartHistDayaIrr, chartHistEnergi, chartHistSiklusKerja, chartHistAvgPowerIrr];
       
       allCharts.forEach((chart) => {
         if (!chart) return;
@@ -1188,8 +1256,11 @@
         } else if (chart === chartDutyCycle || chart === chartHistSiklusKerja) {
           chart.options.scales.yAxes[0].ticks.fontColor = getCssVar('--warning-color');
         } else if (chart === chartRealtimeAkumulasi) {
-          chart.data.datasets[1].borderColor = colorP;
-          chart.data.datasets[2].borderColor = colorIrr;
+          chart.data.datasets[0].borderColor = colorP;
+          chart.data.datasets[1].borderColor = colorIrr;
+        } else if (chart === chartHistAvgPowerIrr) {
+          chart.data.datasets[0].borderColor = colorP;
+          chart.data.datasets[1].borderColor = colorIrr;
         } else if (chart === chartHistDayaIrr) {
           chart.data.datasets[0].backgroundColor = colorP;
           chart.data.datasets[1].backgroundColor = colorIrr;
@@ -2201,6 +2272,7 @@
       });
     }
 
+    // Grafik Historis: pointRadius diset 0 (tanpa dot), pointHoverRadius tetap aktif untuk menampilkan data saat diklik/hover
     const ctxHistVI = document.getElementById('chartHistVI').getContext('2d');
     const chartHistVI = new Chart(ctxHistVI, {
       type: 'line',
@@ -2208,8 +2280,8 @@
         labels: [],
         boundaryIndices: [],
         datasets: [
-          { label: 'Tegangan (V)', borderColor: getCssVar('--color-v'), fill: false, data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-v'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
-          { label: 'Arus (A)', borderColor: getCssVar('--color-i'), fill: false, data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-i'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
+          { label: 'Tegangan (V)', borderColor: getCssVar('--color-v'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-v'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
+          { label: 'Arus (A)', borderColor: getCssVar('--color-i'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-i'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
         ]
       },
       options: {
@@ -2220,6 +2292,30 @@
           yAxes: [
             { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-v'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
             { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-i'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+          ]
+        }
+      }
+    });
+
+    const ctxHistAvgPowerIrr = document.getElementById('chartHistAvgPowerIrr').getContext('2d');
+    const chartHistAvgPowerIrr = new Chart(ctxHistAvgPowerIrr, {
+      type: 'line',
+      data: {
+        labels: [],
+        boundaryIndices: [],
+        datasets: [
+          { label: 'Daya Rata-rata (W)', borderColor: getCssVar('--color-p'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-p'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
+          { label: 'Iradiansi Rata-rata (W/m²)', borderColor: getCssVar('--color-irr'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-irr'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        scales: {
+          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2243,7 +2339,7 @@
             data: [], 
             modes: [],
             borderWidth: 2, 
-            pointRadius: 2, 
+            pointRadius: 0, 
             pointHoverRadius: 4, 
             showLine: false, 
             pointBackgroundColor: function(context) {
@@ -2282,8 +2378,8 @@
         labels: [],
         boundaryIndices: [],
         datasets: [
-          { label: 'Daya (W)', borderColor: getCssVar('--color-p'), fill: false, data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-p'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
-          { label: 'Iradiansi (W/m²)', borderColor: getCssVar('--color-irr'), fill: false, data: [], borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-irr'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
+          { label: 'Daya (W)', borderColor: getCssVar('--color-p'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-p'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
+          { label: 'Iradiansi (W/m²)', borderColor: getCssVar('--color-irr'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-irr'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
         ]
       },
       options: {
@@ -2465,21 +2561,33 @@
       chartHistSiklusKerja.data.datasets[3].modes = [];
       chartHistSiklusKerja.update();
 
+      chartHistAvgPowerIrr.data.labels = [];
+      chartHistAvgPowerIrr.data.datasets[0].data = [];
+      chartHistAvgPowerIrr.data.datasets[1].data = [];
+      chartHistAvgPowerIrr.update();
+
       document.getElementById("title-day-power").innerText = "";
       document.getElementById("title-day-duty").innerText = "";
       document.getElementById("title-day-vi").innerText = "";
+      document.getElementById("title-day-avg-power-irr").innerText = "";
     }
 
     function loadSingleDayHistory(targetIsoDate) {
       selectedSingleDateIso = targetIsoDate;
       const stepValue = document.getElementById("stepSelect").value;
+      const startHourVal = parseInt(document.getElementById("startTime").value, 10);
+      const endHourVal = parseInt(document.getElementById("endTime").value, 10);
 
       let parts = targetIsoDate.split("-");
       let displayDate = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : targetIsoDate;
       
-      document.getElementById("title-day-power").innerText = `(${displayDate})`;
-      document.getElementById("title-day-duty").innerText = `(${displayDate})`;
-      document.getElementById("title-day-vi").innerText = `(${displayDate})`;
+      let strStart = String(startHourVal).padStart(2, '0') + ":00";
+      let strEnd = String(endHourVal).padStart(2, '0') + ":00";
+
+      document.getElementById("title-day-power").innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
+      document.getElementById("title-day-duty").innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
+      document.getElementById("title-day-vi").innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
+      document.getElementById("title-day-avg-power-irr").innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
 
       database.ref("/mppt_data").once("value", (snapshot) => {
         let histLabels = [];
@@ -2487,6 +2595,8 @@
         let histI = [];
         let histP = [];
         let histIrr = [];
+        let histAvgP = [];
+        let histAvgIrr = [];
         let histSiklusData = [];
         let histSiklusModes = [];
 
@@ -2515,6 +2625,19 @@
           }
 
           if (formattedTanggalData === targetIsoDate) {
+            if (jamData) {
+              let timeParts = jamData.split(":");
+              let hourPart = parseInt(timeParts[0], 10);
+              let minutePart = parseInt(timeParts[1], 10) || 0;
+              let secondPart = parseInt(timeParts[2], 10) || 0;
+
+              if (!isNaN(hourPart)) {
+                if (hourPart < startHourVal) return;
+                if (hourPart > endHourVal) return;
+                if (hourPart === endHourVal && (minutePart > 0 || secondPart > 0)) return;
+              }
+            }
+
             let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : new Date(`${formattedTanggalData}T${jamData || "00:00:00"}`).getTime();
 
             if (stepValue !== "5s" && lastRecordedTime > 0 && (itemTime - lastRecordedTime < intervalMs)) {
@@ -2529,6 +2652,8 @@
             histI.push(Number(item.arus || 0));
             histP.push(Number(item.daya || 0));
             histIrr.push(Number(item.iradiansi || 0));
+            histAvgP.push(Number(item.daya_rata_rata || 0));
+            histAvgIrr.push(Number(item.iradiansi_rata_rata || 0));
 
             let valSiklus = Number(item.siklus_kerja || 0);
             let dbMode = item.mode_operasi || "";
@@ -2558,6 +2683,12 @@
         chartHistSiklusKerja.data.datasets[3].modes = histSiklusModes;
         chartHistSiklusKerja.config.data.boundaryIndices = [];
         chartHistSiklusKerja.update();
+
+        chartHistAvgPowerIrr.data.labels = histLabels;
+        chartHistAvgPowerIrr.data.datasets[0].data = histAvgP;
+        chartHistAvgPowerIrr.data.datasets[1].data = histAvgIrr;
+        chartHistAvgPowerIrr.config.data.boundaryIndices = [];
+        chartHistAvgPowerIrr.update();
       });
     }
 
