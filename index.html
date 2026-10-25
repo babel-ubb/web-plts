@@ -184,7 +184,6 @@
     }
     .control-duty-realtime label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
     .control-duty-realtime .val-box { font-size: 16px; font-weight: 800; color: var(--realtime-value-color); }
-    .control-duty-realtime .unit-box { font-size: 11px; font-weight: 600; color: var(--text-muted); }
 
     .dashboard-grid { max-width: 1200px; margin: 0 auto 30px auto; }
     .realtime-unified-box {
@@ -239,11 +238,6 @@
     .charts-wrapper { max-width: 1200px; margin: 0 auto 30px auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
     .chart-box { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
     .chart-box h2 { font-size: 16px; font-weight: 700; color: #0284c7; margin-bottom: 12px; text-align: center; }
-
-    .chart-legend-note { display: flex; justify-content: center; gap: 16px; font-size: 13px; font-weight: 600; margin-bottom: 10px; flex-wrap: wrap; color: #0284c7; }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
-    .legend-box-red { width: 16px; height: 16px; background-color: rgba(255, 82, 82, 0.85); border-radius: 3px; }
-    .legend-box-blue { width: 16px; height: 16px; background-color: rgba(2, 132, 199, 0.85); border-radius: 3px; }
 
     .scale-control-panel {
       display: flex;
@@ -315,9 +309,9 @@
       background: #0284c7 !important;
       border: 2px solid #0284c7 !important;
       color: #ffffff !important;
-      padding: 8px 12px !important;
+      padding: 3px 12px !important;
       border-radius: 8px !important;
-      font-size: 14px !important;
+      font-size: 12px !important;
       font-weight: 800 !important;
       outline: none !important;
       cursor: pointer !important;
@@ -406,12 +400,6 @@
         <span class="slider-val" id="lbl-slider-val" style="display: none;">50%</span>
       </div>
 
-      <div class="control-duty-realtime">
-        <label>Siklus Kerja:</label>
-        <span class="val-box" id="val-siklus-control">0.0</span>
-        <span class="unit-box">%</span>
-      </div>
-
       <div id="mppt-mode-info-container" class="control-duty-realtime">
         <label>Mode MPPT:</label>
         <span class="val-box" id="val-mppt-mode-info">-</span>
@@ -463,7 +451,7 @@
           </div>
         </div>
 
-        <!-- c. Iradiansi dan daya -->
+        <!-- c. Iradiansi, daya, dan Siklus Kerja -->
         <div class="realtime-sub-group">
           <div class="sub-card">
             <h3>Iradiansi</h3>
@@ -476,16 +464,16 @@
             <div class="value" id="val-daya">0.00</div>
             <div class="unit">Watt</div>
           </div>
-        </div>
-
-        <!-- d. Siklus Kerja, Tegangan, Arus -->
-        <div class="realtime-sub-group">
+          <div class="vertical-divider"></div>
           <div class="sub-card">
             <h3>Siklus Kerja</h3>
             <div class="value" id="val-siklus">0.0</div>
             <div class="unit">%</div>
           </div>
-          <div class="vertical-divider"></div>
+        </div>
+
+        <!-- d. Tegangan, Arus -->
+        <div class="realtime-sub-group">
           <div class="sub-card">
             <h3>Tegangan (V)</h3>
             <div class="value" id="val-tegangan">0.00</div>
@@ -503,14 +491,14 @@
     </div>
   </div>
 
+	<div style="max-width: 1200px; margin: 0 auto 15px auto; text-align: center; font-size: 14px; font-weight: 600; color: var(--text-muted);">
+    💡 Klik keterangan warna kurva untuk menyembunyikan atau menampilkan kurva.
+  </div>
+
   <!-- Grafik Realtime -->
   <div class="charts-wrapper">
     <div class="chart-box">
       <h2>Energi Matahari & Energi PLTS</h2>
-      <div class="chart-legend-note">
-        <div class="legend-item"><div class="legend-box-red"></div><span>Vertikal : Iradiansi Matahari Sangat Rendah</span></div>
-        <div class="legend-item"><div class="legend-box-blue"></div><span>Vertikal : Daya PLTS Nol</span></div>
-      </div>
       <canvas id="chartRealtimeEnergi" style="max-height: 400px;"></canvas>
     </div>
 
@@ -568,7 +556,9 @@
         <strong id="sum-irr">0 W/m²</strong>
       </div>
     </div>
-
+	<div style="text-align: center; margin: 0 0 15px 0; font-size: 14px; font-weight: 600; color: var(--text-muted);">
+      💡 Klik keterangan warna kurva untuk menyembunyikan atau menampilkan kurva.
+    </div>
     <div class="history-charts-grid">
       <!-- 1. Grafik History Energi Harian -->
       <div class="history-chart-box">
@@ -677,7 +667,7 @@
 
         <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
           <div class="filter-group">
-            <label for="stepSelect">Interval Data Detail:</label>
+            <label for="stepSelect">Interval Data:</label>
             <select id="stepSelect" onchange="reloadSingleDayDetail()">
               <option value="5s">5 detik</option>
               <option value="10s">10 detik</option>
@@ -692,7 +682,7 @@
           </div>
 
           <div class="filter-group" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-            <label for="startTime">Mulai:</label>
+            <label for="startTime">Jam/menit awal:</label>
             <select id="startTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
               <option value="06" selected>06</option>
               <option value="07">07</option>
@@ -723,7 +713,7 @@
               <input type="number" id="startMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
             </div>
 
-            <label for="endTime" style="margin-left: 6px;">Akhir:</label>
+            <label for="endTime" style="margin-left: 6px;">Jam/menit akhir:</label>
             <select id="endTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
               <option value="06">06</option>
               <option value="07">07</option>
@@ -757,18 +747,20 @@
         </div>
       </div>
 
-
-<!-- Kotak Input Pengaturan Kelengkungan Garis (Tension) & Titik Data -->
+      <!-- Kotak Input Pengaturan Kelengkungan Garis (Tension) & Titik Data -->
       <div class="interval-bar-box" style="justify-content: center; gap: 30px; flex-wrap: wrap;">
         <div class="filter-group">
-          <label for="tensionInput" style="font-size: 13px;">Kelengkungan Garis (Tension):</label>
-          <input type="number" id="tensionInput" value="0" step="0.1" min="0" max="1" class="scale-input-box" style="width: 35x; height: 32px; padding: 2px 6px; font-size: 13px;" oninput="changeLineTension(this.value)" onchange="changeLineTension(this.value)">
-          <span style="font-size: 11px; color: var(--text-muted); font-style: italic;">(0 = Garis Lurus, 0.4 = Lengkung Mulus)</span>
+          <label for="tensionSelect" style="font-size: 13px;">Kelengkungan Garis (Tension):</label>
+          <select id="tensionSelect" class="scale-input-box" onchange="changeLineTension(this.value)" style="width: 75px; height: 32px; padding: 2px 6px; font-size: 13px;">
+            <option value="0" selected>0</option>
+            <option value="0.1">0.1</option>
+            <option value="0.2">0.2</option>
+            <option value="0.3">0.3</option>
+          </select>
         </div>
 
         <div class="filter-group">
           <label for="pointRadiusSelect" style="font-size: 13px;">Titik Data (Dot):</label>
-          <!-- Menggunakan class dan ukuran tinggi/padding yang sama, dengan width disesuaikan agar teks muat -->
           <select id="pointRadiusSelect" class="scale-input-box" onchange="changePointRadius(this.value)" style="width: 90px; height: 32px; padding: 2px 6px; font-size: 13px;">
             <option value="0" selected>Tak ada</option>
             <option value="1">Kecil</option>
@@ -777,14 +769,11 @@
           </select>
         </div>
       </div>
+	
 
       <!-- 3. Grafik Detail Harian: Energi Matahari & Energi PLTS -->
       <div class="history-chart-box">
         <h3>Energi Matahari & Energi PLTS <span id="title-day-energi-plts-matahari" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
-        <div class="chart-legend-note">
-          <div class="legend-item"><div class="legend-box-red"></div><span>Vertikal : Iradiansi Matahari Sangat Rendah</span></div>
-          <div class="legend-item"><div class="legend-box-blue"></div><span>Vertikal : Daya PLTS Nol</span></div>
-        </div>
         <canvas id="chartHistEnergiPltsMatahari" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
@@ -826,7 +815,7 @@
         <canvas id="chartHistSiklusKerja" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #ff9800;">Sumbu Y (Duty Cycle):</span>
+            <span class="scale-axis-title" style="color: var(--text-color);">Sumbu Y (Duty Cycle):</span>
             <span>Min:</span><input type="number" id="min-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'max', this.value)">
           </div>
@@ -878,7 +867,7 @@
         <canvas id="chartHistLamaOperasi" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #38bdf8;">Sumbu Y (Lama Operasi):</span>
+            <span class="scale-axis-title" style="color: var(--text-color);">Sumbu Y (Lama Operasi):</span>
             <span>Min:</span><input type="number" id="min-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'max', this.value)">
           </div>
@@ -904,17 +893,12 @@
     // Atur tension global awal menjadi 0 (garis lurus)
     Chart.defaults.global.elements.line.tension = 0;
 
-    // Fungsi interaktif untuk mengubah line tension dengan pembaruan meta controller Chart.js v2.9.4
-    
-
-function changeLineTension(val) {
-      // Jika input kosong atau sedang mengetik desimal awal (misal "0."), abaikan sementara agar tidak error
+    function changeLineTension(val) {
       if (val === "" || isNaN(val)) return;
       let newTension = parseFloat(val);
 
       Chart.defaults.global.elements.line.tension = newTension;
 
-      // HANYA daftar grafik garis murni (Grafik Batang & Siklus Kerja dikecualikan)
       const lineCharts = [
         chartRealtimeEnergi,
         chartVI,
@@ -924,7 +908,9 @@ function changeLineTension(val) {
         chartHistPowerIrr,
         chartHistAvgPowerIrr,
         chartHistEnergiPltsMatahari,
-        chartHistLamaOperasi
+        chartHistLamaOperasi,
+        chartDutyCycle,
+        chartHistSiklusKerja
       ];
 
       lineCharts.forEach(chart => {
@@ -938,15 +924,11 @@ function changeLineTension(val) {
           dataset.lineTension = newTension;
         });
 
-        // Re-assign array dataset agar Chart.js merender ulang kurva seketika
         chart.data.datasets = [...chart.data.datasets];
         chart.update();
       });
     }
 
-
-
-// Fungsi interaktif untuk memunculkan atau menyembunyikan titik data (dot) pada grafik garis
     function changePointRadius(val) {
       let radius = parseFloat(val);
       if (isNaN(radius)) return;
@@ -960,7 +942,9 @@ function changeLineTension(val) {
         chartHistPowerIrr,
         chartHistAvgPowerIrr,
         chartHistEnergiPltsMatahari,
-        chartHistLamaOperasi
+        chartHistLamaOperasi,
+        chartDutyCycle,
+        chartHistSiklusKerja
       ];
 
       lineChartsForDots.forEach(chart => {
@@ -973,8 +957,6 @@ function changeLineTension(val) {
         chart.update();
       });
     }
-
-
 
     const annotationLinePlugin = {
       afterDraw: function(chart) {
@@ -1001,59 +983,61 @@ function changeLineTension(val) {
     };
     Chart.plugins.register(annotationLinePlugin);
 
-    const energyHighlightPlugin = {
-      afterDraw: function(chart) {
-        if (!chart.config.options.enableEnergyHighlights) return;
-        const annotations = chart.config.data.energyHighlights;
-        if (!annotations || annotations.length === 0) return;
-        const ctx = chart.ctx;
-        const xAxis = chart.scales['x-axis-0'];
-        const yAxis = chart.scales[chart.config.options.scales.yAxes[0].id];
-        if (!xAxis || !yAxis) return;
-        ctx.save();
-        ctx.lineWidth = 3;
-        annotations.forEach(item => {
-          const x = xAxis.getPixelForValue(item.xVal);
-          if (x >= xAxis.left && x <= xAxis.right) {
-            if (item.type === 'pink') {
-              ctx.strokeStyle = 'rgba(255, 82, 82, 0.75)';
-            } else if (item.type === 'yellow') {
-              ctx.strokeStyle = 'rgba(2, 132, 199, 0.85)';
-            } else {
-              return;
-            }
-            ctx.beginPath();
-            ctx.moveTo(x, yAxis.top);
-            ctx.lineTo(x, yAxis.bottom);
-            ctx.stroke();
-          }
-        });
-        ctx.restore();
-      }
-    };
-    Chart.plugins.register(energyHighlightPlugin);
-
     const continuousDutyPlugin = {
       afterDatasetsDraw: function(chart) {
         if (!chart.config.options.customSegmentColoring) return;
-        var ctx = chart.ctx;
         var meta = chart.getDatasetMeta(3);
-        if (!meta || !meta.data || meta.data.length < 2) return;
+        if (!meta) return;
+        
+        var ctx = chart.ctx;
+        if (!meta.data || meta.data.length < 2) return;
         var dataset = chart.data.datasets[3];
         var dataPoints = meta.data;
         var modes = dataset.modes || [];
         var modeColors = { 'MANUAL': '#ff5252', 'PO': '#0284c7', 'INC': '#00e676' };
+        
+        // Cek status hidden dari legenda dummy (indeks 0=Manual, 1=PO, 2=INC)
+        var hiddenModes = {
+          'MANUAL': chart.getDatasetMeta(0).hidden === true,
+          'PO': chart.getDatasetMeta(1).hidden === true,
+          'INC': chart.getDatasetMeta(2).hidden === true
+        };
+
         ctx.save();
         ctx.lineWidth = dataset.borderWidth || 2;
+        
+        var tension = chart.options.elements && chart.options.elements.line && chart.options.elements.line.tension !== undefined 
+                      ? chart.options.elements.line.tension 
+                      : (Chart.defaults.global.elements.line.tension || 0);
+
         for (var i = 0; i < dataPoints.length - 1; i++) {
           var p0 = dataPoints[i];
           var p1 = dataPoints[i+1];
           if (p0 && p1 && !isNaN(p0._view.y) && !isNaN(p1._view.y) && !isNaN(p0._view.x) && !isNaN(p1._view.x)) {
             var mode = modes[i+1] || modes[i] || 'PO';
+            
+            // Jika mode ini disembunyikan lewat klik legenda, lewati penggambarannya!
+            if (hiddenModes[mode]) continue;
+
             ctx.strokeStyle = modeColors[mode] || '#0284c7';
             ctx.beginPath();
             ctx.moveTo(p0._view.x, p0._view.y);
-            ctx.lineTo(p1._view.x, p1._view.y);
+
+            if (tension > 0 && Chart.helpers && Chart.helpers.splineCurve) {
+              var prevModel = i > 0 ? dataPoints[i-1]._view : p0._view;
+              var nextModel = i + 2 < dataPoints.length ? dataPoints[i+2]._view : p1._view;
+              
+              var cp0 = Chart.helpers.splineCurve(prevModel, p0._view, p1._view, tension);
+              var cp1 = Chart.helpers.splineCurve(p0._view, p1._view, nextModel, tension);
+
+              ctx.bezierCurveTo(
+                cp0.next.x, cp0.next.y,
+                cp1.previous.x, cp1.previous.y,
+                p1._view.x, p1._view.y
+              );
+            } else {
+              ctx.lineTo(p1._view.x, p1._view.y);
+            }
             ctx.stroke();
           }
         }
@@ -1189,10 +1173,11 @@ function changeLineTension(val) {
     function updateChartThemeColors() {
       const gridColor = getCssVar('--chart-grid');
       const xAxisColor = document.body.classList.contains("light-mode") ? "#000000" : "#ffffff";
+      const dutyLamaColor = xAxisColor;
 
       const allCharts = [
         chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartRealtimeEnergi, 
-        chartHistVI, chartHistPowerIrr, chartHistDayaIrr, chartHistoryEnergi, chartHistSiklusKerja, 
+        chartHistVI, chartHistPowerIrr, chartHistoryDayaIrr, chartHistoryEnergi, chartHistSiklusKerja, 
         chartHistAvgPowerIrr, chartHistEnergiPltsMatahari, chartHistLamaOperasi
       ];
       
@@ -1204,6 +1189,9 @@ function changeLineTension(val) {
         });
         chart.options.scales.yAxes.forEach(axis => {
           if (axis.gridLines) axis.gridLines.color = gridColor;
+          if (chart === chartDutyCycle || chart === chartHistSiklusKerja || chart === chartHistLamaOperasi) {
+            if (axis.ticks) axis.ticks.fontColor = dutyLamaColor;
+          }
         });
         chart.update();
       });
@@ -1310,7 +1298,6 @@ function changeLineTension(val) {
         document.getElementById("val-iradiah").innerText = "0";
         document.getElementById("val-daya").innerText = "0.00";
         document.getElementById("val-siklus").innerText = "0.0";
-        document.getElementById("val-siklus-control").innerText = "0.0";
         document.getElementById("val-tegangan").innerText = "0.00";
         document.getElementById("val-arus").innerText = "0.00";
       }
@@ -1685,7 +1672,7 @@ function changeLineTension(val) {
         { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
       ]},
       options: {
-        responsive: true, maintainAspectRatio: false, enableEnergyHighlights: true,
+        responsive: true, maintainAspectRatio: false, 
         legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
           xAxes: timeScaleOptions.xAxes,
@@ -1731,7 +1718,7 @@ function changeLineTension(val) {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
             { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -1746,7 +1733,7 @@ function changeLineTension(val) {
           { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', data: [], showLine: false },
           { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', data: [], showLine: false },
           { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', data: [], showLine: false },
-          { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, showLine: false,
+          { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, pointRadius: 0, showLine: false,
             pointBackgroundColor: function(c) {
               let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
               return m === 'MANUAL' ? '#ff5252' : (m === 'INC' ? '#00e676' : '#0284c7');
@@ -1756,10 +1743,19 @@ function changeLineTension(val) {
       },
       options: {
         responsive: true, maintainAspectRatio: false, customSegmentColoring: true,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold', filter: (l) => l.text !== 'DutyCycleData' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold', filter: (l) => l.text !== 'DutyCycleData' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
-          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: '#ff9800', fontStyle: 'bold', fontSize: 12, beginAtZero: true, max: 100 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, beginAtZero: true, max: 100 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
         }
       }
     });
@@ -1813,17 +1809,6 @@ function changeLineTension(val) {
           c.data.datasets.forEach(d => { if (d.data) d.data.shift(); if (d.modes) d.modes.shift(); });
         }
       });
-
-      let highlights = [];
-      const len = chartRealtimeEnergi.data.datasets[1].data.length;
-      const energySunArr = chartRealtimeEnergi.data.datasets[0].data;
-      const energyPltsArr = chartRealtimeEnergi.data.datasets[1].data;
-      for (let idx = 1; idx < len; idx++) {
-        let xVal = energySunArr[idx].x;
-        if ((energySunArr[idx].y - energySunArr[idx - 1].y) < 1e-9) highlights.push({ xVal: xVal, type: 'pink' });
-        else if ((energyPltsArr[idx].y - energyPltsArr[idx - 1].y) < 1e-9) highlights.push({ xVal: xVal, type: 'yellow' });
-      }
-      chartRealtimeEnergi.data.energyHighlights = highlights;
 
       [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartRealtimeEnergi].forEach(c => c.update());
     }
@@ -1900,7 +1885,6 @@ function changeLineTension(val) {
         if (data.siklus_kerja !== undefined) {
           let fd = Number(data.siklus_kerja).toFixed(1);
           document.getElementById("val-siklus").innerText = fd;
-          document.getElementById("val-siklus-control").innerText = fd;
         }
         document.getElementById("val-tegangan").innerText = v.toFixed(2);
         document.getElementById("val-arus").innerText = i.toFixed(2);
@@ -1951,7 +1935,7 @@ function changeLineTension(val) {
         { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
-        responsive: true, maintainAspectRatio: false, enableEnergyHighlights: true,
+        responsive: true, maintainAspectRatio: false, 
         legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
           xAxes: timeScaleOptions.xAxes,
@@ -1975,10 +1959,19 @@ function changeLineTension(val) {
       ]},
       options: {
         responsive: true, maintainAspectRatio: false, customSegmentColoring: true,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold', filter: (l) => l.text !== 'DutyCycleData' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold', filter: (l) => l.text !== 'DutyCycleData' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
-          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: '#ff9800', fontStyle: 'bold', fontSize: 12, beginAtZero: true, max: 100 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, beginAtZero: true, max: 100 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
         }
       }
     });
@@ -2001,7 +1994,7 @@ function changeLineTension(val) {
           xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }],
           yAxes: [
             { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2020,7 +2013,7 @@ function changeLineTension(val) {
           xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }],
           yAxes: [
             { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2029,14 +2022,14 @@ function changeLineTension(val) {
     const chartHistLamaOperasi = new Chart(document.getElementById('chartHistLamaOperasi').getContext('2d'), {
       type: 'line',
       data: { datasets: [
-        { label: 'Lama Operasi (Jam)', borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', fill: true, data: [], borderWidth: 2.5, pointRadius: 1 }
+        { label: 'Ubah interval data jadi 5 detik dan tampilkan titik data, bagian landai indikasi PLTS offline', borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 50, 0.1)', fill: true, data: [], borderWidth: 2.5, pointRadius: 1 }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { labels: { fontColor: '#ff9800', fontStyle: 'bold' } },
         scales: {
           xAxes: timeScaleOptions.xAxes,
-          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: '#38bdf8', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
         }
       }
     });
