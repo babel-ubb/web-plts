@@ -9,6 +9,9 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+  <!-- Moment.js (Dibutuhkan untuk Chart.js Time Scale) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
   <!-- Chart.js Library untuk Grafik (Versi 2.9.4) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
@@ -24,51 +27,41 @@
       --text-color: #ffffff;
       --text-muted: #cccccc;
       --border-color: #333333;
-      --primary-color: #00e676;
+      --primary-color: #0284c7;
       --danger-color: #ff5252;
       --warning-color: #ff9800;
       --chart-grid: rgba(255,255,255,0.15);
-      --sub-heading-color: #3399ff;
-      --color-v: #ff5252;
-      --color-i: #3399ff;
-      --color-p: #ff5252;
-      --color-irr: #3399ff;
-      --color-energy: #00e676;
+      --sub-heading-color: #0284c7;
       
       --btn-blue-bg: #0284c7;
       --btn-blue-hover: #0369a1;
       --box-blue-color: #0284c7;
-      --realtime-value-color: #3399ff;
+      --realtime-value-color: #38bdf8;
       
       --slider-track: #38bdf8;
       --slider-thumb: #38bdf8;
     }
 
     body.light-mode {
-      --bg-color: #f8fafc;
+      --bg-color: #cbd5e1;
       --card-bg: #ffffff;
       --card-inner-bg: #f1f5f9;
       --text-color: #0f172a;
-      --text-muted: #475569;
-      --border-color: #cbd5e1;
-      --primary-color: #0d9488;
-      --danger-color: #e11d48;
+      --text-muted: #334155;
+      --border-color: #94a3b8;
+      --primary-color: #0284c7;
+      --danger-color: #dc2626;
       --warning-color: #d97706;
       --chart-grid: rgba(0, 0, 0, 0.15);
-      --sub-heading-color: #0066cc;
-      --color-v: #e11d48;
-      --color-i: #2563eb;
-      --color-p: #e11d48;
-      --color-irr: #2563eb;
-      --color-energy: #0d9488;
+      --sub-heading-color: #0284c7;
 
       --btn-blue-bg: #0284c7;
       --btn-blue-hover: #0369a1;
       --box-blue-color: #0284c7;
       --realtime-value-color: #2563eb;
 
-      --slider-track: #38bdf8;
-      --slider-thumb: #38bdf8;
+      --slider-track: #0284c7;
+      --slider-thumb: #0284c7;
     }
 
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
@@ -83,14 +76,14 @@
     }
     
     .sub-title {
-      color: #3399ff;
+      color: #0284c7 !important;
       font-size: 24px;
       font-weight: 700;
       margin-bottom: 4px;
       letter-spacing: 0.5px;
     }
 
-    h1 { color: var(--primary-color); font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
+    h1 { color: #0284c7 !important; font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
     
     .status { 
       font-size: 16px; 
@@ -125,29 +118,10 @@
       border-color: var(--btn-blue-hover);
     }
 
-    .status-badge {
-      font-weight: 500;
-      font-size: 16px;
-      padding: 0;
-      border-radius: 0;
-      background: transparent;
-      border: none;
-      transition: color 0.3s;
-    }
-    
-    .status-online {
-      color: #00e676;
-    }
-    .status-offline {
-      color: var(--danger-color);
-    }
-
-    .status-note {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-muted);
-      font-style: italic;
-    }
+    .status-badge { font-weight: 500; font-size: 16px; padding: 0; border-radius: 0; background: transparent; border: none; transition: color 0.3s; }
+    .status-online { color: #00e676; }
+    .status-offline { color: var(--danger-color); }
+    .status-note { font-size: 14px; font-weight: 500; color: var(--text-muted); font-style: italic; }
 
     .control-section {
       max-width: 1200px;
@@ -160,47 +134,27 @@
       text-align: center;
     }
 
-    .control-section h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--primary-color);
-      margin-bottom: 16px;
-    }
-
-    .control-box {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .mode-buttons {
-      display: flex;
-      gap: 12px;
-    }
+    .control-section h2 { font-size: 20px; font-weight: 700; color: #0284c7 !important; margin-bottom: 16px; }
+    .control-box { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: center; }
+    .mode-buttons { display: flex; gap: 12px; }
 
     .btn-mode {
       padding: 12px 24px;
       border-radius: 8px;
-      border: 2px solid var(--btn-blue-bg);
+      border: 2px solid #0284c7;
       font-weight: 700;
       cursor: pointer;
       font-size: 15px;
-      transition: 0.3s;
-      background: var(--card-inner-bg);
-      color: var(--btn-blue-bg);
+      transition: all 0.3s ease;
+      background: transparent;
+      color: var(--text-color);
     }
-
-    .btn-mode:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .btn-mode.active-auto, .btn-mode.active-manual {
-      background: var(--btn-blue-bg);
-      color: #ffffff;
-      border-color: var(--btn-blue-bg);
+    .btn-mode:disabled { opacity: 0.4; cursor: not-allowed; }
+    
+    .btn-mode.active-blue {
+      background: #0284c7 !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
       box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
     }
 
@@ -212,55 +166,12 @@
       padding: 10px 20px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
-      transition: opacity 0.3s;
     }
-
-    .slider-container label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-
-    .slider {
-      -webkit-appearance: none;
-      width: 180px;
-      height: 8px;
-      border-radius: 5px;
-      background: var(--slider-track);
-      outline: none;
-    }
-
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--slider-thumb);
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
-    }
-    
-    .slider::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--slider-thumb);
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
-    }
-
+    .slider-container label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+    .slider { -webkit-appearance: none; width: 180px; height: 8px; border-radius: 5px; background: var(--slider-track); outline: none; }
+    .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--slider-thumb); cursor: pointer; }
     .slider:disabled { opacity: 0.3; cursor: not-allowed; }
-
-    .slider-val {
-      font-size: 16px;
-      font-weight: 700;
-      color: #38bdf8;
-      min-width: 50px;
-      text-align: right;
-    }
+    .slider-val { font-size: 16px; font-weight: 700; color: #38bdf8; min-width: 50px; text-align: right; }
 
     .control-duty-realtime {
       display: flex;
@@ -270,436 +181,200 @@
       padding: 6px 14px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
-      transition: opacity 0.3s;
     }
+    .control-duty-realtime label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+    .control-duty-realtime .val-box { font-size: 16px; font-weight: 800; color: var(--realtime-value-color); }
+    .control-duty-realtime .unit-box { font-size: 11px; font-weight: 600; color: var(--text-muted); }
 
-    .control-duty-realtime label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-
-    .control-duty-realtime .val-box {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--realtime-value-color);
-    }
-
-    .control-duty-realtime .unit-box {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .dashboard-grid {
-      max-width: 1200px;
-      margin: 0 auto 30px auto;
-    }
-
-    .realtime-grouped-box {
+    .dashboard-grid { max-width: 1200px; margin: 0 auto 30px auto; }
+    .realtime-unified-box {
       background: var(--card-bg);
-      border: 2px solid var(--box-blue-color);
+      border: 2px solid #0284c7;
       border-radius: 16px;
       padding: 24px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
+    .realtime-header { text-align: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px dashed var(--border-color); }
+    .realtime-header h2 { font-size: 20px; font-weight: 700; color: #0284c7 !important; text-transform: uppercase; letter-spacing: 0.8px; }
 
-    .realtime-header {
-      text-align: center;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px dashed var(--border-color);
-    }
-
-    .realtime-header h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--box-blue-color);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    .grid-container {
+    .realtime-groups-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      align-items: stretch;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 900px) {
+      .realtime-groups-grid { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 1024px) {
-      .grid-container { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 540px) {
-      .grid-container { grid-template-columns: 1fr; }
-    }
-
-    .card {
+    .realtime-sub-group {
       background: var(--card-inner-bg);
-      border-radius: 12px;
-      padding: 16px 12px;
       border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .sub-card {
+      flex: 1;
       text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      min-height: 95px;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 4px;
+    }
+    .sub-card h3 { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .sub-card .value { font-size: 22px; font-weight: 800; color: var(--realtime-value-color); margin: auto 0; line-height: 1.1; }
+    .sub-card .unit { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
+
+    .vertical-divider {
+      width: 1px;
+      background-color: var(--border-color);
+      margin: 0 2px;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-      border-color: var(--box-blue-color);
-    }
+    .charts-wrapper { max-width: 1200px; margin: 0 auto 30px auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    .chart-box { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .chart-box h2 { font-size: 16px; font-weight: 700; color: #0284c7; margin-bottom: 12px; text-align: center; }
 
-    .card h3 { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.6px; }
-    .card .value { font-size: 24px; font-weight: 800; color: var(--realtime-value-color); margin: auto 0; line-height: 1.1; }
-    .card .unit { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
+    .chart-legend-note { display: flex; justify-content: center; gap: 16px; font-size: 13px; font-weight: 600; margin-bottom: 10px; flex-wrap: wrap; color: #0284c7; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-box-red { width: 16px; height: 16px; background-color: rgba(255, 82, 82, 0.85); border-radius: 3px; }
+    .legend-box-blue { width: 16px; height: 16px; background-color: rgba(2, 132, 199, 0.85); border-radius: 3px; }
 
-    .charts-wrapper {
-      max-width: 1200px;
-      margin: 0 auto 30px auto;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-
-    .chart-box {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 18px;
+    .scale-control-panel {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: var(--card-inner-bg);
+      padding: 10px 14px;
+      border-radius: 8px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-top: 14px;
+      font-size: 12px;
+      align-items: center;
     }
-
-    .chart-box h2 {
-      font-size: 16px;
+    .scale-axis-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .scale-axis-title {
       font-weight: 700;
-      color: var(--primary-color);
-      margin-bottom: 12px;
-      text-align: center;
+    }
+    .scale-input-box {
+      width: 65px;
+      padding: 4px 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 12px;
+      outline: none;
+    }
+    .scale-btn-auto {
+      background: #0284c7;
+      border: none;
+      color: #ffffff;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      transition: background 0.2s;
+    }
+    .scale-btn-auto:hover {
+      background: #0369a1;
     }
 
     .esp-memory-box {
-      max-width: 1200px;
-      margin: 0 auto 30px auto;
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px 20px;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      gap: 20px;
+      max-width: 1200px; margin: 0 auto 30px auto; background: var(--card-bg); border-radius: 12px;
+      padding: 16px 20px; border: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; gap: 20px;
     }
+    .esp-memory-item { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; }
+    .esp-memory-box span { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .esp-memory-box strong { font-size: 20px; font-weight: 800; color: var(--warning-color); }
 
-    .esp-memory-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex: 1;
-      text-align: center;
-    }
+    .history-section { max-width: 1200px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; padding: 22px; border: 1px solid var(--border-color); }
+    .history-section h2 { font-size: 20px; font-weight: 700; color: #0284c7 !important; margin-bottom: 18px; text-align: center; }
 
-    .esp-memory-box span {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-
-    .esp-memory-box strong {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--warning-color);
-    }
-
-    .history-section {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 22px;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    .history-section h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--primary-color);
-      margin-bottom: 18px;
-      text-align: center;
-    }
-
-    .filter-box {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
+    .filter-box { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: center; margin-bottom: 25px; }
     .filter-group { display: flex; align-items: center; gap: 8px; }
     .filter-group label { font-size: 15px; font-weight: 600; color: var(--text-muted); }
-    
-    .filter-group input[type="text"], .filter-group select {
-      background: var(--card-inner-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      outline: none;
+    .filter-group input[type="text"] {
+      background: var(--card-inner-bg); border: 1px solid var(--border-color); color: var(--text-color);
+      padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; outline: none;
     }
 
-    /* Kustomisasi kontras khusus untuk Tombol Pilih Jam */
-    .select-time-kontras {
+    .btn-export, .btn-clear, .btn-action-custom, .select-time-kontras, #stepSelect {
       background: #0284c7 !important;
-      border: 2px solid #38bdf8 !important;
+      border: 2px solid #0284c7 !important;
       color: #ffffff !important;
-      padding: 8px 14px !important;
+      padding: 8px 12px !important;
       border-radius: 8px !important;
-      font-size: 15px !important;
+      font-size: 14px !important;
       font-weight: 800 !important;
       outline: none !important;
       cursor: pointer !important;
-      box-shadow: 0 0 10px rgba(2, 132, 199, 0.5);
       transition: all 0.2s ease-in-out;
     }
-    .select-time-kontras:hover {
+    .btn-export:hover, .btn-clear:hover, .btn-action-custom:hover, .select-time-kontras:hover, #stepSelect:hover {
       background: #0369a1 !important;
-      border-color: #0284c7 !important;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+      border-color: #0369a1 !important;
     }
-    .select-time-kontras option {
-      background-color: #1e1e1e !important;
-      color: #ffffff !important;
+    .select-time-kontras option, #stepSelect option {
+      background-color: var(--card-bg) !important;
+      color: var(--text-color) !important;
       font-weight: 700;
     }
 
-    /* Kustomisasi Flatpickr */
-    .flatpickr-calendar .flatpickr-day,
-    .flatpickr-calendar .flatpickr-day.selected,
-    .flatpickr-calendar .flatpickr-day.startRange,
-    .flatpickr-calendar .flatpickr-day.endRange,
-    .flatpickr-calendar .flatpickr-day.inRange,
-    .flatpickr-calendar .flatpickr-day.today {
-      color: #000 !important;
-    }
-    .flatpickr-calendar .flatpickr-day.prevMonthDay,
-    .flatpickr-calendar .flatpickr-day.nextMonthDay {
-      color: rgba(0, 0, 0, 0.35) !important;
-    }
-    .flatpickr-day.has-data {
-      background: rgba(0, 230, 118, 0.4) !important;
-      border-color: #00e676 !important;
-      color: #000 !important;
-      font-weight: bold !important;
-    }
-    body.light-mode .flatpickr-day.has-data {
-      background: rgba(13, 148, 136, 0.3) !important;
-      border-color: #0d9488 !important;
-      color: #000 !important;
-      font-weight: bold !important;
-    }
+    .flatpickr-calendar .flatpickr-day, .flatpickr-calendar .flatpickr-day.selected, .flatpickr-calendar .flatpickr-day.today { color: #000 !important; }
+    .flatpickr-day.has-data { background: rgba(2, 132, 199, 0.4) !important; border-color: #0284c7 !important; color: #000 !important; font-weight: bold !important; }
 
-    .btn-export, .btn-clear, .btn-action-custom {
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      border: none;
-      background: var(--btn-blue-bg);
-      color: #ffffff;
-      transition: 0.2s;
-    }
-    .btn-export:hover, .btn-clear:hover, .btn-action-custom:hover { background: var(--btn-blue-hover); }
-
-    .history-summary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .summary-card {
-      background: var(--card-inner-bg);
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      text-align: center;
-    }
-
+    .history-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .summary-card { background: var(--card-inner-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
     .summary-card span { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-    .summary-card strong { font-size: 17px; font-weight: 800; color: var(--primary-color); margin-top: 4px; display: block; }
+    .summary-card strong { font-size: 17px; font-weight: 800; color: #0284c7; margin-top: 4px; display: block; }
 
-    .history-charts-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+    .history-charts-grid { display: flex; flex-direction: column; gap: 20px; }
+    .history-chart-box { background: var(--card-inner-bg); border-radius: 8px; padding: 18px; border: 1px solid var(--border-color); }
+    .history-chart-box h3 { text-align: center; color: #0284c7; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
 
-    .history-chart-box {
-      background: var(--card-inner-bg);
-      border-radius: 8px;
-      padding: 18px;
-      border: 1px solid var(--border-color);
-    }
+    .history-table-box { background: var(--card-inner-bg); border-radius: 8px; padding: 18px; border: 1px solid var(--border-color); margin: 10px 0; }
+    .history-table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+    .history-table-header .table-action-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    
+    .history-table-box h3 { text-align: center; color: #0284c7 !important; font-size: 16px; font-weight: 700; margin: 0; flex-grow: 1; }
 
-    .history-chart-box h3 {
-      text-align: center;
-      color: var(--primary-color);
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
+    .log-rekap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .log-rekap-card { background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
+    .log-rekap-card span { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .log-rekap-card strong { font-size: 18px; font-weight: 800; margin-top: 4px; display: block; }
 
-    .history-table-box {
-      background: var(--card-inner-bg);
-      border-radius: 8px;
-      padding: 18px;
-      border: 1px solid var(--border-color);
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
-
-    .history-table-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .history-table-header .table-action-btns {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .history-table-box h3 {
-      text-align: center;
-      color: var(--primary-color);
-      font-size: 16px;
-      font-weight: 700;
-      margin: 0;
-      flex-grow: 1;
-    }
-
-    .log-rekap-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .log-rekap-card {
-      background: var(--card-bg);
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      text-align: center;
-    }
-
-    .log-rekap-card span {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-
-    .log-rekap-card strong {
-      font-size: 18px;
-      font-weight: 800;
-      margin-top: 4px;
-      display: block;
-    }
-
-    .table-responsive {
-      max-height: 350px;
-      overflow-y: auto;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-    }
-
-    .log-status-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: center;
-      font-size: 14px;
-      white-space: nowrap;
-    }
-
-    .log-status-table th, .log-status-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .log-status-table th {
-      background: var(--card-bg);
-      color: var(--primary-color);
-      font-weight: 700;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.2s;
-    }
-
-    .log-status-table th:hover {
-      background: var(--border-color);
-    }
-
-    .log-status-table tbody tr {
-      cursor: pointer;
-      transition: background-color 0.2s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .log-status-table tbody tr:hover {
-      background: rgba(2, 132, 199, 0.15);
-    }
-
-    .log-status-table tbody tr.selected-row {
-      background: rgba(2, 132, 199, 0.35) !important;
-      font-weight: bold;
-    }
-
-    .log-status-table tfoot td {
-      background: var(--card-bg);
-      font-weight: 800;
-      color: var(--primary-color);
-      border-top: 2px solid var(--border-color);
-      position: sticky;
-      bottom: 0;
-      z-index: 2;
-    }
+    .table-responsive { max-height: 350px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; }
+    .log-status-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; white-space: nowrap; }
+    .log-status-table th, .log-status-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
+    .log-status-table th { background: var(--card-bg); color: #0284c7; font-weight: 700; position: sticky; top: 0; z-index: 2; cursor: pointer; }
+    .log-status-table tbody tr:hover { background: rgba(2, 132, 199, 0.1); }
+    .log-status-table tbody tr.selected-row { background: rgba(2, 132, 199, 0.25) !important; font-weight: bold; }
+    .log-status-table tfoot td { background: var(--card-bg); font-weight: 800; color: #0284c7; position: sticky; bottom: 0; z-index: 2; }
 
     .interval-bar-box {
+      display: flex; justify-content: space-between; align-items: center; margin: 15px 0 10px 0;
+      padding: 12px 18px; background: var(--card-inner-bg); border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 12px;
+    }
+    .txt-pilih-baris {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0284c7 !important;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin: 15px 0 10px 0;
-      padding: 12px 18px;
-      background: var(--card-inner-bg);
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      flex-wrap: wrap;
-      gap: 12px;
+      gap: 6px;
     }
   </style>
 </head>
@@ -744,66 +419,86 @@
     </div>
   </div>
 
-  <!-- Monitoring Realtime Dashboard -->
+  <!-- Monitoring Real-Time Dashboard -->
   <div class="dashboard-grid">
-    <div class="realtime-grouped-box">
+    <div class="realtime-unified-box">
       <div class="realtime-header">
         <h2>Data Real Time (Setiap <span id="interval-label">5</span> detik)</h2>
       </div>
-      <div class="grid-container">
-        <div class="card iradiah">
-          <h3>Iradiansi</h3>
-          <div class="value" id="val-iradiah">0</div>
-          <div class="unit">W/m²</div>
+      <div class="realtime-groups-grid">
+        
+        <!-- a. Energi Matahari, Energi PLTS dan lama operasi -->
+        <div class="realtime-sub-group">
+          <div class="sub-card">
+            <h3>Energi Matahari</h3>
+            <div class="value" id="val-energi-matahari">0.00</div>
+            <div class="unit">Wh/m²</div>
+          </div>
+          <div class="vertical-divider"></div>
+          <div class="sub-card">
+            <h3>Energi PLTS</h3>
+            <div class="value" id="val-energi">0.00</div>
+            <div class="unit">Wh</div>
+          </div>
+          <div class="vertical-divider"></div>
+          <div class="sub-card">
+            <h3>Lama Operasi</h3>
+            <div class="value" id="val-lama-operasi">0.00</div>
+            <div class="unit">Jam</div>
+          </div>
         </div>
 
-        <div class="card power">
-          <h3>Daya (P)</h3>
-          <div class="value" id="val-daya">0.00</div>
-          <div class="unit">Watt</div>
+        <!-- b. Iradiansi rata rata dan daya rata rata -->
+        <div class="realtime-sub-group">
+          <div class="sub-card">
+            <h3>Iradiansi Rata-rata</h3>
+            <div class="value" id="val-irr-rata">0</div>
+            <div class="unit">W/m²</div>
+          </div>
+          <div class="vertical-divider"></div>
+          <div class="sub-card">
+            <h3>Daya Rata-rata</h3>
+            <div class="value" id="val-daya-rata">0.00</div>
+            <div class="unit">Watt</div>
+          </div>
         </div>
 
-        <div class="card voltage">
-          <h3>Tegangan (V)</h3>
-          <div class="value" id="val-tegangan">0.00</div>
-          <div class="unit">Volt</div>
+        <!-- c. Iradiansi dan daya -->
+        <div class="realtime-sub-group">
+          <div class="sub-card">
+            <h3>Iradiansi</h3>
+            <div class="value" id="val-iradiah">0</div>
+            <div class="unit">W/m²</div>
+          </div>
+          <div class="vertical-divider"></div>
+          <div class="sub-card">
+            <h3>Daya (P)</h3>
+            <div class="value" id="val-daya">0.00</div>
+            <div class="unit">Watt</div>
+          </div>
         </div>
 
-        <div class="card current">
-          <h3>Arus (I)</h3>
-          <div class="value" id="val-arus">0.00</div>
-          <div class="unit">Ampere</div>
+        <!-- d. Siklus Kerja, Tegangan, Arus -->
+        <div class="realtime-sub-group">
+          <div class="sub-card">
+            <h3>Siklus Kerja</h3>
+            <div class="value" id="val-siklus">0.0</div>
+            <div class="unit">%</div>
+          </div>
+          <div class="vertical-divider"></div>
+          <div class="sub-card">
+            <h3>Tegangan (V)</h3>
+            <div class="value" id="val-tegangan">0.00</div>
+            <div class="unit">Volt</div>
+          </div>
+          <div class="vertical-divider"></div>
+          <div class="sub-card">
+            <h3>Arus (I)</h3>
+            <div class="value" id="val-arus">0.00</div>
+            <div class="unit">Ampere</div>
+          </div>
         </div>
 
-        <div class="card duty" style="display: none;">
-          <h3>Duty Cycle</h3>
-          <div class="value" id="val-siklus">0.0</div>
-          <div class="unit">%</div>
-        </div>
-
-        <div class="card energy">
-          <h3>Energi PLTS</h3>
-          <div class="value" id="val-energi">0.00</div>
-          <div class="unit">Wh</div>
-        </div>
-
-        <div class="card avg-power">
-          <h3>Daya Rata-rata</h3>
-          <div class="value" id="val-daya-rata">0.00</div>
-          <div class="unit">Watt</div>
-        </div>
-
-        <div class="card avg-irr">
-          <h3>Iradiansi Rata-rata</h3>
-          <div class="value" id="val-irr-rata">0</div>
-          <div class="unit">W/m²</div>
-        </div>
-
-        <div class="card operating-hours">
-          <h3>LAMA OPERASI (PERHARI)</h3>
-          <div class="value" id="val-lama-operasi">0.00</div>
-          <div class="unit">Jam</div>
-        </div>
       </div>
     </div>
   </div>
@@ -811,7 +506,16 @@
   <!-- Grafik Realtime -->
   <div class="charts-wrapper">
     <div class="chart-box">
-      <h2>Daya (W) & Iradiansi (W/m²)</h2>
+      <h2>Energi Matahari & Energi PLTS</h2>
+      <div class="chart-legend-note">
+        <div class="legend-item"><div class="legend-box-red"></div><span>Vertikal : Iradiansi Matahari Sangat Rendah</span></div>
+        <div class="legend-item"><div class="legend-box-blue"></div><span>Vertikal : Daya PLTS Nol</span></div>
+      </div>
+      <canvas id="chartRealtimeEnergi" style="max-height: 400px;"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Iradiansi (W/m²) & Daya (W)</h2>
       <canvas id="chartDayaIrradiance" style="max-height: 400px;"></canvas>
     </div>
 
@@ -826,7 +530,7 @@
     </div>
 
     <div class="chart-box">
-      <h2>Daya Rata-rata & Iradiansi Rata-rata</h2>
+      <h2>Iradiansi Rata-rata & Daya Rata-rata</h2>
       <canvas id="chartRealtimeAkumulasi" style="max-height: 400px;"></canvas>
     </div>
   </div>
@@ -866,14 +570,42 @@
     </div>
 
     <div class="history-charts-grid">
+      <!-- 1. Grafik History Energi Harian -->
       <div class="history-chart-box">
-        <h3>Energi PLTS (Wh)</h3>
+        <h3>Energi Matahari & Energi PLTS Harian</h3>
         <canvas id="chartHistoryEnergi" style="max-height: 380px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Energi Matahari):</span>
+            <span>Min:</span><input type="number" id="min-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'max', this.value)">
+          </div>
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Energi PLTS):</span>
+            <span>Min:</span><input type="number" id="min-hisen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y1', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-hisen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y1', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistoryEnergi', ['y', 'y1'], ['min-hisen-left', 'max-hisen-left', 'min-hisen-right', 'max-hisen-right'])">Auto</button>
+        </div>
       </div>
 
+      <!-- 2. Grafik History Daya & Iradiansi Harian -->
       <div class="history-chart-box">
-        <h3>Daya Rata-rata & Iradiansi Rata-rata Harian</h3>
+        <h3>Iradiansi Rata-rata & Daya Rata-rata Harian</h3>
         <canvas id="chartHistoryDayaIrr" style="max-height: 380px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Iradiansi Rata-rata):</span>
+            <span>Min:</span><input type="number" id="min-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'max', this.value)">
+          </div>
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Daya Rata-rata):</span>
+            <span>Min:</span><input type="number" id="min-hisdayirr-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y1', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-hisdayirr-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y1', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistoryDayaIrr', ['y', 'y1'], ['min-hisdayirr-left', 'max-hisdayirr-left', 'min-hisdayirr-right', 'max-hisdayirr-right'])">Auto</button>
+        </div>
       </div>
 
       <!-- Tabel Rekapitulasi Harian -->
@@ -881,7 +613,7 @@
         <div class="history-table-header">
           <h3 style="text-align: left;">Rekapitulasi Harian</h3>
           <div class="table-action-btns">
-            <button class="btn-export" onclick="exportToCSV()">UNDUH SEMUA DATA</button>
+            <button class="btn-export" onclick="exportToCSV()">UNDUH DATA</button>
             <button class="btn-export" onclick="exportTableToCSV()">UNDUH REKAPITULASI</button>
           </div>
         </div>
@@ -893,7 +625,7 @@
           </div>
           <div class="log-rekap-card">
             <span>JUMLAH HARI BEROPERASI</span>
-            <strong id="rekap-hari-ada-log" style="color: var(--primary-color);">0 Hari</strong>
+            <strong id="rekap-hari-ada-log" style="color: #0284c7;">0 Hari</strong>
           </div>
           <div class="log-rekap-card">
             <span>Tak Beroperasi</span>
@@ -937,9 +669,9 @@
         </div>
       </div>
 
-      <!-- Baris Interval Data, Keterangan & Jam Awal/Akhir di Sebelah Kanan -->
+      <!-- Baris Interval Data Detail -->
       <div class="interval-bar-box">
-        <div style="font-size: 15px; font-weight: 700; color: var(--sub-heading-color); display: flex; align-items: center; gap: 6px;">
+        <div class="txt-pilih-baris">
           <span>ℹ️</span> Pilih baris tanggal pada tabel
         </div>
 
@@ -948,6 +680,8 @@
             <label for="stepSelect">Interval Data Detail:</label>
             <select id="stepSelect" onchange="reloadSingleDayDetail()">
               <option value="5s">5 detik</option>
+              <option value="10s">10 detik</option>
+              <option value="30s">30 detik</option>
               <option value="1m">1 menit</option>
               <option value="5m">5 menit</option>
               <option value="10m">10 menit</option>
@@ -957,10 +691,10 @@
             </select>
           </div>
 
-          <div class="filter-group" style="display: flex; gap: 10px; align-items: center;">
-            <label for="startTime">Jam Awal:</label>
+          <div class="filter-group" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <label for="startTime">Mulai:</label>
             <select id="startTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
-              <option value="06">06</option>
+              <option value="06" selected>06</option>
               <option value="07">07</option>
               <option value="08">08</option>
               <option value="09">09</option>
@@ -974,8 +708,22 @@
               <option value="17">17</option>
               <option value="18">18</option>
             </select>
+            <div style="display:inline-flex; align-items:center; gap:4px;">
+              <select id="startMinute" class="select-time-kontras" onchange="handleMinuteChange('start')">
+                <option value="00" selected>00</option>
+                <option value="05">05</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+                <option value="custom">Ketik...</option>
+              </select>
+              <input type="number" id="startMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
+            </div>
 
-            <label for="endTime" style="margin-left: 4px;">Jam Akhir:</label>
+            <label for="endTime" style="margin-left: 6px;">Akhir:</label>
             <select id="endTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
               <option value="06">06</option>
               <option value="07">07</option>
@@ -991,28 +739,151 @@
               <option value="17">17</option>
               <option value="18" selected>18</option>
             </select>
+            <div style="display:inline-flex; align-items:center; gap:4px;">
+              <select id="endMinute" class="select-time-kontras" onchange="handleMinuteChange('end')">
+                <option value="00" selected>00</option>
+                <option value="05">05</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+                <option value="custom">Ketik...</option>
+              </select>
+              <input type="number" id="endMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
+            </div>
           </div>
         </div>
       </div>
 
+
+<!-- Kotak Input Pengaturan Kelengkungan Garis (Tension) & Titik Data -->
+      <div class="interval-bar-box" style="justify-content: center; gap: 30px; flex-wrap: wrap;">
+        <div class="filter-group">
+          <label for="tensionInput" style="font-size: 13px;">Kelengkungan Garis (Tension):</label>
+          <input type="number" id="tensionInput" value="0" step="0.1" min="0" max="1" class="scale-input-box" style="width: 35x; height: 32px; padding: 2px 6px; font-size: 13px;" oninput="changeLineTension(this.value)" onchange="changeLineTension(this.value)">
+          <span style="font-size: 11px; color: var(--text-muted); font-style: italic;">(0 = Garis Lurus, 0.4 = Lengkung Mulus)</span>
+        </div>
+
+        <div class="filter-group">
+          <label for="pointRadiusSelect" style="font-size: 13px;">Titik Data (Dot):</label>
+          <!-- Menggunakan class dan ukuran tinggi/padding yang sama, dengan width disesuaikan agar teks muat -->
+          <select id="pointRadiusSelect" class="scale-input-box" onchange="changePointRadius(this.value)" style="width: 90px; height: 32px; padding: 2px 6px; font-size: 13px;">
+            <option value="0" selected>Tak ada</option>
+            <option value="1">Kecil</option>
+            <option value="2">Sedang</option>
+            <option value="3">Besar</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 3. Grafik Detail Harian: Energi Matahari & Energi PLTS -->
       <div class="history-chart-box">
-        <h3>Daya (W) & Iradiansi (W/m²) <span id="title-day-power" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
+        <h3>Energi Matahari & Energi PLTS <span id="title-day-energi-plts-matahari" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
+        <div class="chart-legend-note">
+          <div class="legend-item"><div class="legend-box-red"></div><span>Vertikal : Iradiansi Matahari Sangat Rendah</span></div>
+          <div class="legend-item"><div class="legend-box-blue"></div><span>Vertikal : Daya PLTS Nol</span></div>
+        </div>
+        <canvas id="chartHistEnergiPltsMatahari" style="max-height: 380px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Energi Matahari):</span>
+            <span>Min:</span><input type="number" id="min-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'max', this.value)">
+          </div>
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Energi PLTS):</span>
+            <span>Min:</span><input type="number" id="min-histdayen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y1', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdayen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y1', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistEnergiPltsMatahari', ['y', 'y1'], ['min-histdayen-left', 'max-histdayen-left', 'min-histdayen-right', 'max-histdayen-right'])">Auto</button>
+        </div>
+      </div>
+
+      <!-- 4. Grafik Detail Harian: Iradiansi & Daya -->
+      <div class="history-chart-box">
+        <h3>Iradiansi (W/m²) & Daya (W) <span id="title-day-power" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
         <canvas id="chartHistPowerIrr" style="max-height: 380px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Iradiansi):</span>
+            <span>Min:</span><input type="number" id="min-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'max', this.value)">
+          </div>
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Daya):</span>
+            <span>Min:</span><input type="number" id="min-histdaypow-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y1', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdaypow-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y1', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistPowerIrr', ['y', 'y1'], ['min-histdaypow-left', 'max-histdaypow-left', 'min-histdaypow-right', 'max-histdaypow-right'])">Auto</button>
+        </div>
       </div>
 
+      <!-- 5. Grafik Detail Harian: Siklus Kerja -->
       <div class="history-chart-box">
-        <h3>Siklus Kerja (%) <span id="title-day-duty" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
+        <h3>Siklus Kerja (%) <span id="title-day-duty" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
         <canvas id="chartHistSiklusKerja" style="max-height: 380px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #ff9800;">Sumbu Y (Duty Cycle):</span>
+            <span>Min:</span><input type="number" id="min-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistSiklusKerja', ['y'], ['min-histdayduty-left', 'max-histdayduty-left'])">Auto</button>
+        </div>
       </div>
 
+      <!-- 6. Grafik Detail Harian: Tegangan & Arus -->
       <div class="history-chart-box">
-        <h3>Tegangan (V) & Arus (A) <span id="title-day-vi" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
+        <h3>Tegangan (V) & Arus (A) <span id="title-day-vi" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
         <canvas id="chartHistVI" style="max-height: 380px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Tegangan):</span>
+            <span>Min:</span><input type="number" id="min-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'max', this.value)">
+          </div>
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Arus):</span>
+            <span>Min:</span><input type="number" id="min-histdayvi-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y1', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdayvi-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y1', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistVI', ['y', 'y1'], ['min-histdayvi-left', 'max-histdayvi-left', 'min-histdayvi-right', 'max-histdayvi-right'])">Auto</button>
+        </div>
       </div>
 
+      <!-- 7. Grafik Detail Harian: Iradiansi Rata-rata & Daya Rata-rata -->
       <div class="history-chart-box">
-        <h3>Daya Rata-rata & Iradiansi Rata-rata <span id="title-day-avg-power-irr" style="font-size:14px; font-weight:normal; color:var(--btn-blue-bg);"></span></h3>
+        <h3>Iradiansi Rata-rata & Daya Rata-rata <span id="title-day-avg-power-irr" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
         <canvas id="chartHistAvgPowerIrr" style="max-height: 380px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Iradiansi Rata-rata):</span>
+            <span>Min:</span><input type="number" id="min-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'max', this.value)">
+          </div>
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Daya Rata-rata):</span>
+            <span>Min:</span><input type="number" id="min-histdayavg-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y1', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdayavg-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y1', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistAvgPowerIrr', ['y', 'y1'], ['min-histdayavg-left', 'max-histdayavg-left', 'min-histdayavg-right', 'max-histdayavg-right'])">Auto</button>
+        </div>
+      </div>
+
+      <!-- 8. Grafik Detail Harian: Lama Operasi (Jam) -->
+      <div class="history-chart-box">
+        <h3>Lama Operasi (Jam) <span id="title-day-lama-operasi" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
+        <canvas id="chartHistLamaOperasi" style="max-height: 380px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
+            <span class="scale-axis-title" style="color: #38bdf8;">Sumbu Y (Lama Operasi):</span>
+            <span>Min:</span><input type="number" id="min-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'min', this.value)">
+            <span>Max:</span><input type="number" id="max-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistLamaOperasi', ['y'], ['min-histdaylama-left', 'max-histdaylama-left'])">Auto</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1021,7 +892,7 @@
   <div class="esp-memory-box" style="margin-top: 30px; flex-wrap: wrap;">
     <div class="esp-memory-item">
       <span>SISA PENYIMPANAN DATABASE</span>
-      <strong id="rekap-sisa-kuota" style="color: var(--primary-color);">100.0%</strong>
+      <strong id="rekap-sisa-kuota" style="color: #0284c7;">100.0%</strong>
     </div>
   </div>
 
@@ -1030,23 +901,94 @@
   </footer-toggle-container>
 
   <script>
+    // Atur tension global awal menjadi 0 (garis lurus)
+    Chart.defaults.global.elements.line.tension = 0;
+
+    // Fungsi interaktif untuk mengubah line tension dengan pembaruan meta controller Chart.js v2.9.4
+    
+
+function changeLineTension(val) {
+      // Jika input kosong atau sedang mengetik desimal awal (misal "0."), abaikan sementara agar tidak error
+      if (val === "" || isNaN(val)) return;
+      let newTension = parseFloat(val);
+
+      Chart.defaults.global.elements.line.tension = newTension;
+
+      // HANYA daftar grafik garis murni (Grafik Batang & Siklus Kerja dikecualikan)
+      const lineCharts = [
+        chartRealtimeEnergi,
+        chartVI,
+        chartDayaIrr,
+        chartRealtimeAkumulasi,
+        chartHistVI,
+        chartHistPowerIrr,
+        chartHistAvgPowerIrr,
+        chartHistEnergiPltsMatahari,
+        chartHistLamaOperasi
+      ];
+
+      lineCharts.forEach(chart => {
+        if (!chart) return;
+        
+        if (!chart.options.elements) chart.options.elements = {};
+        if (!chart.options.elements.line) chart.options.elements.line = {};
+        chart.options.elements.line.tension = newTension;
+
+        chart.data.datasets.forEach(dataset => {
+          dataset.lineTension = newTension;
+        });
+
+        // Re-assign array dataset agar Chart.js merender ulang kurva seketika
+        chart.data.datasets = [...chart.data.datasets];
+        chart.update();
+      });
+    }
+
+
+
+// Fungsi interaktif untuk memunculkan atau menyembunyikan titik data (dot) pada grafik garis
+    function changePointRadius(val) {
+      let radius = parseFloat(val);
+      if (isNaN(radius)) return;
+
+      const lineChartsForDots = [
+        chartRealtimeEnergi,
+        chartVI,
+        chartDayaIrr,
+        chartRealtimeAkumulasi,
+        chartHistVI,
+        chartHistPowerIrr,
+        chartHistAvgPowerIrr,
+        chartHistEnergiPltsMatahari,
+        chartHistLamaOperasi
+      ];
+
+      lineChartsForDots.forEach(chart => {
+        if (!chart) return;
+        
+        chart.data.datasets.forEach(dataset => {
+          dataset.pointRadius = radius;
+        });
+
+        chart.update();
+      });
+    }
+
+
+
     const annotationLinePlugin = {
       afterDraw: function(chart) {
         if (!chart.config.data.boundaryIndices || chart.config.data.boundaryIndices.length === 0) return;
-        
         const ctx = chart.ctx;
         const xAxis = chart.scales['x-axis-0'];
         const yAxis = chart.scales[chart.config.options.scales.yAxes[0].id];
-
         if (!xAxis || !yAxis) return;
-
         ctx.save();
         ctx.strokeStyle = '#8B4513';
         ctx.lineWidth = 3;
         ctx.setLineDash([4, 4]);
-
-        chart.config.data.boundaryIndices.forEach(index => {
-          const x = xAxis.getPixelForTick(index);
+        chart.config.data.boundaryIndices.forEach(xVal => {
+          const x = xAxis.getPixelForValue(xVal);
           if (x >= xAxis.left && x <= xAxis.right) {
             ctx.beginPath();
             ctx.moveTo(x, yAxis.top);
@@ -1054,12 +996,42 @@
             ctx.stroke();
           }
         });
-
         ctx.restore();
       }
     };
-
     Chart.plugins.register(annotationLinePlugin);
+
+    const energyHighlightPlugin = {
+      afterDraw: function(chart) {
+        if (!chart.config.options.enableEnergyHighlights) return;
+        const annotations = chart.config.data.energyHighlights;
+        if (!annotations || annotations.length === 0) return;
+        const ctx = chart.ctx;
+        const xAxis = chart.scales['x-axis-0'];
+        const yAxis = chart.scales[chart.config.options.scales.yAxes[0].id];
+        if (!xAxis || !yAxis) return;
+        ctx.save();
+        ctx.lineWidth = 3;
+        annotations.forEach(item => {
+          const x = xAxis.getPixelForValue(item.xVal);
+          if (x >= xAxis.left && x <= xAxis.right) {
+            if (item.type === 'pink') {
+              ctx.strokeStyle = 'rgba(255, 82, 82, 0.75)';
+            } else if (item.type === 'yellow') {
+              ctx.strokeStyle = 'rgba(2, 132, 199, 0.85)';
+            } else {
+              return;
+            }
+            ctx.beginPath();
+            ctx.moveTo(x, yAxis.top);
+            ctx.lineTo(x, yAxis.bottom);
+            ctx.stroke();
+          }
+        });
+        ctx.restore();
+      }
+    };
+    Chart.plugins.register(energyHighlightPlugin);
 
     const continuousDutyPlugin = {
       afterDatasetsDraw: function(chart) {
@@ -1067,19 +1039,12 @@
         var ctx = chart.ctx;
         var meta = chart.getDatasetMeta(3);
         if (!meta || !meta.data || meta.data.length < 2) return;
-
         var dataset = chart.data.datasets[3];
         var dataPoints = meta.data;
         var modes = dataset.modes || [];
-        var modeColors = {
-          'MANUAL': '#ff5252',
-          'PO': '#0284c7',
-          'INC': '#00e676'
-        };
-
+        var modeColors = { 'MANUAL': '#ff5252', 'PO': '#0284c7', 'INC': '#00e676' };
         ctx.save();
         ctx.lineWidth = dataset.borderWidth || 2;
-
         for (var i = 0; i < dataPoints.length - 1; i++) {
           var p0 = dataPoints[i];
           var p1 = dataPoints[i+1];
@@ -1109,7 +1074,6 @@
     document.addEventListener("DOMContentLoaded", () => {
       const labelEl = document.getElementById("interval-label");
       if (labelEl) labelEl.innerText = INTERVAL_DETIK;
-
       initHistoricalDateRange();
       initFirebaseStorageAndUsersMonitor();
     });
@@ -1127,6 +1091,34 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    function handleMinuteChange(type) {
+      const select = document.getElementById(type === 'start' ? 'startMinute' : 'endMinute');
+      const input = document.getElementById(type === 'start' ? 'startMinuteInput' : 'endMinuteInput');
+      if (select.value === 'custom') {
+        input.style.display = 'inline-block';
+        input.focus();
+      } else {
+        input.style.display = 'none';
+        reloadSingleDayDetail();
+      }
+    }
+
+    function getStartMinute() {
+      const select = document.getElementById('startMinute');
+      if (select.value === 'custom') {
+        return parseInt(document.getElementById('startMinuteInput').value, 10) || 0;
+      }
+      return parseInt(select.value, 10) || 0;
+    }
+
+    function getEndMinute() {
+      const select = document.getElementById('endMinute');
+      if (select.value === 'custom') {
+        return parseInt(document.getElementById('endMinuteInput').value, 10) || 0;
+      }
+      return parseInt(select.value, 10) || 0;
+    }
+
     function initHistoricalDateRange() {
       database.ref("/mppt_ringkasan_harian").once("value", (snapshot) => {
         let dates = [];
@@ -1136,13 +1128,10 @@
           let rawKey = child.key || "";
           let cleanKey = rawKey.startsWith("tanggal_") ? rawKey.replace("tanggal_", "") : rawKey;
           let tanggalLog = item.tanggal || cleanKey;
-          
           let formattedDate = tanggalLog;
           if (tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2) {
             let parts = tanggalLog.split("-");
-            if (parts.length === 3) {
-              formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
+            if (parts.length === 3) formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
           }
           if (formattedDate) {
             dates.push(formattedDate);
@@ -1150,9 +1139,7 @@
           }
         });
 
-        let defaultStart = "";
-        let defaultEnd = "";
-
+        let defaultStart = "", defaultEnd = "";
         if (dates.length > 0) {
           dates.sort();
           defaultStart = dates[0];
@@ -1161,16 +1148,10 @@
           const today = new Date();
           const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
           const startDateObj = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
-          const formatDateOnly = (date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-          };
+          const formatDateOnly = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
           defaultStart = formatDateOnly(startDateObj);
           defaultEnd = formatDateOnly(endDateObj);
         }
-
         initFlatpickrPickers(defaultStart, defaultEnd);
         loadHistory();
       });
@@ -1179,30 +1160,17 @@
     function initFlatpickrPickers(defaultStart, defaultEnd) {
       const fpConfig = {
         dateFormat: "Y-m-d",
-        onChange: function(selectedDates, dateStr, instance) {
-          loadHistory();
-        },
+        onChange: function(selectedDates, dateStr, instance) { loadHistory(); },
         onDayCreate: function(dObj, dStr, fp, dayElem) {
           const year = dayElem.dateObj.getFullYear();
           const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
           const day = String(dayElem.dateObj.getDate()).padStart(2, '0');
           const dateStr = `${year}-${month}-${day}`;
-
-          if (availableDatesSet.has(dateStr)) {
-            dayElem.classList.add("has-data");
-          }
+          if (availableDatesSet.has(dateStr)) dayElem.classList.add("has-data");
         }
       };
-
-      startDatePickerInstance = flatpickr("#startDate", {
-        ...fpConfig,
-        defaultDate: defaultStart
-      });
-
-      endDatePickerInstance = flatpickr("#endDate", {
-        ...fpConfig,
-        defaultDate: defaultEnd
-      });
+      startDatePickerInstance = flatpickr("#startDate", { ...fpConfig, defaultDate: defaultStart });
+      endDatePickerInstance = flatpickr("#endDate", { ...fpConfig, defaultDate: defaultEnd });
     }
 
     let lastEspHeartbeatTime = 0;
@@ -1218,68 +1186,89 @@
       updateChartThemeColors();
     }
 
-    function getLegendTextColor() {
-      return document.body.classList.contains("light-mode") ? "#0f172a" : "#ffffff";
-    }
-
     function updateChartThemeColors() {
-      const textColor = getLegendTextColor();
       const gridColor = getCssVar('--chart-grid');
+      const xAxisColor = document.body.classList.contains("light-mode") ? "#000000" : "#ffffff";
 
-      const colorV = getCssVar('--color-v');
-      const colorI = getCssVar('--color-i');
-      const colorP = getCssVar('--color-p');
-      const colorIrr = getCssVar('--color-irr');
-      const colorEnergy = getCssVar('--color-energy');
-
-      const allCharts = [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartHistVI, chartHistPowerIrr, chartHistDayaIrr, chartHistEnergi, chartHistSiklusKerja, chartHistAvgPowerIrr];
+      const allCharts = [
+        chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartRealtimeEnergi, 
+        chartHistVI, chartHistPowerIrr, chartHistDayaIrr, chartHistoryEnergi, chartHistSiklusKerja, 
+        chartHistAvgPowerIrr, chartHistEnergiPltsMatahari, chartHistLamaOperasi
+      ];
       
       allCharts.forEach((chart) => {
         if (!chart) return;
-        chart.options.legend.labels.fontColor = textColor;
-        
         chart.options.scales.xAxes.forEach(axis => {
-          if (axis.ticks) axis.ticks.fontColor = textColor;
           if (axis.gridLines) axis.gridLines.color = gridColor;
+          if (axis.ticks) axis.ticks.fontColor = xAxisColor;
         });
-
         chart.options.scales.yAxes.forEach(axis => {
           if (axis.gridLines) axis.gridLines.color = gridColor;
         });
-
-        if (chart === chartVI || chart === chartHistVI) {
-          chart.data.datasets[0].borderColor = colorV;
-          chart.data.datasets[1].borderColor = colorI;
-        } else if (chart === chartDayaIrr || chart === chartHistPowerIrr) {
-          chart.data.datasets[0].borderColor = colorP;
-          chart.data.datasets[1].borderColor = colorIrr;
-        } else if (chart === chartDutyCycle || chart === chartHistSiklusKerja) {
-          chart.options.scales.yAxes[0].ticks.fontColor = getCssVar('--warning-color');
-        } else if (chart === chartRealtimeAkumulasi) {
-          chart.data.datasets[0].borderColor = colorP;
-          chart.data.datasets[1].borderColor = colorIrr;
-        } else if (chart === chartHistAvgPowerIrr) {
-          chart.data.datasets[0].borderColor = colorP;
-          chart.data.datasets[1].borderColor = colorIrr;
-        } else if (chart === chartHistDayaIrr) {
-          chart.data.datasets[0].backgroundColor = colorP;
-          chart.data.datasets[1].backgroundColor = colorIrr;
-          chart.options.scales.yAxes[0].ticks.fontColor = colorP;
-          chart.options.scales.yAxes[1].ticks.fontColor = colorIrr;
-        } else if (chart === chartHistEnergi) {
-          chart.data.datasets[0].backgroundColor = colorEnergy;
-          chart.options.scales.yAxes[0].ticks.fontColor = colorEnergy;
-        }
-
         chart.update();
       });
     }
 
+    function getXAxisFontColor() {
+      return document.body.classList.contains("light-mode") ? "#000000" : "#ffffff";
+    }
+
+    function getChartInstanceByName(chartName) {
+      const chartsMap = {
+        'chartRealtimeEnergi': chartRealtimeEnergi,
+        'chartDayaIrradiance': chartDayaIrr,
+        'chartDutyCycle': chartDutyCycle,
+        'chartVI': chartVI,
+        'chartRealtimeAkumulasi': chartRealtimeAkumulasi,
+        'chartHistoryEnergi': chartHistoryEnergi,
+        'chartHistoryDayaIrr': chartHistoryDayaIrr,
+        'chartHistEnergiPltsMatahari': chartHistEnergiPltsMatahari,
+        'chartHistPowerIrr': chartHistPowerIrr,
+        'chartHistSiklusKerja': chartHistSiklusKerja,
+        'chartHistVI': chartHistVI,
+        'chartHistAvgPowerIrr': chartHistAvgPowerIrr,
+        'chartHistLamaOperasi': chartHistLamaOperasi
+      };
+      return chartsMap[chartName];
+    }
+
+    function applyCustomScale(chartName, yAxisId, minOrMax, value) {
+      const chart = getChartInstanceByName(chartName);
+      if (!chart) return;
+      const targetAxis = chart.options.scales.yAxes.find(axis => axis.id === yAxisId);
+      if (!targetAxis) return;
+
+      if (value === "" || isNaN(value)) {
+        delete targetAxis.ticks[minOrMax];
+      } else {
+        targetAxis.ticks[minOrMax] = Number(value);
+      }
+      chart.update();
+    }
+
+    function resetChartScaleAuto(chartName, axisIds, inputIds) {
+      const chart = getChartInstanceByName(chartName);
+      if (!chart) return;
+
+      axisIds.forEach(yAxisId => {
+        const targetAxis = chart.options.scales.yAxes.find(axis => axis.id === yAxisId);
+        if (targetAxis) {
+          delete targetAxis.ticks.min;
+          delete targetAxis.ticks.max;
+        }
+      });
+
+      inputIds.forEach(id => {
+        const inputElem = document.getElementById(id);
+        if (inputElem) inputElem.value = "";
+      });
+
+      chart.update();
+    }
+
     const statusRef = database.ref("/mppt_status/last_seen");
     statusRef.on("value", (snapshot) => {
-      if (snapshot.exists()) {
-        lastEspHeartbeatTime = Number(snapshot.val());
-      }
+      if (snapshot.exists()) lastEspHeartbeatTime = Number(snapshot.val());
     });
 
     function updateSliderState(isConnected, isManual) {
@@ -1313,28 +1302,24 @@
         statusElem.className = "status-badge status-offline";
         if (statusNote) statusNote.style.display = "none";
         
+        document.getElementById("val-energi-matahari").innerText = "0.00";
+        document.getElementById("val-energi").innerText = "0.00";
+        document.getElementById("val-lama-operasi").innerText = "0.00";
+        document.getElementById("val-irr-rata").innerText = "0";
+        document.getElementById("val-daya-rata").innerText = "0.00";
         document.getElementById("val-iradiah").innerText = "0";
         document.getElementById("val-daya").innerText = "0.00";
-        document.getElementById("val-tegangan").innerText = "0.00";
-        document.getElementById("val-arus").innerText = "0.00";
         document.getElementById("val-siklus").innerText = "0.0";
         document.getElementById("val-siklus-control").innerText = "0.0";
-        document.getElementById("val-energi").innerText = "0.00";
-        document.getElementById("val-daya-rata").innerText = "0.00";
-        document.getElementById("val-irr-rata").innerText = "0";
-        document.getElementById("val-lama-operasi").innerText = "0.00";
+        document.getElementById("val-tegangan").innerText = "0.00";
+        document.getElementById("val-arus").innerText = "0.00";
       }
-
       updateSliderState(isConnected, currentModeManual);
     }, 2000);
 
     const controlRef = database.ref("/mppt_control");
-    
     controlRef.once("value", (snapshot) => {
-      const data = snapshot.val();
-      if (!data) {
-        controlRef.set({ mode_manual: false, duty_manual: 50 });
-      }
+      if (!snapshot.exists()) controlRef.set({ mode_manual: false, duty_manual: 50 });
     });
 
     controlRef.on("value", (snapshot) => {
@@ -1348,49 +1333,27 @@
       const mpptInfoContainer = document.getElementById("mppt-mode-info-container");
       const mpptInfoVal = document.getElementById("val-mppt-mode-info");
 
-      let isManual = false;
-      let dutyVal = 50;
-      let mpptOpMode = 0;
-
-      if (data) {
-        isManual = data.mode_manual || false;
-        dutyVal = data.duty_manual !== undefined ? data.duty_manual : 50;
-        if (data.MODE_OPERASI_MPPT !== undefined) {
-          mpptOpMode = Number(data.MODE_OPERASI_MPPT);
-        }
-      }
+      let isManual = data ? data.mode_manual || false : false;
+      let dutyVal = data && data.duty_manual !== undefined ? data.duty_manual : 50;
+      let mpptOpMode = data && data.MODE_OPERASI_MPPT !== undefined ? Number(data.MODE_OPERASI_MPPT) : 0;
 
       currentModeManual = isManual;
 
       if (isManual) {
-        btnManual.className = "btn-mode active-manual";
-        btnManual.style.opacity = "1";
-        sliderContainerBox.style.opacity = "0.75";
-      } else {
-        btnManual.className = "btn-mode";
-        btnManual.style.opacity = "0.75";
+        btnManual.className = "btn-mode active-blue";
+        btnMppt.className = "btn-mode";
         sliderContainerBox.style.opacity = "1";
-      }
-
-      if (!isManual) {
-        btnMppt.classList.add("active-auto");
-        btnMppt.style.opacity = "1";
-        btnParamMppt.style.display = "inline-block";
-        mpptInfoContainer.style.display = "flex";
-      } else {
-        btnMppt.classList.remove("active-auto");
-        btnMppt.style.opacity = "0.75";
         btnParamMppt.style.display = "none";
         mpptInfoContainer.style.display = "none";
+      } else {
+        btnMppt.className = "btn-mode active-blue";
+        btnManual.className = "btn-mode";
+        sliderContainerBox.style.opacity = "0.75";
+        btnParamMppt.style.display = "inline-block";
+        mpptInfoContainer.style.display = "flex";
       }
 
-      if (mpptOpMode === 0) {
-        mpptInfoVal.innerText = "P&O";
-      } else if (mpptOpMode === 1) {
-        mpptInfoVal.innerText = "InC";
-      } else {
-        mpptInfoVal.innerText = "-";
-      }
+      mpptInfoVal.innerText = mpptOpMode === 0 ? "P&O" : (mpptOpMode === 1 ? "InC" : "-");
 
       const now = Date.now();
       const isConnected = lastEspHeartbeatTime > 0 && (now - lastEspHeartbeatTime) <= 12000;
@@ -1403,359 +1366,205 @@
     });
 
     function checkAdminAccess(callback) {
-      if (mpptAdminUnlocked) {
-        callback();
-      } else {
+      if (mpptAdminUnlocked) callback();
+      else {
         showCustomPasswordPrompt((inputPassword) => {
           if (inputPassword === "hanya kita saja") {
             mpptAdminUnlocked = true;
             callback();
-          } else if (inputPassword !== null) {
-            alert("Password Salah!");
-          }
+          } else if (inputPassword !== null) alert("Password Salah!");
         });
       }
     }
 
-    function setMode(isManual) {
-      controlRef.update({ mode_manual: isManual });
-    }
-
-    function handleManualClick() {
-      checkAdminAccess(() => {
-        setMode(true);
-      });
-    }
-
-    function handleMpptSelectionClick() {
-      checkAdminAccess(() => {
-        if (currentModeManual) {
-          controlRef.update({ mode_manual: false });
-        }
-        openMpptSelectionModal();
-      });
-    }
-
-    function handleParameterMpptClick() {
-      checkAdminAccess(() => {
-        openParameterMpptModal();
-      });
-    }
+    function setMode(isManual) { controlRef.update({ mode_manual: isManual }); }
+    function handleManualClick() { checkAdminAccess(() => setMode(true)); }
+    function handleMpptSelectionClick() { checkAdminAccess(() => { if (currentModeManual) controlRef.update({ mode_manual: false }); openMpptSelectionModal(); }); }
+    function handleParameterMpptClick() { checkAdminAccess(() => openParameterMpptModal()); }
 
     function openMpptSelectionModal() {
       let overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
-      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
-
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.textAlign = "center"; box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "320px";
-
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:320px;color:${getCssVar('--text-color')};`;
       let title = document.createElement("h3");
-      title.innerText = "Pilih Metode MPPT"; title.style.marginBottom = "20px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px";
-
+      title.innerText = "Pilih Metode MPPT"; title.style.cssText = `margin-bottom:20px;color:#0284c7;font-size:18px;`;
       let btnContainer = document.createElement("div");
-      btnContainer.style.display = "flex"; btnContainer.style.flexDirection = "column"; btnContainer.style.gap = "12px";
+      btnContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
-      const options = [
-        { label: "P and O", val: 0 },
-        { label: "InC", val: 1 }
-      ];
-
-      options.forEach(opt => {
+      [{ label: "P and O", val: 0 }, { label: "InC", val: 1 }].forEach(opt => {
         let btn = document.createElement("button");
         btn.innerText = opt.label;
-        btn.style.padding = "12px"; btn.style.borderRadius = "6px"; btn.style.border = "1px solid " + getCssVar('--btn-blue-bg');
-        btn.style.background = getCssVar('--card-inner-bg'); btn.style.color = getCssVar('--btn-blue-bg');
-        btn.style.fontWeight = "bold"; btn.style.cursor = "pointer";
-
-        btn.onclick = () => {
-          controlRef.update({ 
-            MODE_OPERASI_MPPT: opt.val,
-            mode_manual: false 
-          });
-          document.body.removeChild(overlay);
-        };
+        btn.style.cssText = `padding:12px;border-radius:6px;border:1px solid #0284c7;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;`;
+        btn.onclick = () => { controlRef.update({ MODE_OPERASI_MPPT: opt.val, mode_manual: false }); document.body.removeChild(overlay); };
         btnContainer.appendChild(btn);
       });
 
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.marginTop = "8px"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
-      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
-      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+      btnCancel.innerText = "Batal";
+      btnCancel.style.cssText = `margin-top:8px;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.onclick = () => document.body.removeChild(overlay);
 
-      box.appendChild(title);
-      box.appendChild(btnContainer);
-      box.appendChild(btnCancel);
-      overlay.appendChild(box);
+      box.appendChild(title); box.appendChild(btnContainer); box.appendChild(btnCancel); overlay.appendChild(box);
       document.body.appendChild(overlay);
     }
 
     function openParameterMpptModal() {
       let overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
-      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
-
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.textAlign = "center"; box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "340px";
-
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:340px;color:${getCssVar('--text-color')};`;
       let title = document.createElement("h3");
-      title.innerText = "Parameter MPPT"; title.style.marginBottom = "20px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px";
-
+      title.innerText = "Parameter MPPT"; title.style.cssText = `margin-bottom:20px;color:#0284c7;font-size:18px;`;
       let btnContainer = document.createElement("div");
-      btnContainer.style.display = "flex"; btnContainer.style.flexDirection = "column"; btnContainer.style.gap = "12px";
+      btnContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
-      const paramOptions = [
-        { 
-          label: "Parameter P&O (Perturb and Observe)",
-          action: () => {
-            document.body.removeChild(overlay);
-            openParameterPoModal();
-          }
-        },
-        { 
-          label: "Parameter InC (Incremental Conductance)",
-          action: () => {
-            document.body.removeChild(overlay);
-            openParameterInCModal();
-          }
-        },
-        { 
-          label: "Jumlah Sampel Sensor",
-          action: () => {
-            document.body.removeChild(overlay);
-            openParameterStatistikSensorModal();
-          }
-        }
-      ];
-
-      paramOptions.forEach(opt => {
+      [
+        { label: "Parameter P&O", action: () => { document.body.removeChild(overlay); openParameterPoModal(); } },
+        { label: "Parameter InC", action: () => { document.body.removeChild(overlay); openParameterInCModal(); } },
+        { label: "Jumlah Sampel Sensor", action: () => { document.body.removeChild(overlay); openParameterStatistikSensorModal(); } }
+      ].forEach(opt => {
         let btn = document.createElement("button");
         btn.innerText = opt.label;
-        btn.style.padding = "12px"; btn.style.borderRadius = "6px"; btn.style.border = "1px solid " + getCssVar('--btn-blue-bg');
-        btn.style.background = getCssVar('--card-inner-bg'); btn.style.color = getCssVar('--btn-blue-bg');
-        btn.style.fontWeight = "bold"; btn.style.cursor = "pointer";
-
+        btn.style.cssText = `padding:12px;border-radius:6px;border:1px solid #0284c7;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;`;
         btn.onclick = opt.action;
         btnContainer.appendChild(btn);
       });
 
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.marginTop = "8px"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
-      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
-      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+      btnCancel.innerText = "Batal";
+      btnCancel.style.cssText = `margin-top:8px;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.onclick = () => document.body.removeChild(overlay);
 
-      box.appendChild(title);
-      box.appendChild(btnContainer);
-      box.appendChild(btnCancel);
-      overlay.appendChild(box);
+      box.appendChild(title); box.appendChild(btnContainer); box.appendChild(btnCancel); overlay.appendChild(box);
       document.body.appendChild(overlay);
     }
 
     function openParameterPoModal() {
       let overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
-      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
-
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "520px"; box.style.maxHeight = "90vh"; box.style.overflowY = "auto";
-
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:520px;max-height:90vh;overflow-y:auto;`;
       let title = document.createElement("h3");
-      title.innerText = "Parameter P&O (Perturb and Observe)"; title.style.marginBottom = "15px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px"; title.style.textAlign = "center";
-
+      title.innerText = "Parameter P&O"; title.style.cssText = `margin-bottom:15px;color:#0284c7;font-size:18px;text-align:center;`;
       let formContainer = document.createElement("div");
-      formContainer.style.display = "flex"; formContainer.style.flexDirection = "column"; formContainer.style.gap = "12px";
+      formContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
       const inputsConfig = [
-        { id: "po-proporsi-p-and-o", label: "PROPORSI_P_AND_O", firebaseKey: "PROPORSI_P_AND_O", type: "number", step: "any" },
-        { id: "po-perubahan-teg-min", label: "PERUBAHAN_TEG_MIN_P_AND_O", firebaseKey: "PERUBAHAN_TEG_MIN_P_AND_O", type: "number", step: "any" },
-        { id: "po-perubahan-daya-min", label: "PERUBAHAN_DAYA_MIN_P_AND_O", firebaseKey: "PERUBAHAN_DAYA_MIN_P_AND_O", type: "number", step: "any" },
-        { id: "po-batas-atas-step", label: "BATAS_ATAS_STEP_P_AND_O", firebaseKey: "BATAS_ATAS_STEP_P_AND_O", type: "number", step: "any" },
-        { id: "po-batas-bawah-step", label: "BATAS_BAWAH_STEP_P_AND_O", firebaseKey: "BATAS_BAWAH_STEP_P_AND_O", type: "number", step: "any" }
+        { id: "po-proporsi-p-and-o", label: "PROPORSI_P_AND_O", firebaseKey: "PROPORSI_P_AND_O" },
+        { id: "po-perubahan-teg-min", label: "PERUBAHAN_TEG_MIN_P_AND_O", firebaseKey: "PERUBAHAN_TEG_MIN_P_AND_O" },
+        { id: "po-perubahan-daya-min", label: "PERUBAHAN_DAYA_MIN_P_AND_O", firebaseKey: "PERUBAHAN_DAYA_MIN_P_AND_O" },
+        { id: "po-batas-atas-step", label: "BATAS_ATAS_STEP_P_AND_O", firebaseKey: "BATAS_ATAS_STEP_P_AND_O" },
+        { id: "po-batas-bawah-step", label: "BATAS_BAWAH_STEP_P_AND_O", firebaseKey: "BATAS_BAWAH_STEP_P_AND_O" }
       ];
 
       database.ref("/mppt_control").once("value", (snapshot) => {
         const val = snapshot.val() || {};
-
         inputsConfig.forEach(item => {
           let group = document.createElement("div");
-          group.style.display = "flex"; group.style.flexDirection = "column"; group.style.gap = "4px";
-
+          group.style.cssText = "display:flex;flex-direction:column;gap:4px;";
           let lbl = document.createElement("label");
           lbl.innerText = item.label;
-          lbl.style.fontSize = "13px"; lbl.style.fontWeight = "bold"; lbl.style.color = getCssVar('--text-color');
-
+          lbl.style.cssText = "font-size:13px;font-weight:bold;";
           let rowFlex = document.createElement("div");
-          rowFlex.style.display = "flex"; rowFlex.style.gap = "8px"; rowFlex.style.alignItems = "center";
+          rowFlex.style.cssText = "display:flex;gap:8px;align-items:center;";
 
           let fbValSpan = document.createElement("span");
           let rawFbVal = val[item.firebaseKey];
-          let formattedFbVal = (rawFbVal !== undefined && !isNaN(rawFbVal)) ? Number(rawFbVal).toFixed(6) : "0.000000";
-          fbValSpan.innerText = formattedFbVal;
-          fbValSpan.style.minWidth = "110px";
-          fbValSpan.style.padding = "8px";
-          fbValSpan.style.background = getCssVar('--card-bg');
-          fbValSpan.style.border = "1px solid " + getCssVar('--border-color');
-          fbValSpan.style.borderRadius = "6px";
-          fbValSpan.style.fontSize = "13px";
-          fbValSpan.style.fontWeight = "bold";
-          fbValSpan.style.color = getCssVar('--realtime-value-color');
-          fbValSpan.style.textAlign = "center";
+          fbValSpan.innerText = (rawFbVal !== undefined && !isNaN(rawFbVal)) ? Number(rawFbVal).toFixed(6) : "0.000000";
+          fbValSpan.style.cssText = `min-width:110px;padding:8px;background:${getCssVar('--card-bg')};border:1px solid ${getCssVar('--border-color')};border-radius:6px;font-size:13px;font-weight:bold;color:${getCssVar('--realtime-value-color')};text-align:center;`;
 
           let input = document.createElement("input");
-          input.type = item.type || "text";
-          input.id = item.id;
-          if (item.step) input.step = item.step;
-          input.style.flex = "1";
-          input.style.padding = "8px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color');
-          input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "14px";
+          input.type = "number"; input.id = item.id; input.step = "any";
+          input.style.cssText = `flex:1;padding:8px;border-radius:6px;border:1px solid ${getCssVar('--border-color')};background:${getCssVar('--card-inner-bg')};color:${getCssVar('--text-color')};font-size:14px;`;
+          if (rawFbVal !== undefined) input.value = rawFbVal;
 
-          if (rawFbVal !== undefined) {
-            input.value = rawFbVal;
-          }
-
-          rowFlex.appendChild(fbValSpan);
-          rowFlex.appendChild(input);
-          group.appendChild(lbl);
-          group.appendChild(rowFlex);
+          rowFlex.appendChild(fbValSpan); rowFlex.appendChild(input);
+          group.appendChild(lbl); group.appendChild(rowFlex);
           formContainer.appendChild(group);
         });
       });
 
       let btnContainer = document.createElement("div");
-      btnContainer.style.display = "flex"; btnContainer.style.gap = "10px"; btnContainer.style.marginTop = "15px";
-
+      btnContainer.style.cssText = "display:flex;gap:10px;margin-top:15px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
-      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
-      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.onclick = () => document.body.removeChild(overlay);
 
       let btnSave = document.createElement("button");
-      btnSave.innerText = "Simpan"; btnSave.style.flex = "1"; btnSave.style.padding = "10px"; btnSave.style.borderRadius = "6px"; btnSave.style.border = "none";
-      btnSave.style.background = getCssVar('--btn-blue-bg'); btnSave.style.color = "#ffffff"; btnSave.style.fontWeight = "bold"; btnSave.style.cursor = "pointer";
-      
+      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
       btnSave.onclick = () => {
         let v1 = parseFloat(document.getElementById("po-proporsi-p-and-o").value);
         let v2 = parseFloat(document.getElementById("po-perubahan-teg-min").value);
         let v3 = parseFloat(document.getElementById("po-perubahan-daya-min").value);
         let v4 = parseFloat(document.getElementById("po-batas-atas-step").value);
         let v5 = parseFloat(document.getElementById("po-batas-bawah-step").value);
-
-        if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5)) {
-          alert("Semua kolom parameter harus diisi dengan angka yang valid!");
-          return;
-        }
-
+        if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5)) { alert("Isi semua angka dengan valid!"); return; }
         database.ref("/mppt_control").update({
-          "PROPORSI_P_AND_O": v1,
-          "PERUBAHAN_TEG_MIN_P_AND_O": v2,
-          "PERUBAHAN_DAYA_MIN_P_AND_O": v3,
-          "BATAS_ATAS_STEP_P_AND_O": v4,
-          "BATAS_BAWAH_STEP_P_AND_O": v5,
-          timestamp: Date.now()
-        }).then(() => {
-          alert("Parameter P&O berhasil disimpan!");
-          document.body.removeChild(overlay);
-        }).catch((error) => {
-          alert("Gagal menyimpan parameter: " + error.message);
-        });
+          "PROPORSI_P_AND_O": v1, "PERUBAHAN_TEG_MIN_P_AND_O": v2, "PERUBAHAN_DAYA_MIN_P_AND_O": v3,
+          "BATAS_ATAS_STEP_P_AND_O": v4, "BATAS_BAWAH_STEP_P_AND_O": v5, timestamp: Date.now()
+        }).then(() => { alert("Berhasil disimpan!"); document.body.removeChild(overlay); });
       };
 
-      btnContainer.appendChild(btnCancel);
-      btnContainer.appendChild(btnSave);
-      box.appendChild(title);
-      box.appendChild(formContainer);
-      box.appendChild(btnContainer);
-      overlay.appendChild(box);
+      btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnSave);
+      box.appendChild(title); box.appendChild(formContainer); box.appendChild(btnContainer); overlay.appendChild(box);
       document.body.appendChild(overlay);
     }
 
     function openParameterInCModal() {
       let overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
-      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
-
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "520px"; box.style.maxHeight = "90vh"; box.style.overflowY = "auto";
-
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:520px;max-height:90vh;overflow-y:auto;`;
       let title = document.createElement("h3");
-      title.innerText = "Parameter InC (Incremental Conductance)"; title.style.marginBottom = "15px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px"; title.style.textAlign = "center";
-
+      title.innerText = "Parameter InC"; title.style.cssText = `margin-bottom:15px;color:#0284c7;font-size:18px;text-align:center;`;
       let formContainer = document.createElement("div");
-      formContainer.style.display = "flex"; formContainer.style.flexDirection = "column"; formContainer.style.gap = "12px";
+      formContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
       const inputsConfig = [
-        { id: "inc-proporsi", label: "PROPORSI_INC", firebaseKey: "PROPORSI_INC", type: "number", step: "any" },
-        { id: "inc-batas-atas-step", label: "BATAS_ATAS_STEP_INC", firebaseKey: "BATAS_ATAS_STEP_INC", type: "number", step: "any" },
-        { id: "inc-batas-bawah-step", label: "BATAS_BAWAH_STEP_INC", firebaseKey: "BATAS_BAWAH_STEP_INC", type: "number", step: "any" },
-        { id: "inc-perubahan-teg-min", label: "PERUBAHAN_TEG_MIN_INC", firebaseKey: "PERUBAHAN_TEG_MIN_INC", type: "number", step: "any" },
-        { id: "inc-perubahan-arus-min", label: "PERUBAHAN_ARUS_MIN_INC", firebaseKey: "PERUBAHAN_ARUS_MIN_INC", type: "number", step: "any" },
-        { id: "inc-teg-min", label: "TEG_MIN_INC", firebaseKey: "TEG_MIN_INC", type: "number", step: "any" }
+        { id: "inc-proporsi", label: "PROPORSI_INC", firebaseKey: "PROPORSI_INC" },
+        { id: "inc-batas-atas-step", label: "BATAS_ATAS_STEP_INC", firebaseKey: "BATAS_ATAS_STEP_INC" },
+        { id: "inc-batas-bawah-step", label: "BATAS_BAWAH_STEP_INC", firebaseKey: "BATAS_BAWAH_STEP_INC" },
+        { id: "inc-perubahan-teg-min", label: "PERUBAHAN_TEG_MIN_INC", firebaseKey: "PERUBAHAN_TEG_MIN_INC" },
+        { id: "inc-perubahan-arus-min", label: "PERUBAHAN_ARUS_MIN_INC", firebaseKey: "PERUBAHAN_ARUS_MIN_INC" },
+        { id: "inc-teg-min", label: "TEG_MIN_INC", firebaseKey: "TEG_MIN_INC" }
       ];
 
       database.ref("/mppt_control").once("value", (snapshot) => {
         const val = snapshot.val() || {};
-
         inputsConfig.forEach(item => {
           let group = document.createElement("div");
-          group.style.display = "flex"; group.style.flexDirection = "column"; group.style.gap = "4px";
-
+          group.style.cssText = "display:flex;flex-direction:column;gap:4px;";
           let lbl = document.createElement("label");
           lbl.innerText = item.label;
-          lbl.style.fontSize = "13px"; lbl.style.fontWeight = "bold"; lbl.style.color = getCssVar('--text-color');
-
+          lbl.style.cssText = "font-size:13px;font-weight:bold;";
           let rowFlex = document.createElement("div");
-          rowFlex.style.display = "flex"; rowFlex.style.gap = "8px"; rowFlex.style.alignItems = "center";
+          rowFlex.style.cssText = "display:flex;gap:8px;align-items:center;";
 
           let fbValSpan = document.createElement("span");
           let rawFbVal = val[item.firebaseKey];
-          let formattedFbVal = (rawFbVal !== undefined && !isNaN(rawFbVal)) ? Number(rawFbVal).toFixed(6) : "0.000000";
-          fbValSpan.innerText = formattedFbVal;
-          fbValSpan.style.minWidth = "110px";
-          fbValSpan.style.padding = "8px";
-          fbValSpan.style.background = getCssVar('--card-bg');
-          fbValSpan.style.border = "1px solid " + getCssVar('--border-color');
-          fbValSpan.style.borderRadius = "6px";
-          fbValSpan.style.fontSize = "13px";
-          fbValSpan.style.fontWeight = "bold";
-          fbValSpan.style.color = getCssVar('--realtime-value-color');
-          fbValSpan.style.textAlign = "center";
+          fbValSpan.innerText = (rawFbVal !== undefined && !isNaN(rawFbVal)) ? Number(rawFbVal).toFixed(6) : "0.000000";
+          fbValSpan.style.cssText = `min-width:110px;padding:8px;background:${getCssVar('--card-bg')};border:1px solid ${getCssVar('--border-color')};border-radius:6px;font-size:13px;font-weight:bold;color:${getCssVar('--realtime-value-color')};text-align:center;`;
 
           let input = document.createElement("input");
-          input.type = item.type || "text";
-          input.id = item.id;
-          if (item.step) input.step = item.step;
-          input.style.flex = "1";
-          input.style.padding = "8px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color');
-          input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "14px";
+          input.type = "number"; input.id = item.id; input.step = "any";
+          input.style.cssText = `flex:1;padding:8px;border-radius:6px;border:1px solid ${getCssVar('--border-color')};background:${getCssVar('--card-inner-bg')};color:${getCssVar('--text-color')};font-size:14px;`;
+          if (rawFbVal !== undefined) input.value = rawFbVal;
 
-          if (rawFbVal !== undefined) {
-            input.value = rawFbVal;
-          }
-
-          rowFlex.appendChild(fbValSpan);
-          rowFlex.appendChild(input);
-          group.appendChild(lbl);
-          group.appendChild(rowFlex);
+          rowFlex.appendChild(fbValSpan); rowFlex.appendChild(input);
+          group.appendChild(lbl); group.appendChild(rowFlex);
           formContainer.appendChild(group);
         });
       });
 
       let btnContainer = document.createElement("div");
-      btnContainer.style.display = "flex"; btnContainer.style.gap = "10px"; btnContainer.style.marginTop = "15px";
-
+      btnContainer.style.cssText = "display:flex;gap:10px;margin-top:15px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
-      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
-      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.onclick = () => document.body.removeChild(overlay);
 
       let btnSave = document.createElement("button");
-      btnSave.innerText = "Simpan"; btnSave.style.flex = "1"; btnSave.style.padding = "10px"; btnSave.style.borderRadius = "6px"; btnSave.style.border = "none";
-      btnSave.style.background = getCssVar('--btn-blue-bg'); btnSave.style.color = "#ffffff"; btnSave.style.fontWeight = "bold"; btnSave.style.cursor = "pointer";
-      
+      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
       btnSave.onclick = () => {
         let v1 = parseFloat(document.getElementById("inc-proporsi").value);
         let v2 = parseFloat(document.getElementById("inc-batas-atas-step").value);
@@ -1763,147 +1572,78 @@
         let v4 = parseFloat(document.getElementById("inc-perubahan-teg-min").value);
         let v5 = parseFloat(document.getElementById("inc-perubahan-arus-min").value);
         let v6 = parseFloat(document.getElementById("inc-teg-min").value);
-
-        if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5) || isNaN(v6)) {
-          alert("Semua kolom parameter harus diisi dengan angka yang valid!");
-          return;
-        }
-
+        if (isNaN(v1) || isNaN(v2) || isNaN(v3) || isNaN(v4) || isNaN(v5) || isNaN(v6)) { alert("Isi semua angka dengan valid!"); return; }
         database.ref("/mppt_control").update({
-          "PROPORSI_INC": v1,
-          "BATAS_ATAS_STEP_INC": v2,
-          "BATAS_BAWAH_STEP_INC": v3,
-          "PERUBAHAN_TEG_MIN_INC": v4,
-          "PERUBAHAN_ARUS_MIN_INC": v5,
-          "TEG_MIN_INC": v6,
-          timestamp: Date.now()
-        }).then(() => {
-          alert("Parameter InC berhasil disimpan!");
-          document.body.removeChild(overlay);
-        }).catch((error) => {
-          alert("Gagal menyimpan parameter: " + error.message);
-        });
+          "PROPORSI_INC": v1, "BATAS_ATAS_STEP_INC": v2, "BATAS_BAWAH_STEP_INC": v3,
+          "PERUBAHAN_TEG_MIN_INC": v4, "PERUBAHAN_ARUS_MIN_INC": v5, "TEG_MIN_INC": v6, timestamp: Date.now()
+        }).then(() => { alert("Berhasil disimpan!"); document.body.removeChild(overlay); });
       };
 
-      btnContainer.appendChild(btnCancel);
-      btnContainer.appendChild(btnSave);
-      box.appendChild(title);
-      box.appendChild(formContainer);
-      box.appendChild(btnContainer);
-      overlay.appendChild(box);
+      btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnSave);
+      box.appendChild(title); box.appendChild(formContainer); box.appendChild(btnContainer); overlay.appendChild(box);
       document.body.appendChild(overlay);
     }
 
     function openParameterStatistikSensorModal() {
       let overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
-      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
-
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "420px";
-
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:420px;`;
       let title = document.createElement("h3");
-      title.innerText = "Jumlah Sampel Sensor"; title.style.marginBottom = "15px"; title.style.color = getCssVar('--primary-color'); title.style.fontSize = "18px"; title.style.textAlign = "center";
-
+      title.innerText = "Jumlah Sampel Sensor"; title.style.cssText = `margin-bottom:15px;color:#0284c7;font-size:18px;text-align:center;`;
       let formContainer = document.createElement("div");
-      formContainer.style.display = "flex"; formContainer.style.flexDirection = "column"; formContainer.style.gap = "12px";
+      formContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
-      const inputsConfig = [
-        { id: "stat-jumlah-sampel", label: "JUMLAH_SAMPEL", firebaseKey: "JUMLAH_SAMPEL", type: "number" }
-      ];
+      let group = document.createElement("div");
+      group.style.cssText = "display:flex;flex-direction:column;gap:4px;";
+      let lbl = document.createElement("label");
+      lbl.innerText = "JUMLAH_SAMPEL"; lbl.style.cssText = "font-size:13px;font-weight:bold;";
+      let input = document.createElement("input");
+      input.type = "number"; input.id = "stat-jumlah-sampel";
+      input.style.cssText = `width:100%;padding:8px;border-radius:6px;border:1px solid ${getCssVar('--border-color')};background:${getCssVar('--card-inner-bg')};color:${getCssVar('--text-color')};font-size:14px;`;
 
-      database.ref("/mppt_control").once("value", (snapshot) => {
-        const val = snapshot.val() || {};
-
-        inputsConfig.forEach(item => {
-          let group = document.createElement("div");
-          group.style.display = "flex"; group.style.flexDirection = "column"; group.style.gap = "4px";
-
-          let lbl = document.createElement("label");
-          lbl.innerText = item.label;
-          lbl.style.fontSize = "13px"; lbl.style.fontWeight = "bold"; lbl.style.color = getCssVar('--text-color');
-
-          let input = document.createElement("input");
-          input.type = item.type;
-          input.id = item.id;
-          input.style.width = "100%";
-          input.style.padding = "8px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color');
-          input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "14px";
-
-          if (val[item.firebaseKey] !== undefined) {
-            input.value = val[item.firebaseKey];
-          }
-
-          group.appendChild(lbl);
-          group.appendChild(input);
-          formContainer.appendChild(group);
-        });
+      database.ref("/mppt_control/JUMLAH_SAMPEL").once("value", (snap) => {
+        if (snap.exists()) input.value = snap.val();
       });
 
-      let btnContainer = document.createElement("div");
-      btnContainer.style.display = "flex"; btnContainer.style.gap = "10px"; btnContainer.style.marginTop = "15px";
+      group.appendChild(lbl); group.appendChild(input); formContainer.appendChild(group);
 
+      let btnContainer = document.createElement("div");
+      btnContainer.style.cssText = "display:flex;gap:10px;margin-top:15px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none";
-      btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
-      btnCancel.onclick = () => { document.body.removeChild(overlay); };
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.onclick = () => document.body.removeChild(overlay);
 
       let btnSave = document.createElement("button");
-      btnSave.innerText = "Simpan"; btnSave.style.flex = "1"; btnSave.style.padding = "10px"; btnSave.style.borderRadius = "6px"; btnSave.style.border = "none";
-      btnSave.style.background = getCssVar('--btn-blue-bg'); btnSave.style.color = "#ffffff"; btnSave.style.fontWeight = "bold"; btnSave.style.cursor = "pointer";
-      
+      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
       btnSave.onclick = () => {
         let v1 = parseFloat(document.getElementById("stat-jumlah-sampel").value);
-
-        if (isNaN(v1)) {
-          alert("Kolom jumlah sampel harus diisi dengan angka yang valid!");
-          return;
-        }
-
-        database.ref("/mppt_control").update({
-          "JUMLAH_SAMPEL": v1,
-          timestamp: Date.now()
-        }).then(() => {
-          alert("Jumlah Sampel Sensor berhasil disimpan!");
-          document.body.removeChild(overlay);
-        }).catch((error) => {
-          alert("Gagal menyimpan parameter: " + error.message);
-        });
+        if (isNaN(v1)) { alert("Isi angka dengan valid!"); return; }
+        database.ref("/mppt_control").update({ "JUMLAH_SAMPEL": v1, timestamp: Date.now() })
+          .then(() => { alert("Berhasil disimpan!"); document.body.removeChild(overlay); });
       };
 
-      btnContainer.appendChild(btnCancel);
-      btnContainer.appendChild(btnSave);
-      box.appendChild(title);
-      box.appendChild(formContainer);
-      box.appendChild(btnContainer);
-      overlay.appendChild(box);
+      btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnSave);
+      box.appendChild(title); box.appendChild(formContainer); box.appendChild(btnContainer); overlay.appendChild(box);
       document.body.appendChild(overlay);
-    }    
+    }
 
     function showCustomPasswordPrompt(callback) {
       let overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
-      overlay.style.backgroundColor = "rgba(0,0,0,0.6)"; overlay.style.display = "flex"; overlay.style.justifyContent = "center"; overlay.style.alignItems = "center"; overlay.style.zIndex = "9999";
-
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.background = getCssVar('--card-bg'); box.style.padding = "25px"; box.style.borderRadius = "12px"; box.style.border = "1px solid " + getCssVar('--border-color'); box.style.textAlign = "center"; box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)"; box.style.color = getCssVar('--text-color'); box.style.width = "320px";
-
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:320px;color:${getCssVar('--text-color')};`;
       let title = document.createElement("p");
-      title.innerText = "Masukkan Password:"; title.style.marginBottom = "12px"; title.style.fontWeight = "600"; title.style.fontSize = "16px";
-
+      title.innerText = "Masukkan Password:"; title.style.cssText = "margin-bottom:12px;font-weight:600;font-size:16px;";
       let input = document.createElement("input");
-      input.type = "password"; input.style.width = "100%"; input.style.padding = "10px"; input.style.marginBottom = "18px"; input.style.borderRadius = "6px"; input.style.border = "1px solid " + getCssVar('--border-color'); input.style.background = getCssVar('--card-inner-bg'); input.style.color = getCssVar('--text-color'); input.style.fontSize = "16px";
-
+      input.type = "password"; input.style.cssText = `width:100%;padding:10px;margin-bottom:18px;border-radius:6px;border:1px solid ${getCssVar('--border-color')};background:${getCssVar('--card-inner-bg')};color:${getCssVar('--text-color')};font-size:16px;`;
+      
       let btnContainer = document.createElement("div");
-      btnContainer.style.display = "flex"; btnContainer.style.justifyContent = "space-between"; btnContainer.style.gap = "10px";
-
+      btnContainer.style.cssText = "display:flex;justify-content:space-between;gap:10px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.flex = "1"; btnCancel.style.padding = "10px"; btnCancel.style.borderRadius = "6px"; btnCancel.style.border = "none"; btnCancel.style.background = getCssVar('--border-color'); btnCancel.style.color = getCssVar('--text-color'); btnCancel.style.fontWeight = "bold"; btnCancel.style.cursor = "pointer";
-
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
       let btnSubmit = document.createElement("button");
-      btnSubmit.innerText = "OK"; btnSubmit.style.flex = "1"; btnSubmit.style.padding = "10px"; btnSubmit.style.borderRadius = "6px"; btnSubmit.style.border = "none"; btnSubmit.style.background = document.body.classList.contains('light-mode') ? '#0284c7' : '#0284c7'; btnSubmit.style.color = "#ffffff"; btnSubmit.style.fontWeight = "bold"; btnSubmit.style.cursor = "pointer";
+      btnSubmit.innerText = "OK"; btnSubmit.style.cssText = "flex:1;padding:10px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
 
       btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnSubmit);
       box.appendChild(title); box.appendChild(input); box.appendChild(btnContainer); overlay.appendChild(box);
@@ -1911,35 +1651,67 @@
       input.focus();
 
       function closePrompt(val) { document.body.removeChild(overlay); callback(val); }
-      btnSubmit.onclick = function() { closePrompt(input.value); };
-      btnCancel.onclick = function() { closePrompt(null); };
-      input.onkeydown = function(e) {
-        if (e.key === "Enter") closePrompt(input.value);
-        else if (e.key === "Escape") closePrompt(null);
-      };
+      btnSubmit.onclick = () => closePrompt(input.value);
+      btnCancel.onclick = () => closePrompt(null);
+      input.onkeydown = (e) => { if (e.key === "Enter") closePrompt(input.value); else if (e.key === "Escape") closePrompt(null); };
     }
 
     function updateSliderLabel(val) { document.getElementById("lbl-slider-val").innerText = val + "%"; }
     function sendDutyToFirebase(val) { controlRef.update({ duty_manual: parseFloat(val) }); }
 
+    const timeScaleOptions = {
+      xAxes: [{ 
+        type: 'time',
+        time: {
+          parser: 'YYYY-MM-DD HH:mm:ss',
+          tooltipFormat: 'DD-MM-YYYY HH:mm:ss',
+          unit: 'minute',
+          displayFormats: {
+            second: 'HH:mm:ss',
+            minute: 'HH:mm:ss',
+            hour: 'HH:mm:ss'
+          }
+        },
+        ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, autoSkip: true, maxTicksLimit: 15 }, 
+        gridLines: { color: 'rgba(255,255,255,0.15)', offsetGridLines: false } 
+      }]
+    };
+
+    const ctxRealtimeEnergi = document.getElementById('chartRealtimeEnergi').getContext('2d');
+    const chartRealtimeEnergi = new Chart(ctxRealtimeEnergi, {
+      type: 'line',
+      data: { energyHighlights: [], datasets: [
+        { label: 'Energi Matahari (Wh/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y' },
+        { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false, enableEnergyHighlights: true,
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        scales: {
+          xAxes: timeScaleOptions.xAxes,
+          yAxes: [
+            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+          ]
+        }
+      }
+    });
+
     const ctxVI = document.getElementById('chartVI').getContext('2d');
     const chartVI = new Chart(ctxVI, {
       type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          { label: 'Tegangan (V)', borderColor: getCssVar('--color-v'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' },
-          { label: 'Arus (A)', borderColor: getCssVar('--color-i'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y1' }
-        ]
-      },
+      data: { datasets: [
+        { label: 'Tegangan (V)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y' },
+        { label: 'Arus (A)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
+      ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-v'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
-            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-i'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -1948,21 +1720,18 @@
     const ctxDayaIrr = document.getElementById('chartDayaIrradiance').getContext('2d');
     const chartDayaIrr = new Chart(ctxDayaIrr, {
       type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          { label: 'Daya (W)', borderColor: getCssVar('--color-p'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' },
-          { label: 'Iradiansi (W/m²)', borderColor: getCssVar('--color-irr'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y1' }
-        ]
-      },
+      data: { datasets: [
+        { label: 'Iradiansi (W/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y' },
+        { label: 'Daya (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
+      ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
-            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -1972,131 +1741,91 @@
     const chartDutyCycle = new Chart(ctxDutyCycle, {
       type: 'line',
       data: {
-        labels: [],
         boundaryIndices: [],
         datasets: [
-          { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', fill: false, data: [], pointRadius: 0, showLine: false },
-          { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', fill: false, data: [], pointRadius: 0, showLine: false },
-          { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', fill: false, data: [], pointRadius: 0, showLine: false },
-          { 
-            label: 'DutyCycleData', 
-            borderColor: '#0284c7', 
-            backgroundColor: 'transparent', 
-            fill: false, 
-            data: [], 
-            modes: [],
-            borderWidth: 2, 
-            pointRadius: 2, 
-            pointHoverRadius: 4, 
-            showLine: false, 
-            pointBackgroundColor: function(context) {
-              var idx = context.dataIndex;
-              var mode = context.dataset.modes && context.dataset.modes[idx];
-              if (mode === 'MANUAL') return '#ff5252';
-              if (mode === 'INC') return '#00e676';
-              return '#0284c7';
-            } 
+          { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', data: [], showLine: false },
+          { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', data: [], showLine: false },
+          { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', data: [], showLine: false },
+          { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, showLine: false,
+            pointBackgroundColor: function(c) {
+              let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
+              return m === 'MANUAL' ? '#ff5252' : (m === 'INC' ? '#00e676' : '#0284c7');
+            }
           }
         ]
       },
       options: {
-        responsive: true, maintainAspectRatio: false,
-        customSegmentColoring: true,
-        legend: { 
-          labels: { 
-            fontColor: getLegendTextColor(), 
-            fontStyle: 'bold',
-            filter: function(legendItem, data) {
-              return legendItem.text !== 'DutyCycleData';
-            }
-          } 
-        },
+        responsive: true, maintainAspectRatio: false, customSegmentColoring: true,
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold', filter: (l) => l.text !== 'DutyCycleData' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
-          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getCssVar('--warning-color'), fontStyle: 'bold', beginAtZero: true, max: 100 }, gridLines: { color: getCssVar('--chart-grid') } }]
+          xAxes: timeScaleOptions.xAxes,
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: '#ff9800', fontStyle: 'bold', fontSize: 12, beginAtZero: true, max: 100 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
         }
       }
-    });    
+    });
 
     const ctxRealtimeAkumulasi = document.getElementById('chartRealtimeAkumulasi').getContext('2d');
     const chartRealtimeAkumulasi = new Chart(ctxRealtimeAkumulasi, {
       type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          { label: 'Daya Rata-rata (W)', borderColor: getCssVar('--color-p'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y' },
-          { label: 'Iradiansi Rata-rata (W/m²)', borderColor: getCssVar('--color-irr'), backgroundColor: 'transparent', fill: false, data: [], borderWidth: 2.5, lineTension: 0.2, pointRadius: 3, pointHoverRadius: 5, yAxisID: 'y1' }
-        ]
-      },
+      data: { datasets: [
+        { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y' },
+        { label: 'Daya Rata-rata (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
+      ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
-            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
     });
-      
-    function addDataToRealtimeCharts(label, v, i, p, irr, duty, energyWh, avgPower, avgIrr) {
+
+    function addDataToRealtimeCharts(timestamp, v, i, p, irr, duty, energyWh, energySunWh, avgPower, avgIrr) {
       const MAX_DATA = 30;
+      
+      chartVI.data.datasets[0].data.push({ x: timestamp, y: v });
+      chartVI.data.datasets[1].data.push({ x: timestamp, y: i });
+      
+      chartDayaIrr.data.datasets[0].data.push({ x: timestamp, y: irr });
+      chartDayaIrr.data.datasets[1].data.push({ x: timestamp, y: p });
 
-      chartVI.data.labels.push(label);
-      chartVI.data.datasets[0].data.push(v);
-      chartVI.data.datasets[1].data.push(i);
-
-      chartDayaIrr.data.labels.push(label);
-      chartDayaIrr.data.datasets[0].data.push(p);
-      chartDayaIrr.data.datasets[1].data.push(irr);
-
-      let currentMode = "PO"; 
+      let currentMode = "PO";
       if (latestRealtimeData) {
         let dbMode = latestRealtimeData.mode_operasi || "";
-        if (dbMode === "Man" || dbMode === "MANUAL" || latestRealtimeData.mode_manual === true) {
-          currentMode = "MANUAL";
-        } else if (dbMode === "InC" || dbMode === "INC") {
-          currentMode = "INC";
-        } else {
-          currentMode = "PO";
-        }
+        if (dbMode === "Man" || dbMode === "MANUAL" || latestRealtimeData.mode_manual === true) currentMode = "MANUAL";
+        else if (dbMode === "InC" || dbMode === "INC") currentMode = "INC";
       }
-
-      chartDutyCycle.data.labels.push(label);
-      chartDutyCycle.data.datasets[3].data.push(duty);
+      chartDutyCycle.data.datasets[3].data.push({ x: timestamp, y: duty });
       chartDutyCycle.data.datasets[3].modes.push(currentMode);
 
-      chartRealtimeAkumulasi.data.labels.push(label);
-      chartRealtimeAkumulasi.data.datasets[0].data.push(avgPower);
-      chartRealtimeAkumulasi.data.datasets[1].data.push(avgIrr);
+      chartRealtimeAkumulasi.data.datasets[0].data.push({ x: timestamp, y: avgIrr });
+      chartRealtimeAkumulasi.data.datasets[1].data.push({ x: timestamp, y: avgPower });
+      
+      chartRealtimeEnergi.data.datasets[0].data.push({ x: timestamp, y: energySunWh });
+      chartRealtimeEnergi.data.datasets[1].data.push({ x: timestamp, y: energyWh });
 
-      if (chartVI.data.labels.length > MAX_DATA) {
-        chartVI.data.labels.shift(); 
-        chartVI.data.datasets[0].data.shift(); 
-        chartVI.data.datasets[1].data.shift();
-      }
-      if (chartDayaIrr.data.labels.length > MAX_DATA) {
-        chartDayaIrr.data.labels.shift(); 
-        chartDayaIrr.data.datasets[0].data.shift(); 
-        chartDayaIrr.data.datasets[1].data.shift();
-      }
-      if (chartDutyCycle.data.labels.length > MAX_DATA) {
-        chartDutyCycle.data.labels.shift(); 
-        chartDutyCycle.data.datasets[3].data.shift(); 
-        chartDutyCycle.data.datasets[3].modes.shift();
-      }
-      if (chartRealtimeAkumulasi.data.labels.length > MAX_DATA) {
-        chartRealtimeAkumulasi.data.labels.shift(); 
-        chartRealtimeAkumulasi.data.datasets[0].data.shift(); 
-        chartRealtimeAkumulasi.data.datasets[1].data.shift();
-      }
+      [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartRealtimeEnergi].forEach(c => {
+        if (c.data.datasets[0].data.length > MAX_DATA) {
+          c.data.datasets.forEach(d => { if (d.data) d.data.shift(); if (d.modes) d.modes.shift(); });
+        }
+      });
 
-      chartVI.update(); 
-      chartDayaIrr.update(); 
-      chartDutyCycle.update(); 
-      chartRealtimeAkumulasi.update();
+      let highlights = [];
+      const len = chartRealtimeEnergi.data.datasets[1].data.length;
+      const energySunArr = chartRealtimeEnergi.data.datasets[0].data;
+      const energyPltsArr = chartRealtimeEnergi.data.datasets[1].data;
+      for (let idx = 1; idx < len; idx++) {
+        let xVal = energySunArr[idx].x;
+        if ((energySunArr[idx].y - energySunArr[idx - 1].y) < 1e-9) highlights.push({ xVal: xVal, type: 'pink' });
+        else if ((energyPltsArr[idx].y - energyPltsArr[idx - 1].y) < 1e-9) highlights.push({ xVal: xVal, type: 'yellow' });
+      }
+      chartRealtimeEnergi.data.energyHighlights = highlights;
+
+      [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartRealtimeEnergi].forEach(c => c.update());
     }
 
     const mpptRef = database.ref("/mppt_data");
@@ -2107,371 +1836,227 @@
     function decodeFirebasePushId(pushId) {
       if (!pushId || typeof pushId !== 'string') return 0;
       const PUSH_CHARS = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
-      let id = pushId.substring(0, 8);
-      let timestamp = 0;
-      for (let i = 0; i < id.length; i++) {
-        let c = id.charAt(i);
-        let index = PUSH_CHARS.indexOf(c);
-        if (index === -1) return 0;
-        timestamp = timestamp * 64 + index;
-      }
+      let id = pushId.substring(0, 8), timestamp = 0;
+      for (let i = 0; i < id.length; i++) timestamp = timestamp * 64 + PUSH_CHARS.indexOf(id.charAt(i));
       return timestamp;
     }
 
     function exportToCSV() {
-      const startVal = document.getElementById("startDate").value;
-      const endVal = document.getElementById("endDate").value;
-
+      const startVal = document.getElementById("startDate").value, endVal = document.getElementById("endDate").value;
       database.ref("/mppt_data").once("value", (snapshot) => {
-        let rows = [["stempel_waktu", "waktu_rtc", "tegangan", "arus", "daya", "daya_rata_rata", "energi_plts_watt_jam", "iradiansi", "iradiansi_rata_rata", "siklus_kerja", "mode_operasi"]];
-
+        let rows = [["stempel_waktu", "waktu_rtc", "tegangan", "arus", "daya", "daya_rata_rata", "energi_plts_watt_jam", "iradiansi", "iradiansi_rata_rata", "energi_matahari_watt_jam", "lama_jam_operasi", "siklus_kerja", "mode_operasi"]];
         snapshot.forEach((child) => {
           let item = child.val();
           if (!item) return;
-
-          let waktuRtc = item.waktu_rtc || "";
-          let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
-          
-          let formattedTanggalData = tanggalData;
-          if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
-            let parts = tanggalData.split("-");
-            if (parts.length === 3) {
-              formattedTanggalData = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
-          }
-
+          let waktuRtc = item.waktu_rtc || "", tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
+          let formattedTanggalData = tanggalData.includes("-") && tanggalData.indexOf("-") === 2 ? `${tanggalData.split("-")[2]}-${tanggalData.split("-")[1]}-${tanggalData.split("-")[0]}` : tanggalData;
           if (!startVal || !endVal || (formattedTanggalData >= startVal && formattedTanggalData <= endVal)) {
-            rows.push([
-              item.stempel_waktu || "",
-              item.waktu_rtc || "",
-              item.tegangan !== undefined ? item.tegangan : "",
-              item.arus !== undefined ? item.arus : "",
-              item.daya !== undefined ? item.daya : "",
-              item.daya_rata_rata !== undefined ? item.daya_rata_rata : "",
-              item.energi_plts_watt_jam !== undefined ? item.energi_plts_watt_jam : "",
-              item.iradiansi !== undefined ? item.iradiansi : "",
-              item.iradiansi_rata_rata !== undefined ? item.iradiansi_rata_rata : "",
-              item.siklus_kerja !== undefined ? item.siklus_kerja : "",
-              item.mode_operasi !== undefined ? item.mode_operasi : ""
-            ]);
+            rows.push([item.stempel_waktu||"", item.waktu_rtc||"", item.tegangan||"", item.arus||"", item.daya||"", item.daya_rata_rata||"", item.energi_plts_watt_jam||"", item.iradiansi||"", item.iradiansi_rata_rata||"", item.energi_matahari_watt_jam||"", item.lama_jam_operasi||"", item.siklus_kerja||"", item.mode_operasi||""]);
           }
         });
-
-        let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
-        let encodedUri = encodeURI(csvContent);
         let link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `data_mppt_${startVal}_hingga_${endVal}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        link.href = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+        link.download = `data_mppt_${startVal}_hingga_${endVal}.csv`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
       });
     }
 
     function exportTableToCSV() {
-      let table = document.getElementById("table-rekap-harian");
-      let rows = table.querySelectorAll("tr");
-      let csv = [];
-      
-      rows.forEach((row, rowIndex) => {
-        let cols = row.querySelectorAll("td, th");
+      let table = document.getElementById("table-rekap-harian"), csv = [];
+      table.querySelectorAll("tr").forEach(row => {
         let data = [];
-        
         if (row.parentElement.tagName === "TFOOT") {
-          data.push('"TOTAL / RATA-RATA / MAKS"');
-          data.push('""');
-          
-          let lamaOp = document.getElementById("foot-total-lama-operasi").innerText;
-          let ePlts = document.getElementById("foot-total-energi").innerText;
-          let dRata = document.getElementById("foot-avg-daya").innerText;
-          let dMaks = document.getElementById("foot-max-daya").innerText;
-          let iRata = document.getElementById("foot-avg-irr").innerText;
-          let iMaks = document.getElementById("foot-max-irr").innerText;
-          let eMat = document.getElementById("foot-total-energi-matahari").innerText;
-
-          data.push('"' + lamaOp + '"');
-          data.push('"' + ePlts + '"');
-          data.push('"' + dRata + '"');
-          data.push('"' + dMaks + '"');
-          data.push('"' + iRata + '"');
-          data.push('"' + iMaks + '"');
-          data.push('"' + eMat + '"');
-        } else {
-          cols.forEach(col => {
-            data.push('"' + col.innerText.replace(/"/g, '""') + '"');
+          data.push('"TOTAL / RATA-RATA / MAKS"', '""');
+          ['foot-total-lama-operasi', 'foot-total-energi', 'foot-avg-daya', 'foot-max-daya', 'foot-avg-irr', 'foot-max-irr', 'foot-total-energi-matahari'].forEach(id => {
+            data.push('"' + document.getElementById(id).innerText + '"');
           });
+        } else {
+          row.querySelectorAll("td, th").forEach(col => data.push('"' + col.innerText.replace(/"/g, '""') + '"'));
         }
-        
         csv.push(data.join(","));
       });
-
-      let csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
-      let encodedUri = encodeURI(csvContent);
       let link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "rekapitulasi_harian_mppt.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      link.href = "data:text/csv;charset=utf-8," + csv.join("\n");
+      link.download = "rekapitulasi_harian_mppt.csv";
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
     function processRealtimeData(data, pushKey) {
       if (!data) return;
-
       latestRealtimeData = data;
-
-      const v = data.tegangan !== undefined ? Number(data.tegangan) : 0;
-      const i = data.arus !== undefined ? Number(data.arus) : 0;
-      const p = data.daya !== undefined ? Number(data.daya) : 0;
-      const irr = data.iradiansi !== undefined ? Number(data.iradiansi) : 0;
-      const duty = data.siklus_kerja !== undefined ? Number(data.siklus_kerja) : 0;
-      const energyWh = data.energi_plts_watt_jam !== undefined ? Number(data.energi_plts_watt_jam) : 0;
-      const avgPower = data.daya_rata_rata !== undefined ? Number(data.daya_rata_rata) : 0;
-      const avgIrr = data.iradiansi_rata_rata !== undefined ? Number(data.iradiansi_rata_rata) : 0;
-      const lamaOperasi = data.lama_jam_operasi !== undefined ? Number(data.lama_jam_operasi) : 0;
+      const v = Number(data.tegangan || 0), i = Number(data.arus || 0), p = Number(data.daya || 0), irr = Number(data.iradiansi || 0);
+      const duty = Number(data.siklus_kerja || 0), energyWh = Number(data.energi_plts_watt_jam || 0), energySunWh = Number(data.energi_matahari_watt_jam || 0);
+      const avgPower = Number(data.daya_rata_rata || 0), avgIrr = Number(data.iradiansi_rata_rata || 0), lamaOperasi = Number(data.lama_jam_operasi || 0);
 
       const now = Date.now();
       if (lastEspHeartbeatTime > 0 && (now - lastEspHeartbeatTime) <= 12000) {
+        document.getElementById("val-energi-matahari").innerText = energySunWh.toFixed(2);
+        document.getElementById("val-energi").innerText = energyWh.toFixed(2);
+        document.getElementById("val-lama-operasi").innerText = lamaOperasi.toFixed(2);
+        document.getElementById("val-irr-rata").innerText = avgIrr.toFixed(0);
+        document.getElementById("val-daya-rata").innerText = avgPower.toFixed(2);
         document.getElementById("val-iradiah").innerText = irr.toFixed(0);
         document.getElementById("val-daya").innerText = p.toFixed(2);
+        if (data.siklus_kerja !== undefined) {
+          let fd = Number(data.siklus_kerja).toFixed(1);
+          document.getElementById("val-siklus").innerText = fd;
+          document.getElementById("val-siklus-control").innerText = fd;
+        }
         document.getElementById("val-tegangan").innerText = v.toFixed(2);
         document.getElementById("val-arus").innerText = i.toFixed(2);
-        if (data.siklus_kerja !== undefined) {
-          const formattedDuty = Number(data.siklus_kerja).toFixed(1);
-          document.getElementById("val-siklus").innerText = formattedDuty;
-          document.getElementById("val-siklus-control").innerText = formattedDuty;
-        }
-        document.getElementById("val-energi").innerText = energyWh.toFixed(2);
-        document.getElementById("val-daya-rata").innerText = avgPower.toFixed(2);
-        document.getElementById("val-irr-rata").innerText = avgIrr.toFixed(0);
-        document.getElementById("val-lama-operasi").innerText = lamaOperasi.toFixed(2);
       }
 
-      let rawTime = data.stempel_waktu ? Number(data.stempel_waktu) : 0;
-      if (!rawTime && pushKey && pushKey.startsWith("-")) {
-        rawTime = decodeFirebasePushId(pushKey);
-      }
-      if (!rawTime) rawTime = Date.now();
-
-      let jamStr = data.waktu_rtc ? data.waktu_rtc.split(" ")[1] : new Date(rawTime).toLocaleTimeString('id-ID');
-      addDataToRealtimeCharts(jamStr, v, i, p, irr, duty, energyWh, avgPower, avgIrr);
+      let rawTime = data.stempel_waktu ? Number(data.stempel_waktu) : (pushKey && pushKey.startsWith("-") ? decodeFirebasePushId(pushKey) : Date.now());
+      addDataToRealtimeCharts(rawTime, v, i, p, irr, duty, energyWh, energySunWh, avgPower, avgIrr);
     }
 
     function initFirebaseStorageAndUsersMonitor() {
       database.ref("/mppt_data").on("value", (snapshot) => {
         if (!snapshot.exists()) return;
-        const dataVal = snapshot.val();
-        
-        const jsonStr = JSON.stringify(dataVal);
-        const bytes = new Blob([jsonStr]).size;
-        const maxLimitBytes = 1 * 1024 * 1024 * 1024;
-        const percentageUsed = (bytes / maxLimitBytes) * 100;
-        const percentageRemaining = Math.max(0, 100 - percentageUsed);
-        
-        document.getElementById("rekap-sisa-kuota").innerText = percentageRemaining.toFixed(1) + "%";
+        const bytes = new Blob([JSON.stringify(snapshot.val())]).size;
+        document.getElementById("rekap-sisa-kuota").innerText = Math.max(0, 100 - ((bytes / (1024*1024*1024)) * 100)).toFixed(1) + "%";
       });
     }
 
-    // Grafik Historis: pointRadius diset 0 (tanpa dot), pointHoverRadius tetap aktif untuk menampilkan data saat diklik/hover
-    const ctxHistVI = document.getElementById('chartHistVI').getContext('2d');
-    const chartHistVI = new Chart(ctxHistVI, {
+    const createHistChart = (id, datasetConfig) => new Chart(document.getElementById(id).getContext('2d'), {
       type: 'line',
-      data: {
-        labels: [],
-        boundaryIndices: [],
-        datasets: [
-          { label: 'Tegangan (V)', borderColor: getCssVar('--color-v'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-v'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
-          { label: 'Arus (A)', borderColor: getCssVar('--color-i'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-i'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
-        ]
-      },
+      data: { datasets: datasetConfig },
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-v'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
-            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-i'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
     });
 
-    const ctxHistAvgPowerIrr = document.getElementById('chartHistAvgPowerIrr').getContext('2d');
-    const chartHistAvgPowerIrr = new Chart(ctxHistAvgPowerIrr, {
+    const chartHistVI = createHistChart('chartHistVI', [
+      { label: 'Tegangan (V)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Arus (A)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
+    ]);
+
+    const chartHistAvgPowerIrr = createHistChart('chartHistAvgPowerIrr', [
+      { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Daya Rata-rata (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
+    ]);
+
+    const chartHistEnergiPltsMatahari = new Chart(document.getElementById('chartHistEnergiPltsMatahari').getContext('2d'), {
       type: 'line',
-      data: {
-        labels: [],
-        boundaryIndices: [],
-        datasets: [
-          { label: 'Daya Rata-rata (W)', borderColor: getCssVar('--color-p'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-p'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
-          { label: 'Iradiansi Rata-rata (W/m²)', borderColor: getCssVar('--color-irr'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-irr'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
-        ]
-      },
+      data: { datasets: [
+        { label: 'Energi Matahari (Wh/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
+      ]},
       options: {
-        responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        responsive: true, maintainAspectRatio: false, enableEnergyHighlights: true,
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
-            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
     });
 
-    const ctxHistSiklus = document.getElementById('chartHistSiklusKerja').getContext('2d');
-    const chartHistSiklusKerja = new Chart(ctxHistSiklus, {
+    const chartHistSiklusKerja = new Chart(document.getElementById('chartHistSiklusKerja').getContext('2d'), {
       type: 'line',
-      data: {
-        labels: [],
-        boundaryIndices: [],
-        datasets: [
-          { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', fill: false, data: [], pointRadius: 0, showLine: false },
-          { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', fill: false, data: [], pointRadius: 0, showLine: false },
-          { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', fill: false, data: [], pointRadius: 0, showLine: false },
-          { 
-            label: 'DutyCycleData', 
-            borderColor: '#0284c7', 
-            backgroundColor: 'transparent', 
-            fill: false, 
-            data: [], 
-            modes: [],
-            borderWidth: 2, 
-            pointRadius: 0, 
-            pointHoverRadius: 4, 
-            showLine: false, 
-            pointBackgroundColor: function(context) {
-              var idx = context.dataIndex;
-              var mode = context.dataset.modes && context.dataset.modes[idx];
-              if (mode === 'MANUAL') return '#ff5252';
-              if (mode === 'INC') return '#00e676';
-              return '#0284c7';
-            } 
-          }
-        ]
-      },
+      data: { datasets: [
+        { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', data: [], showLine: false },
+        { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', data: [], showLine: false },
+        { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', data: [], showLine: false },
+        { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, pointRadius: 0, showLine: false,
+          pointBackgroundColor: (c) => c.dataset.modes && c.dataset.modes[c.dataIndex] === 'MANUAL' ? '#ff5252' : '#0284c7'
+        }
+      ]},
       options: {
-        responsive: true, maintainAspectRatio: false,
-        customSegmentColoring: true,
-        legend: { 
-          labels: { 
-            fontColor: getLegendTextColor(), 
-            fontStyle: 'bold',
-            filter: function(legendItem, data) {
-              return legendItem.text !== 'DutyCycleData';
-            }
-          } 
-        },
+        responsive: true, maintainAspectRatio: false, customSegmentColoring: true,
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold', filter: (l) => l.text !== 'DutyCycleData' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
-          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getCssVar('--warning-color'), fontStyle: 'bold', beginAtZero: true, max: 100 }, gridLines: { color: getCssVar('--chart-grid') } }]
+          xAxes: timeScaleOptions.xAxes,
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: '#ff9800', fontStyle: 'bold', fontSize: 12, beginAtZero: true, max: 100 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
         }
       }
     });
 
-    const ctxHistPowerIrr = document.getElementById('chartHistPowerIrr').getContext('2d');
-    const chartHistPowerIrr = new Chart(ctxHistPowerIrr, {
-      type: 'line',
-      data: {
-        labels: [],
-        boundaryIndices: [],
-        datasets: [
-          { label: 'Daya (W)', borderColor: getCssVar('--color-p'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-p'), showLine: true, yAxisID: 'y', lineTension: 0, spanGaps: false },
-          { label: 'Iradiansi (W/m²)', borderColor: getCssVar('--color-irr'), fill: false, data: [], borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: getCssVar('--color-irr'), showLine: true, yAxisID: 'y1', lineTension: 0, spanGaps: false }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
-        scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
-          yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
-            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
-          ]
-        }
-      }
-    });
+    const chartHistPowerIrr = createHistChart('chartHistPowerIrr', [
+      { label: 'Iradiansi (W/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Daya (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
+    ]);
 
-    const ctxHistDayaIrr = document.getElementById('chartHistoryDayaIrr').getContext('2d');
-    const chartHistDayaIrr = new Chart(ctxHistDayaIrr, {
+    const chartHistoryDayaIrr = new Chart(document.getElementById('chartHistoryDayaIrr').getContext('2d'), {
       type: 'bar',
-      data: {
-        labels: [],
-        datasets: [
-          { label: 'Daya Rata-rata Harian (W)', backgroundColor: getCssVar('--color-p'), data: [], yAxisID: 'y' },
-          { label: 'Iradiansi Rata-rata Harian (W/m²)', backgroundColor: getCssVar('--color-irr'), data: [], yAxisID: 'y1' }
-        ]
-      },
+      data: { labels: [], datasets: [
+        { label: 'Iradiansi Rata-rata Harian (W/m²)', backgroundColor: '#ff5252', data: [], yAxisID: 'y' },
+        { label: 'Daya Rata-rata Harian (W)', backgroundColor: '#0284c7', data: [], yAxisID: 'y1' }
+      ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }],
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-p'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
-            { id: 'y1', position: 'right', ticks: { fontColor: getCssVar('--color-irr'), fontStyle: 'bold', beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
     });
 
-    const ctxHistEnergi = document.getElementById('chartHistoryEnergi').getContext('2d');
-    const chartHistEnergi = new Chart(ctxHistEnergi, {
+    const chartHistoryEnergi = new Chart(document.getElementById('chartHistoryEnergi').getContext('2d'), {
       type: 'bar',
-      data: {
-        labels: [],
-        datasets: [
-          { label: 'Energi PLTS (Wh)', backgroundColor: getCssVar('--color-energy'), data: [], yAxisID: 'y' }
-        ]
-      },
+      data: { labels: [], datasets: [
+        { label: 'Energi Matahari (Wh/m²)', backgroundColor: '#ff5252', data: [], yAxisID: 'y' },
+        { label: 'Energi PLTS (Wh)', backgroundColor: '#0284c7', data: [], yAxisID: 'y1' }
+      ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: getLegendTextColor(), fontStyle: 'bold' } },
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
         scales: {
-          xAxes: [{ ticks: { fontColor: getLegendTextColor(), fontStyle: 'bold' }, gridLines: { color: getCssVar('--chart-grid') } }],
+          xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }],
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: getCssVar('--color-energy'), fontStyle: 'bold', beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
+        }
+      }
+    });
+
+    const chartHistLamaOperasi = new Chart(document.getElementById('chartHistLamaOperasi').getContext('2d'), {
+      type: 'line',
+      data: { datasets: [
+        { label: 'Lama Operasi (Jam)', borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', fill: true, data: [], borderWidth: 2.5, pointRadius: 1 }
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        scales: {
+          xAxes: timeScaleOptions.xAxes,
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: '#38bdf8', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
         }
       }
     });
 
     function loadHistory() {
-      const startVal = document.getElementById("startDate").value;
-      const endVal = document.getElementById("endDate").value;
-      const summaryBox = document.getElementById("history-summary");
-
-      if (!startVal || !endVal) {
-        return;
-      }
+      const startVal = document.getElementById("startDate").value, endVal = document.getElementById("endDate").value;
+      if (!startVal || !endVal) return;
 
       database.ref("/mppt_ringkasan_harian").once("value", (ringkasanSnapshot) => {
         let ringkasanMap = {};
-
         ringkasanSnapshot.forEach((childSnapshot) => {
           const item = childSnapshot.val();
           if (!item) return;
-
-          let rawKey = childSnapshot.key || "";
-          let cleanKey = rawKey.startsWith("tanggal_") ? rawKey.replace("tanggal_", "") : rawKey;
-          let tanggalLog = item.tanggal || cleanKey;
-          
-          let formattedTanggalLog = tanggalLog;
-          if (tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2) {
-            let parts = tanggalLog.split("-");
-            if (parts.length === 3) {
-              formattedTanggalLog = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
-          }
-
+          let tanggalLog = item.tanggal || (childSnapshot.key.startsWith("tanggal_") ? childSnapshot.key.replace("tanggal_", "") : childSnapshot.key);
+          let formattedTanggalLog = tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2 ? `${tanggalLog.split("-")[2]}-${tanggalLog.split("-")[1]}-${tanggalLog.split("-")[0]}` : tanggalLog;
           if (formattedTanggalLog >= startVal && formattedTanggalLog <= endVal) {
             ringkasanMap[formattedTanggalLog] = {
               energiMatahari: Number(item.energi_matahari_watt_jam || 0),
               energi: Number(item.energi_plts_watt_jam || 0),
-              lamaOperasi: Number(item.lama_jam_operasi || 0), 
+              lamaOperasi: Number(item.lama_jam_operasi || 0),
               dayaRata: Number(item.daya_rata_rata || 0),
               iradiansiRata: Number(item.iradiansi_rata_rata || 0),
               dayaMaks: Number(item.daya_maksimum || 0),
@@ -2481,305 +2066,181 @@
         });
 
         let calcResult = renderLogStatusTable(startVal, endVal, ringkasanMap);
-
-        let historyList = [];
-        let curDateChart = new Date(startVal);
-        let stopDateChart = new Date(endVal);
-
+        let historyList = [], curDateChart = new Date(startVal), stopDateChart = new Date(endVal);
         while (curDateChart <= stopDateChart) {
-          let yyyy = curDateChart.getFullYear();
-          let mm = String(curDateChart.getMonth() + 1).padStart(2, '0');
-          let dd = String(curDateChart.getDate()).padStart(2, '0');
-          let isoStr = `${yyyy}-${mm}-${dd}`;
-          let displayStr = `${dd}-${mm}-${yyyy}`;
-
+          let isoStr = `${curDateChart.getFullYear()}-${String(curDateChart.getMonth()+1).padStart(2,'0')}-${String(curDateChart.getDate()).padStart(2,'0')}`;
+          let displayStr = `${String(curDateChart.getDate()).padStart(2,'0')}-${String(curDateChart.getMonth()+1).padStart(2,'0')}-${curDateChart.getFullYear()}`;
           let ringkasan = ringkasanMap[isoStr];
-
           if (ringkasan) {
-            historyList.push({
-              isoDate: isoStr,
-              label: displayStr,
-              energi: ringkasan.energi,
-              dayaRata: ringkasan.dayaRata,
-              iradiansiRata: ringkasan.iradiansiRata
-            });
+            historyList.push({ isoDate: isoStr, label: displayStr, energi: ringkasan.energi, energiMatahari: ringkasan.energiMatahari, dayaRata: ringkasan.dayaRata, iradiansiRata: ringkasan.iradiansiRata });
           }
-
           curDateChart.setDate(curDateChart.getDate() + 1);
         }
-
         historyList.sort((a, b) => a.isoDate.localeCompare(b.isoDate));
 
-        const labels = historyList.map(item => item.label);
-        const dataAvgPower = historyList.map(item => item.dayaRata);
-        const dataAvgIrr = historyList.map(item => item.iradiansiRata);
-        const dataEnergy = historyList.map(item => item.energi);
+        chartHistoryDayaIrr.data.labels = historyList.map(item => item.label);
+        chartHistoryDayaIrr.data.datasets[0].data = historyList.map(item => item.iradiansiRata);
+        chartHistoryDayaIrr.data.datasets[1].data = historyList.map(item => item.dayaRata);
+        chartHistoryDayaIrr.update();
 
-        chartHistDayaIrr.data.labels = labels;
-        chartHistDayaIrr.data.datasets[0].data = dataAvgPower;
-        chartHistDayaIrr.data.datasets[1].data = dataAvgIrr;
-        chartHistDayaIrr.update();
+        const dataEnergySun = historyList.map(item => item.energiMatahari);
+        const dataEnergyPlts = historyList.map(item => item.energi);
 
-        chartHistEnergi.data.labels = labels;
-        chartHistEnergi.data.datasets[0].data = dataEnergy;
-        chartHistEnergi.update();
+        chartHistoryEnergi.data.labels = historyList.map(item => item.label);
+        chartHistoryEnergi.data.datasets[0].data = dataEnergySun;
+        chartHistoryEnergi.data.datasets[1].data = dataEnergyPlts;
+
+        let maxSun = Math.max(...dataEnergySun, 1);
+        let maxPlts = Math.max(...dataEnergyPlts, 1);
+        if (!document.getElementById("min-hisen-left").value && !document.getElementById("max-hisen-left").value) {
+          chartHistoryEnergi.options.scales.yAxes[0].ticks.max = maxSun * 1.2;
+        }
+        if (!document.getElementById("min-hisen-right").value && !document.getElementById("max-hisen-right").value) {
+          chartHistoryEnergi.options.scales.yAxes[1].ticks.max = maxPlts * 1.5;
+        }
+        chartHistoryEnergi.update();
 
         document.getElementById("sum-hari").innerText = calcResult.hariAdaLog;
         document.getElementById("sum-energi").innerText = calcResult.totalEnergiSum.toFixed(2) + " Wh";
         document.getElementById("sum-daya").innerText = calcResult.avgDayaVal.toFixed(2) + " W";
         document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
-        
-        summaryBox.style.display = "grid";
+        document.getElementById("history-summary").style.display = "grid";
 
-        if (historyList.length > 0) {
-          loadSingleDayHistory(historyList[0].isoDate);
-        } else {
-          clearSingleDayCharts();
-        }
+        if (historyList.length > 0) loadSingleDayHistory(historyList[0].isoDate);
+        else clearSingleDayCharts();
       });
     }
 
-    function reloadSingleDayDetail() {
-      if (selectedSingleDateIso) {
-        loadSingleDayHistory(selectedSingleDateIso);
-      }
-    }
+    function reloadSingleDayDetail() { if (selectedSingleDateIso) loadSingleDayHistory(selectedSingleDateIso); }
 
     function clearSingleDayCharts() {
-      chartHistVI.data.labels = [];
-      chartHistVI.data.datasets[0].data = [];
-      chartHistVI.data.datasets[1].data = [];
-      chartHistVI.update();
-
-      chartHistPowerIrr.data.labels = [];
-      chartHistPowerIrr.data.datasets[0].data = [];
-      chartHistPowerIrr.data.datasets[1].data = [];
-      chartHistPowerIrr.update();
-
-      chartHistSiklusKerja.data.labels = [];
-      chartHistSiklusKerja.data.datasets[3].data = [];
-      chartHistSiklusKerja.data.datasets[3].modes = [];
-      chartHistSiklusKerja.update();
-
-      chartHistAvgPowerIrr.data.labels = [];
-      chartHistAvgPowerIrr.data.datasets[0].data = [];
-      chartHistAvgPowerIrr.data.datasets[1].data = [];
-      chartHistAvgPowerIrr.update();
-
-      document.getElementById("title-day-power").innerText = "";
-      document.getElementById("title-day-duty").innerText = "";
-      document.getElementById("title-day-vi").innerText = "";
-      document.getElementById("title-day-avg-power-irr").innerText = "";
+      [chartHistVI, chartHistPowerIrr, chartHistSiklusKerja, chartHistAvgPowerIrr, chartHistEnergiPltsMatahari, chartHistLamaOperasi].forEach(c => {
+        c.data.datasets.forEach(d => { if (d.data) d.data = []; if (d.modes) d.modes = []; });
+        if (c.data.energyHighlights) c.data.energyHighlights = [];
+        c.update();
+      });
+      ['title-day-power', 'title-day-duty', 'title-day-vi', 'title-day-avg-power-irr', 'title-day-energi-plts-matahari', 'title-day-lama-operasi'].forEach(id => {
+        document.getElementById(id).innerText = "";
+      });
     }
 
     function loadSingleDayHistory(targetIsoDate) {
       selectedSingleDateIso = targetIsoDate;
       const stepValue = document.getElementById("stepSelect").value;
       const startHourVal = parseInt(document.getElementById("startTime").value, 10);
+      const startMinVal = getStartMinute();
       const endHourVal = parseInt(document.getElementById("endTime").value, 10);
+      const endMinVal = getEndMinute();
 
-      let parts = targetIsoDate.split("-");
-      let displayDate = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : targetIsoDate;
-      
-      let strStart = String(startHourVal).padStart(2, '0') + ":00";
-      let strEnd = String(endHourVal).padStart(2, '0') + ":00";
+      let parts = targetIsoDate.split("-"), displayDate = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : targetIsoDate;
+      let strStart = `${String(startHourVal).padStart(2,'0')}:${String(startMinVal).padStart(2,'0')}`;
+      let strEnd = `${String(endHourVal).padStart(2,'0')}:${String(endMinVal).padStart(2,'0')}`;
 
-      document.getElementById("title-day-power").innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
-      document.getElementById("title-day-duty").innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
-      document.getElementById("title-day-vi").innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
-      document.getElementById("title-day-avg-power-irr").innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
+      ['title-day-power', 'title-day-duty', 'title-day-vi', 'title-day-avg-power-irr', 'title-day-energi-plts-matahari', 'title-day-lama-operasi'].forEach(id => {
+        document.getElementById(id).innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
+      });
 
       database.ref("/mppt_data").once("value", (snapshot) => {
-        let histLabels = [];
-        let histV = [];
-        let histI = [];
-        let histP = [];
-        let histIrr = [];
-        let histAvgP = [];
-        let histAvgIrr = [];
-        let histSiklusData = [];
-        let histSiklusModes = [];
-
-        let intervalMs = 5 * 1000; 
-        if (stepValue === "1m") intervalMs = 60 * 1000;
-        else if (stepValue === "5m") intervalMs = 5 * 60 * 1000;
-        else if (stepValue === "10m") intervalMs = 10 * 60 * 1000;
-        else if (stepValue === "15m") intervalMs = 15 * 60 * 1000;
-        else if (stepValue === "30m") intervalMs = 30 * 60 * 1000;
-        else if (stepValue === "1h") intervalMs = 60 * 60 * 1000;
-
-        let lastRecordedTime = 0;
+        let histV = [], histI = [], histP = [], histIrr = [], histAvgP = [], histAvgIrr = [], histEnergyPlts = [], histEnergySun = [], histSiklusData = [], histSiklusModes = [], histLamaOp = [];
+        let intervalMs = stepValue === "10s" ? 10000 : (stepValue === "30s" ? 30000 : (stepValue === "1m" ? 60000 : (stepValue === "5m" ? 300000 : (stepValue === "10m" ? 600000 : (stepValue === "15m" ? 900000 : (stepValue === "30m" ? 1800000 : (stepValue === "1h" ? 3600000 : 5000)))))));
+        let lastRecordedTime = 0, startTotalMins = startHourVal * 60 + startMinVal, endTotalMins = endHourVal * 60 + endMinVal;
 
         snapshot.forEach((child) => {
           let item = child.val();
           if (!item) return;
-
-          let waktuRtc = item.waktu_rtc || "";
-          let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
-          let jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
-
-          let formattedTanggalData = tanggalData;
-          if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
-            let p = tanggalData.split("-");
-            if (p.length === 3) formattedTanggalData = `${p[2]}-${p[1]}-${p[0]}`;
-          }
+          let waktuRtc = item.waktu_rtc || "", tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "", jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
+          let formattedTanggalData = tanggalData.includes("-") && tanggalData.indexOf("-") === 2 ? `${tanggalData.split("-")[2]}-${tanggalData.split("-")[1]}-${tanggalData.split("-")[0]}` : tanggalData;
 
           if (formattedTanggalData === targetIsoDate) {
             if (jamData) {
-              let timeParts = jamData.split(":");
-              let hourPart = parseInt(timeParts[0], 10);
-              let minutePart = parseInt(timeParts[1], 10) || 0;
-              let secondPart = parseInt(timeParts[2], 10) || 0;
-
-              if (!isNaN(hourPart)) {
-                if (hourPart < startHourVal) return;
-                if (hourPart > endHourVal) return;
-                if (hourPart === endHourVal && (minutePart > 0 || secondPart > 0)) return;
-              }
+              let tp = jamData.split(":");
+              let itemTotalMins = parseInt(tp[0], 10) * 60 + (parseInt(tp[1], 10) || 0);
+              if (itemTotalMins < startTotalMins || itemTotalMins > endTotalMins) return;
             }
-
             let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : new Date(`${formattedTanggalData}T${jamData || "00:00:00"}`).getTime();
-
-            if (stepValue !== "5s" && lastRecordedTime > 0 && (itemTime - lastRecordedTime < intervalMs)) {
-              return;
-            }
-
+            if (stepValue !== "5s" && lastRecordedTime > 0 && (itemTime - lastRecordedTime < intervalMs)) return;
             lastRecordedTime = itemTime;
 
-            let labelTime = jamData ? jamData : formattedTanggalData;
-            histLabels.push(labelTime);
-            histV.push(Number(item.tegangan || 0));
-            histI.push(Number(item.arus || 0));
-            histP.push(Number(item.daya || 0));
-            histIrr.push(Number(item.iradiansi || 0));
-            histAvgP.push(Number(item.daya_rata_rata || 0));
-            histAvgIrr.push(Number(item.iradiansi_rata_rata || 0));
+            histV.push({ x: itemTime, y: Number(item.tegangan || 0) });
+            histI.push({ x: itemTime, y: Number(item.arus || 0) });
+            histP.push({ x: itemTime, y: Number(item.daya || 0) });
+            histIrr.push({ x: itemTime, y: Number(item.iradiansi || 0) });
+            histAvgP.push({ x: itemTime, y: Number(item.daya_rata_rata || 0) });
+            histAvgIrr.push({ x: itemTime, y: Number(item.iradiansi_rata_rata || 0) });
+            histEnergyPlts.push({ x: itemTime, y: Number(item.energi_plts_watt_jam || 0) });
+            histEnergySun.push({ x: itemTime, y: Number(item.energi_matahari_watt_jam || 0) });
+            histSiklusData.push({ x: itemTime, y: Number(item.siklus_kerja || 0) });
+            histLamaOp.push({ x: itemTime, y: Number(item.lama_jam_operasi || 0) });
 
-            let valSiklus = Number(item.siklus_kerja || 0);
             let dbMode = item.mode_operasi || "";
-            let currentMode = "PO"; 
-            if (dbMode === "Man" || item.mode_manual === true) currentMode = "MANUAL";
-            else if (dbMode === "InC") currentMode = "INC";
-
-            histSiklusData.push(valSiklus);
-            histSiklusModes.push(currentMode);
+            histSiklusModes.push(dbMode === "Man" || item.mode_manual === true ? "MANUAL" : (dbMode === "InC" ? "INC" : "PO"));
           }
         });
 
-        chartHistVI.data.labels = histLabels;
-        chartHistVI.data.datasets[0].data = histV;
-        chartHistVI.data.datasets[1].data = histI;
-        chartHistVI.config.data.boundaryIndices = [];
-        chartHistVI.update();
+        chartHistVI.data.datasets[0].data = histV; chartHistVI.data.datasets[1].data = histI; chartHistVI.update();
+        chartHistPowerIrr.data.datasets[0].data = histIrr; chartHistPowerIrr.data.datasets[1].data = histP; chartHistPowerIrr.update();
+        chartHistSiklusKerja.data.datasets[3].data = histSiklusData; chartHistSiklusKerja.data.datasets[3].modes = histSiklusModes; chartHistSiklusKerja.update();
+        chartHistAvgPowerIrr.data.datasets[0].data = histAvgIrr; chartHistAvgPowerIrr.data.datasets[1].data = histAvgP; chartHistAvgPowerIrr.update();
 
-        chartHistPowerIrr.data.labels = histLabels;
-        chartHistPowerIrr.data.datasets[0].data = histP;
-        chartHistPowerIrr.data.datasets[1].data = histIrr;
-        chartHistPowerIrr.config.data.boundaryIndices = [];
-        chartHistPowerIrr.update();
+        chartHistLamaOperasi.data.datasets[0].data = histLamaOp;
+        chartHistLamaOperasi.update();
 
-        chartHistSiklusKerja.data.labels = histLabels;
-        chartHistSiklusKerja.data.datasets[3].data = histSiklusData;
-        chartHistSiklusKerja.data.datasets[3].modes = histSiklusModes;
-        chartHistSiklusKerja.config.data.boundaryIndices = [];
-        chartHistSiklusKerja.update();
-
-        chartHistAvgPowerIrr.data.labels = histLabels;
-        chartHistAvgPowerIrr.data.datasets[0].data = histAvgP;
-        chartHistAvgPowerIrr.data.datasets[1].data = histAvgIrr;
-        chartHistAvgPowerIrr.config.data.boundaryIndices = [];
-        chartHistAvgPowerIrr.update();
+        let histHighlights = [];
+        for (let idx = 1; idx < histEnergySun.length; idx++) {
+          let xVal = histEnergySun[idx].x;
+          if ((histEnergySun[idx].y - histEnergySun[idx - 1].y) < 1e-9) histHighlights.push({ xVal: xVal, type: 'pink' });
+          else if ((histEnergyPlts[idx].y - histEnergyPlts[idx - 1].y) < 1e-9) histHighlights.push({ xVal: xVal, type: 'yellow' });
+        }
+        chartHistEnergiPltsMatahari.data.datasets[0].data = histEnergySun;
+        chartHistEnergiPltsMatahari.data.datasets[1].data = histEnergyPlts;
+        chartHistEnergiPltsMatahari.data.energyHighlights = histHighlights;
+        chartHistEnergiPltsMatahari.update();
       });
     }
 
     function renderLogStatusTable(startDateStr, endDateStr, ringkasanMap) {
       const tbody = document.getElementById("log-status-tbody");
       tbody.innerHTML = "";
-
-      let curDate = new Date(startDateStr);
-      let stopDate = new Date(endDateStr);
-      let rowNum = 1;
-
-      let totalHariRentang = 0;
-      let hariAdaLog = 0;
-      let hariTakAdaLog = 0;
-
-      let totalEnergiMatahariSum = 0; 
-      let totalEnergiSum = 0;
-      let totalLamaOperasiSum = 0;
-      let sumDayaRataKaliLamaOp = 0;
-      let sumIrrRataKaliLamaOp = 0;
-      let maxDayaVal = 0;
-      let maxIrrVal = 0;
+      let curDate = new Date(startDateStr), stopDate = new Date(endDateStr);
+      let rowNum = 1, hariAdaLog = 0, hariTakAdaLog = 0, totalHariRentang = 0;
+      let totalEnergiMatahariSum = 0, totalEnergiSum = 0, totalLamaOperasiSum = 0, sumDayaRataKaliLamaOp = 0, sumIrrRataKaliLamaOp = 0, maxDayaVal = 0, maxIrrVal = 0;
 
       while (curDate <= stopDate) {
         totalHariRentang++;
-        let yyyy = curDate.getFullYear();
-        let mm = String(curDate.getMonth() + 1).padStart(2, '0');
-        let dd = String(curDate.getDate()).padStart(2, '0');
-        let isoStr = `${yyyy}-${mm}-${dd}`;
-        let displayStr = `${dd}-${mm}-${yyyy}`;
-
+        let isoStr = `${curDate.getFullYear()}-${String(curDate.getMonth()+1).padStart(2,'0')}-${String(curDate.getDate()).padStart(2,'0')}`;
+        let displayStr = `${String(curDate.getDate()).padStart(2,'0')}-${String(curDate.getMonth()+1).padStart(2,'0')}-${curDate.getFullYear()}`;
         let ringkasan = ringkasanMap[isoStr];
-        let hasLog = (ringkasan !== undefined && ringkasan !== null);
 
-        if (hasLog) {
+        if (ringkasan) {
           hariAdaLog++;
-          
-          let eMatVal = Number(ringkasan.energiMatahari || 0);
-          let eVal = Number(ringkasan.energi || 0);
-          let lamaOpVal = Number(ringkasan.lamaOperasi || 0);
-          let dRataVal = Number(ringkasan.dayaRata || 0);
-          let iRataVal = Number(ringkasan.iradiansiRata || 0);
-          let dMaksVal = Number(ringkasan.dayaMaks || 0);
-          let iMaksVal = Number(ringkasan.iradiansiMaks || 0);
+          let eMatVal = Number(ringkasan.energiMatahari || 0), eVal = Number(ringkasan.energi || 0), lamaOpVal = Number(ringkasan.lamaOperasi || 0);
+          let dRataVal = Number(ringkasan.dayaRata || 0), iRataVal = Number(ringkasan.iradiansiRata || 0), dMaksVal = Number(ringkasan.dayaMaks || 0), iMaksVal = Number(ringkasan.iradiansiMaks || 0);
 
-          totalEnergiMatahariSum += eMatVal;
-          totalEnergiSum += eVal;
-          totalLamaOperasiSum += lamaOpVal;
-          sumDayaRataKaliLamaOp += (dRataVal * lamaOpVal);
-          sumIrrRataKaliLamaOp += (iRataVal * lamaOpVal);
-
+          totalEnergiMatahariSum += eMatVal; totalEnergiSum += eVal; totalLamaOperasiSum += lamaOpVal;
+          sumDayaRataKaliLamaOp += (dRataVal * lamaOpVal); sumIrrRataKaliLamaOp += (iRataVal * lamaOpVal);
           if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
           if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
 
           let tr = document.createElement("tr");
           tr.setAttribute("data-iso-date", isoStr);
-          
           if (selectedSingleDateIso === isoStr || (!selectedSingleDateIso && hariAdaLog === 1)) {
             tr.classList.add("selected-row");
             selectedSingleDateIso = isoStr;
           }
-
           tr.onclick = function() {
-            let allRows = tbody.querySelectorAll("tr");
-            allRows.forEach(r => r.classList.remove("selected-row"));
+            tbody.querySelectorAll("tr").forEach(r => r.classList.remove("selected-row"));
             tr.classList.add("selected-row");
             loadSingleDayHistory(isoStr);
           };
-
-          tr.innerHTML = `
-            <td>${rowNum++}</td>
-            <td>${displayStr}</td>
-            <td>${lamaOpVal.toFixed(2)}</td>
-            <td>${eVal.toFixed(2)}</td>
-            <td>${dRataVal.toFixed(2)}</td>
-            <td>${dMaksVal.toFixed(2)}</td>
-            <td>${iRataVal.toFixed(2)}</td>
-            <td>${iMaksVal.toFixed(0)}</td>
-            <td>${eMatVal.toFixed(2)}</td>
-          `;
+          tr.innerHTML = `<td>${rowNum++}</td><td>${displayStr}</td><td>${lamaOpVal.toFixed(2)}</td><td>${eVal.toFixed(2)}</td><td>${dRataVal.toFixed(2)}</td><td>${dMaksVal.toFixed(2)}</td><td>${iRataVal.toFixed(2)}</td><td>${iMaksVal.toFixed(0)}</td><td>${eMatVal.toFixed(2)}</td>`;
           tbody.appendChild(tr);
         } else {
           hariTakAdaLog++;
         }
-
         curDate.setDate(curDate.getDate() + 1);
       }
 
-      if (rowNum === 1) {
-        tbody.innerHTML = `<tr><td colspan="9" style="color: var(--text-muted); font-style: italic;">Tidak ada data historis pada rentang tanggal ini.</td></tr>`;
-      }
+      if (rowNum === 1) tbody.innerHTML = `<tr><td colspan="9" style="color: var(--text-muted); font-style: italic;">Tidak ada data historis pada rentang tanggal ini.</td></tr>`;
 
       document.getElementById("rekap-total-hari").innerText = totalHariRentang + " Hari";
       document.getElementById("rekap-hari-ada-log").innerText = hariAdaLog + " Hari";
@@ -2796,51 +2257,26 @@
       document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2);
       document.getElementById("foot-max-irr").innerText = maxIrrVal.toFixed(0);
 
-      return {
-        hariAdaLog: hariAdaLog,
-        totalEnergiSum: totalEnergiSum,
-        avgDayaVal: finalAvgDaya,
-        avgIrrVal: finalAvgIrr
-      };
+      return { hariAdaLog, totalEnergiSum, avgDayaVal: finalAvgDaya, avgIrrVal: finalAvgIrr };
     }
 
     let sortDirection = false;
     function sortTable(columnIndex) {
-      const table = document.getElementById("table-rekap-harian");
-      const tbody = table.querySelector("#log-status-tbody");
+      const table = document.getElementById("table-rekap-harian"), tbody = table.querySelector("#log-status-tbody");
       const rows = Array.from(tbody.querySelectorAll("tr"));
-
       if (rows.length === 1 && rows[0].cells.length === 1) return;
-
       sortDirection = !sortDirection;
 
       rows.sort((a, b) => {
-        let cellA = a.cells[columnIndex].innerText.trim();
-        let cellB = b.cells[columnIndex].innerText.trim();
-
-        if (cellA === "-") cellA = "0";
-        if (cellB === "-") cellB = "0";
-
-        let valA = parseFloat(cellA.replace(/[^0-9.-]+/g, ""));
-        let valB = parseFloat(cellB.replace(/[^0-9.-]+/g, ""));
-
-        if (isNaN(valA)) valA = cellA;
-        if (isNaN(valB)) valB = cellB;
-
+        let valA = parseFloat(a.cells[columnIndex].innerText.trim().replace(/[^0-9.-]+/g, "")) || a.cells[columnIndex].innerText.trim();
+        let valB = parseFloat(b.cells[columnIndex].innerText.trim().replace(/[^0-9.-]+/g, "")) || b.cells[columnIndex].innerText.trim();
         if (columnIndex === 1) {
-          let partsA = cellA.split("-");
-          let partsB = cellB.split("-");
-          if (partsA.length === 3 && partsB.length === 3) {
-            valA = `${partsA[2]}-${partsA[1]}-${partsA[0]}`;
-            valB = `${partsB[2]}-${partsB[1]}-${partsB[0]}`;
-          }
+          let pA = a.cells[columnIndex].innerText.trim().split("-"), pB = b.cells[columnIndex].innerText.trim().split("-");
+          if (pA.length === 3) valA = `${pA[2]}-${pA[1]}-${pA[0]}`;
+          if (pB.length === 3) valB = `${pB[2]}-${pB[1]}-${pB[0]}`;
         }
-
-        if (valA < valB) return sortDirection ? -1 : 1;
-        if (valA > valB) return sortDirection ? 1 : -1;
-        return 0;
+        return valA < valB ? (sortDirection ? -1 : 1) : (valA > valB ? (sortDirection ? 1 : -1) : 0);
       });
-
       rows.forEach(row => tbody.appendChild(row));
     }
   </script>
