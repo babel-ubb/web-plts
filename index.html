@@ -28,7 +28,7 @@
       --text-muted: #cccccc;
       --border-color: #333333;
       --primary-color: #0284c7;
-      --danger-color: #ff5252;
+      --danger-color: #d97706;
       --warning-color: #ff9800;
       --chart-grid: rgba(255,255,255,0.15);
       --sub-heading-color: #0284c7;
@@ -287,8 +287,17 @@
     }
 
     .esp-memory-box {
-      max-width: 1200px; margin: 0 auto 30px auto; background: var(--card-bg); border-radius: 12px;
-      padding: 16px 20px; border: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; gap: 20px;
+      max-width: 1200px; 
+      margin: 25px auto 30px auto; 
+      background: var(--card-bg); 
+      border-radius: 12px;
+      padding: 16px 20px; 
+      border: 1px solid var(--border-color); 
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      align-items: stretch;
+      text-align: center;
     }
     .esp-memory-item { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; }
     .esp-memory-box span { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
@@ -359,8 +368,17 @@
     .log-status-table tfoot td { background: var(--card-bg); font-weight: 800; color: #0284c7; position: sticky; bottom: 0; z-index: 2; }
 
     .interval-bar-box {
-      display: flex; justify-content: space-between; align-items: center; margin: 15px 0 10px 0;
-      padding: 12px 18px; background: var(--card-inner-bg); border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 12px;
+      max-width: 1200px;
+      margin: 15px auto 10px auto;
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: 12px 18px; 
+      background: var(--card-inner-bg); 
+      border-radius: 8px; 
+      border: 1px solid var(--border-color); 
+      flex-wrap: wrap; 
+      gap: 12px;
     }
     .txt-pilih-baris {
       font-size: 15px;
@@ -369,6 +387,30 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .btn-toggle-off-curve {
+      background: #0284c7;
+      border: 2px solid #0284c7;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+    .btn-toggle-off-curve:hover {
+      background: #0369a1;
+      border-color: #0369a1;
+    }
+    .btn-toggle-off-curve.active {
+      background: #d97706;
+      border-color: #d97706;
+    }
+    .btn-toggle-off-curve.active:hover {
+      background: #dc2626;
+      border-color: #dc2626;
     }
   </style>
 </head>
@@ -389,8 +431,8 @@
     <h2>Parameter Pengendalian PLTS</h2>
     <div class="control-box">
       <div class="mode-buttons">
-        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT</button>
-        <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">MPPT</button>
+        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT, WAKTU LOGGING, SENSOR</button>
+        <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">PILIH METODE MPPT</button>
         <button id="btn-manual" class="btn-mode" onclick="handleManualClick()">MANUAL</button>
       </div>
 
@@ -435,6 +477,7 @@
             <div class="unit">Jam</div>
           </div>
         </div>
+
 
         <!-- b. Iradiansi rata rata dan daya rata rata -->
         <div class="realtime-sub-group">
@@ -488,11 +531,41 @@
         </div>
 
       </div>
+
+<!-- TAMBAHKAN DI SINI (Di bawah semua kelompok a, b, c, dan d) -->
+      <div id="logging-time-info" style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color); text-align: center; font-size: 16px; font-weight: 600; color: var(--text-muted);">
+        Waktu Logging: <span id="val-jam-mulai-log" style="color: #0284c7; font-weight: 700;">-</span>:00 WIB s.d <span id="val-jam-selesai-log" style="color: #0284c7; font-weight: 700;">-</span>:00 WIB
+      </div>
+
     </div>
   </div>
 
-	<div style="max-width: 1200px; margin: 0 auto 15px auto; text-align: center; font-size: 14px; font-weight: 600; color: var(--text-muted);">
-    💡 Klik keterangan warna kurva untuk menyembunyikan atau menampilkan kurva.
+  <div style="max-width: 1200px; margin: 0 auto 15px auto;" class="interval-bar-box">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 15px;">
+      <div style="font-size: 14px; font-weight: 600; color: var(--text-muted);">
+        💡 Klik keterangan warna kurva untuk menyembunyikan atau menampilkan kurva.
+      </div>
+      <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+        <div class="filter-group">
+          <label for="tensionRealtimeSelect" style="font-size: 13px;">Kelengkungan Garis:</label>
+          <select id="tensionRealtimeSelect" class="scale-input-box" onchange="changeRealtimeLineTension(this.value)" style="width: 65px; height: 32px; padding: 2px 6px; font-size: 13px;">
+            <option value="0" selected>0</option>
+            <option value="0.1">0.1</option>
+            <option value="0.2">0.2</option>
+            <option value="0.3">0.3</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="pointRadiusRealtimeSelect" style="font-size: 13px;">Titik Data :</label>
+          <select id="pointRadiusRealtimeSelect" class="scale-input-box" onchange="changeRealtimePointRadius(this.value)" style="width: 85px; height: 32px; padding: 2px 6px; font-size: 13px;">
+            <option value="0" selected>Tak ada</option>
+            <option value="1">Kecil</option>
+            <option value="2">Sedang</option>
+            <option value="3">Besar</option>
+          </select>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Grafik Realtime -->
@@ -556,9 +629,7 @@
         <strong id="sum-irr">0 W/m²</strong>
       </div>
     </div>
-	<div style="text-align: center; margin: 0 0 15px 0; font-size: 14px; font-weight: 600; color: var(--text-muted);">
-      💡 Klik keterangan warna kurva untuk menyembunyikan atau menampilkan kurva.
-    </div>
+    
     <div class="history-charts-grid">
       <!-- 1. Grafik History Energi Harian -->
       <div class="history-chart-box">
@@ -566,7 +637,7 @@
         <canvas id="chartHistoryEnergi" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Energi Matahari):</span>
+            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Energi Matahari):</span>
             <span>Min:</span><input type="number" id="min-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'max', this.value)">
           </div>
@@ -585,7 +656,7 @@
         <canvas id="chartHistoryDayaIrr" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Iradiansi Rata-rata):</span>
+            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Iradiansi Rata-rata):</span>
             <span>Min:</span><input type="number" id="min-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'max', this.value)">
           </div>
@@ -659,125 +730,14 @@
         </div>
       </div>
 
-      <!-- Baris Interval Data Detail -->
-      <div class="interval-bar-box">
-        <div class="txt-pilih-baris">
-          <span>ℹ️</span> Pilih baris tanggal pada tabel
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-          <div class="filter-group">
-            <label for="stepSelect">Interval Data:</label>
-            <select id="stepSelect" onchange="reloadSingleDayDetail()">
-              <option value="5s">5 detik</option>
-              <option value="10s">10 detik</option>
-              <option value="30s">30 detik</option>
-              <option value="1m">1 menit</option>
-              <option value="5m">5 menit</option>
-              <option value="10m">10 menit</option>
-              <option value="15m">15 menit</option>
-              <option value="30m" selected>30 menit</option>
-              <option value="1h">1 jam</option>
-            </select>
-          </div>
-
-          <div class="filter-group" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-            <label for="startTime">Jam/menit awal:</label>
-            <select id="startTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
-              <option value="06" selected>06</option>
-              <option value="07">07</option>
-              <option value="08">08</option>
-              <option value="09">09</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-            </select>
-            <div style="display:inline-flex; align-items:center; gap:4px;">
-              <select id="startMinute" class="select-time-kontras" onchange="handleMinuteChange('start')">
-                <option value="00" selected>00</option>
-                <option value="05">05</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="30">30</option>
-                <option value="40">40</option>
-                <option value="50">50</option>
-                <option value="55">55</option>
-                <option value="custom">Ketik...</option>
-              </select>
-              <input type="number" id="startMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
-            </div>
-
-            <label for="endTime" style="margin-left: 6px;">Jam/menit akhir:</label>
-            <select id="endTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
-              <option value="06">06</option>
-              <option value="07">07</option>
-              <option value="08">08</option>
-              <option value="09">09</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18" selected>18</option>
-            </select>
-            <div style="display:inline-flex; align-items:center; gap:4px;">
-              <select id="endMinute" class="select-time-kontras" onchange="handleMinuteChange('end')">
-                <option value="00" selected>00</option>
-                <option value="05">05</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="30">30</option>
-                <option value="40">40</option>
-                <option value="50">50</option>
-                <option value="55">55</option>
-                <option value="custom">Ketik...</option>
-              </select>
-              <input type="number" id="endMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Kotak Input Pengaturan Kelengkungan Garis (Tension) & Titik Data -->
-      <div class="interval-bar-box" style="justify-content: center; gap: 30px; flex-wrap: wrap;">
-        <div class="filter-group">
-          <label for="tensionSelect" style="font-size: 13px;">Kelengkungan Garis (Tension):</label>
-          <select id="tensionSelect" class="scale-input-box" onchange="changeLineTension(this.value)" style="width: 75px; height: 32px; padding: 2px 6px; font-size: 13px;">
-            <option value="0" selected>0</option>
-            <option value="0.1">0.1</option>
-            <option value="0.2">0.2</option>
-            <option value="0.3">0.3</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="pointRadiusSelect" style="font-size: 13px;">Titik Data (Dot):</label>
-          <select id="pointRadiusSelect" class="scale-input-box" onchange="changePointRadius(this.value)" style="width: 90px; height: 32px; padding: 2px 6px; font-size: 13px;">
-            <option value="0" selected>Tak ada</option>
-            <option value="1">Kecil</option>
-            <option value="2">Sedang</option>
-            <option value="3">Besar</option>
-          </select>
-        </div>
-      </div>
-	
-
+      
       <!-- 3. Grafik Detail Harian: Energi Matahari & Energi PLTS -->
       <div class="history-chart-box">
         <h3>Energi Matahari & Energi PLTS <span id="title-day-energi-plts-matahari" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
         <canvas id="chartHistEnergiPltsMatahari" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Energi Matahari):</span>
+            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Energi Matahari):</span>
             <span>Min:</span><input type="number" id="min-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'max', this.value)">
           </div>
@@ -796,7 +756,7 @@
         <canvas id="chartHistPowerIrr" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Iradiansi):</span>
+            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Iradiansi):</span>
             <span>Min:</span><input type="number" id="min-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'max', this.value)">
           </div>
@@ -829,7 +789,7 @@
         <canvas id="chartHistVI" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Tegangan):</span>
+            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Tegangan):</span>
             <span>Min:</span><input type="number" id="min-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'max', this.value)">
           </div>
@@ -848,7 +808,7 @@
         <canvas id="chartHistAvgPowerIrr" style="max-height: 380px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #ff5252;">Sumbu Kiri (Iradiansi Rata-rata):</span>
+            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Iradiansi Rata-rata):</span>
             <span>Min:</span><input type="number" id="min-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'max', this.value)">
           </div>
@@ -877,43 +837,289 @@
     </div>
   </div>
 
-  <!-- Sisa Memori ESP & Sisa Penyimpanan Database -->
-  <div class="esp-memory-box" style="margin-top: 30px; flex-wrap: wrap;">
-    <div class="esp-memory-item">
-      <span>SISA PENYIMPANAN DATABASE</span>
-      <strong id="rekap-sisa-kuota" style="color: #0284c7;">100.0%</strong>
+  <!-- Baris Interval Data Detail -->
+  <div class="interval-bar-box">
+    <div class="txt-pilih-baris">
+      <span>ℹ️</span> Pilih baris tanggal pada tabel
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+      <div class="filter-group">
+        <label for="stepSelect">Interval Data:</label>
+        <select id="stepSelect" onchange="reloadSingleDayDetail()">
+          <option value="5s" selected>5 detik</option>
+          <option value="10s">10 detik</option>
+          <option value="30s">30 detik</option>
+          <option value="1m">1 menit</option>
+          <option value="5m">5 menit</option>
+          <option value="10m">10 menit</option>
+          <option value="15m">15 menit</option>
+          <option value="30m">30 menit</option>
+          <option value="1h">1 jam</option>
+        </select>
+      </div>
+
+      <div class="filter-group" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <label for="startTime">Jam/menit awal:</label>
+        <select id="startTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
+          <option value="06" selected>06</option>
+          <option value="07">07</option>
+          <option value="08">08</option>
+          <option value="09">09</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+        </select>
+        <div style="display:inline-flex; align-items:center; gap:4px;">
+          <select id="startMinute" class="select-time-kontras" onchange="handleMinuteChange('start')">
+            <option value="00" selected>00</option>
+            <option value="05">05</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="55">55</option>
+            <option value="custom">Ketik...</option>
+          </select>
+          <input type="number" id="startMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
+        </div>
+
+        <label for="endTime" style="margin-left: 6px;">Jam/menit akhir:</label>
+        <select id="endTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
+          <option value="06">06</option>
+          <option value="07">07</option>
+          <option value="08">08</option>
+          <option value="09">09</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18" selected>18</option>
+        </select>
+        <div style="display:inline-flex; align-items:center; gap:4px;">
+          <select id="endMinute" class="select-time-kontras" onchange="handleMinuteChange('end')">
+            <option value="00" selected>00</option>
+            <option value="05">05</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="55">55</option>
+            <option value="custom">Ketik...</option>
+          </select>
+          <input type="number" id="endMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
+        </div>
+      </div>
     </div>
   </div>
 
-  <footer-toggle-container style="max-width: 1200px; margin: 20px auto 0 auto; display: flex; justify-content: flex-end;">
-    <button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar">☀️</button>
-  </footer-toggle-container>
+  <!-- SECTION BAWAH (PENYIMPANAN, PENGATURAN GRAFIK HISTORI, & TOMBOL AKSI) -->
+  <div class="esp-memory-box" style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: center; text-align: center;">
+    
+    <!-- 1. Sisa Penyimpanan -->
+    <div class="esp-memory-item" style="background: var(--card-inner-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column; justify-content: center;">
+      <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px;">SISA PENYIMPANAN DATABASE</span>
+      <strong id="rekap-sisa-kuota" style="font-size: 16px; font-weight: 800; color: #0284c7;">100.0%</strong>
+    </div>
+
+    <!-- 2. Pengaturan Titik Data (Dot) Histori -->
+    <div class="esp-memory-item" style="background: var(--card-inner-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <label for="pointRadiusSelect" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Titik Data (Dot) Histori:</label>
+      <select id="pointRadiusSelect" class="scale-input-box" onchange="changePointRadius(this.value)" style="width: 100%; max-width: 130px; height: 28px; padding: 2px 6px; font-size: 11px; text-align: center;">
+        <option value="0" selected>Tak ada</option>
+        <option value="1">Kecil</option>
+        <option value="2">Sedang</option>
+        <option value="3">Besar</option>
+      </select>
+    </div>
+
+    <!-- 3. Pengaturan Kelengkungan Garis Histori -->
+    <div class="esp-memory-item" style="background: var(--card-inner-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <label for="tensionSelect" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Kelengkungan Garis Histori:</label>
+      <select id="tensionSelect" class="scale-input-box" onchange="changeLineTension(this.value)" style="width: 100%; max-width: 130px; height: 28px; padding: 2px 6px; font-size: 11px; text-align: center;">
+        <option value="0" selected>0</option>
+        <option value="0.1">0.1</option>
+        <option value="0.2">0.2</option>
+        <option value="0.3">0.3</option>
+      </select>
+    </div>
+
+    <!-- 4. Tombol Tampilkan/Sembunyikan Kurva & Toggle Tema -->
+    <div class="esp-memory-item" style="background: var(--card-inner-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 8px;">
+      <button id="btnToggleOffCurve" class="btn-toggle-off-curve" onclick="toggleOffCurve()" style="flex: 1; height: 32px; font-size: 11px; padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Kurva PLTS Off</button>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar" style="width: 32px; height: 32px; min-width: 32px; font-size: 14px; padding: 0; display: flex; align-items: center; justify-content: center;">☀️</button>
+    </div>
+
+  </div>
+
+  <!-- MODAL JENDELA TABEL PLTS OFF (SESI OFFLINE) -->
+  <div id="modalPltsOff" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: var(--card-bg); width: 90%; max-width: 950px; max-height: 85vh; border-radius: 12px; border: 2px solid #0284c7; padding: 20px; display: flex; flex-direction: column; color: var(--text-color); box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+      
+      <!-- Header Modal -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+        <h3 style="color: #0284c7; font-size: 18px; font-weight: 700;">⚠️ Rekap Sesi PLTS Off (Mulai Off sampai On Kembali)</h3>
+        <button onclick="closeModalPltsOff()" style="background: transparent; border: none; color: var(--text-color); font-size: 20px; cursor: pointer; font-weight: bold;">✕</button>
+      </div>
+
+      <!-- Area Tabel (Scrollable) -->
+      <div class="table-responsive" style="flex: 1; overflow-y: auto; max-height: 60vh;">
+        <table class="log-status-table" id="table-plts-off">
+          <thead>
+            <tr style="background: var(--card-inner-bg);">
+              <th>No</th>
+              <th>Waktu (Mulai Off - On Kembali)</th>
+              <th>Daya Rata-rata (W)</th>
+              <th>Iradian Rata-rata (W/m²)</th>
+              <th>Energi Matahari (Wh/m²)</th>
+              <th>Energi PLTS (Wh)</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-plts-off">
+            <tr>
+              <td colspan="6" style="color: var(--text-muted); font-style: italic;">Memuat data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Modal -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+        <span id="info-total-off-rows" style="font-size: 13px; font-weight: bold; color: var(--text-muted);">Total Sesi Off: 0 sesi</span>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-export" onclick="exportPltsOffToCSV()" style="background: #0284c7 !important; border-color: #0284c7 !important;">UNDUH REKAP OFF</button>
+          <button class="btn-clear" onclick="closeModalPltsOff()">TUTUP</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
   <script>
+    // Flag untuk fitur pewarnaan merah segmen PLTS Off (Default: false)
+    let enableOffCurveDisconnect = false;
+    let globalOffSessionsList = [];
+
+    function toggleOffCurve() {
+      enableOffCurveDisconnect = !enableOffCurveDisconnect;
+      const btn = document.getElementById("btnToggleOffCurve");
+      
+      const historyCharts = [
+        chartHistVI, chartHistPowerIrr, chartHistSiklusKerja, 
+        chartHistAvgPowerIrr, chartHistEnergiPltsMatahari, chartHistLamaOperasi
+      ];
+
+      if (enableOffCurveDisconnect) {
+        btn.classList.add("active");
+        const stepSelect = document.getElementById("stepSelect");
+        if (stepSelect) stepSelect.value = "5s";
+
+        historyCharts.forEach(chart => {
+          if (!chart) return;
+          chart.data.datasets.forEach(dataset => {
+            if (dataset.label !== 'DutyCycleData') dataset.showLine = false;
+          });
+          chart.update();
+        });
+
+        if (selectedSingleDateIso) {
+          showModalPltsOff(selectedSingleDateIso);
+        }
+      } else {
+        btn.classList.remove("active");
+        
+        historyCharts.forEach(chart => {
+          if (!chart) return;
+          chart.data.datasets.forEach(dataset => {
+            if (dataset.label !== 'DutyCycleData') dataset.showLine = true;
+          });
+          chart.update();
+        });
+
+        closeModalPltsOff();
+      }
+      reloadSingleDayDetail();
+    }
+
     // Atur tension global awal menjadi 0 (garis lurus)
     Chart.defaults.global.elements.line.tension = 0;
+
+    function changeRealtimeLineTension(val) {
+      if (val === "" || isNaN(val)) return;
+      let newTension = parseFloat(val);
+
+      const realtimeLineCharts = [
+        chartRealtimeEnergi,
+        chartVI,
+        chartDayaIrr,
+        chartRealtimeAkumulasi,
+        chartDutyCycle
+      ];
+
+      realtimeLineCharts.forEach(chart => {
+        if (!chart) return;
+        if (!chart.options.elements) chart.options.elements = {};
+        if (!chart.options.elements.line) chart.options.elements.line = {};
+        chart.options.elements.line.tension = newTension;
+
+        chart.data.datasets.forEach(dataset => {
+          dataset.lineTension = newTension;
+        });
+
+        chart.data.datasets = [...chart.data.datasets];
+        chart.update();
+      });
+    }
+
+    function changeRealtimePointRadius(val) {
+      let radius = parseFloat(val);
+      if (isNaN(radius)) return;
+
+      const realtimePointCharts = [
+        chartRealtimeEnergi,
+        chartVI,
+        chartDayaIrr,
+        chartRealtimeAkumulasi,
+        chartDutyCycle
+      ];
+
+      realtimePointCharts.forEach(chart => {
+        if (!chart) return;
+        chart.data.datasets.forEach(dataset => {
+          if (dataset.label !== 'DutyCycleData') {
+            dataset.pointRadius = radius;
+          }
+        });
+        chart.update();
+      });
+    }
 
     function changeLineTension(val) {
       if (val === "" || isNaN(val)) return;
       let newTension = parseFloat(val);
 
-      Chart.defaults.global.elements.line.tension = newTension;
-
-      const lineCharts = [
-        chartRealtimeEnergi,
-        chartVI,
-        chartDayaIrr,
-        chartRealtimeAkumulasi,
+      const historyLineCharts = [
         chartHistVI,
         chartHistPowerIrr,
         chartHistAvgPowerIrr,
         chartHistEnergiPltsMatahari,
         chartHistLamaOperasi,
-        chartDutyCycle,
         chartHistSiklusKerja
       ];
 
-      lineCharts.forEach(chart => {
+      historyLineCharts.forEach(chart => {
         if (!chart) return;
         
         if (!chart.options.elements) chart.options.elements = {};
@@ -933,25 +1139,22 @@
       let radius = parseFloat(val);
       if (isNaN(radius)) return;
 
-      const lineChartsForDots = [
-        chartRealtimeEnergi,
-        chartVI,
-        chartDayaIrr,
-        chartRealtimeAkumulasi,
+      const historyPointCharts = [
         chartHistVI,
         chartHistPowerIrr,
         chartHistAvgPowerIrr,
         chartHistEnergiPltsMatahari,
         chartHistLamaOperasi,
-        chartDutyCycle,
         chartHistSiklusKerja
       ];
 
-      lineChartsForDots.forEach(chart => {
+      historyPointCharts.forEach(chart => {
         if (!chart) return;
         
         chart.data.datasets.forEach(dataset => {
-          dataset.pointRadius = radius;
+          if (dataset.label !== 'DutyCycleData') {
+            dataset.pointRadius = radius;
+          }
         });
 
         chart.update();
@@ -983,20 +1186,82 @@
     };
     Chart.plugins.register(annotationLinePlugin);
 
+    // Plugin Kustom untuk menggambar segmen berwarna Merah saat PLTS Off (MULAI_ON === 1)
+    const pltsOffRedSegmentPlugin = {
+      afterDatasetsDraw: function(chart) {
+        if (!enableOffCurveDisconnect) return;
+        if (chart.canvas.id === 'chartHistSiklusKerja' || chart.canvas.id === 'chartDutyCycle') return;
+
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+          if (!dataset.mulaiOnValues || dataset.mulaiOnValues.length === 0) return;
+          var meta = chart.getDatasetMeta(datasetIndex);
+          if (!meta || meta.hidden || !meta.data || meta.data.length < 2) return;
+
+          var ctx = chart.ctx;
+          var dataPoints = meta.data;
+          var mulaiOnArr = dataset.mulaiOnValues;
+          var defaultColor = dataset.borderColor || '#0284c7';
+          var redColor = '#dc2626';
+
+          ctx.save();
+          var tension = chart.options.elements && chart.options.elements.line && chart.options.elements.line.tension !== undefined 
+                        ? chart.options.elements.line.tension 
+                        : (dataset.lineTension !== undefined ? dataset.lineTension : 0);
+
+          for (var i = 0; i < dataPoints.length - 1; i++) {
+            var p0 = dataPoints[i];
+            var p1 = dataPoints[i+1];
+
+            if (!p0 || !p1) continue;
+            if (dataset.data[i] === null || dataset.data[i+1] === null) continue;
+
+            if (p0._view && p1._view && !isNaN(p0._view.y) && !isNaN(p1._view.y) && !isNaN(p0._view.x) && !isNaN(p1._view.x)) {
+              var isOff = (mulaiOnArr[i+1] === 1 || mulaiOnArr[i] === 1);
+
+              ctx.strokeStyle = isOff ? redColor : defaultColor;
+              ctx.lineWidth = dataset.borderWidth || 2;
+              ctx.beginPath();
+              ctx.moveTo(p0._view.x, p0._view.y);
+
+              if (tension > 0 && Chart.helpers && Chart.helpers.splineCurve) {
+                var prevModel = i > 0 && dataset.data[i-1] !== null ? dataPoints[i-1]._view : p0._view;
+                var nextModel = i + 2 < dataPoints.length && dataset.data[i+2] !== null ? dataPoints[i+2]._view : p1._view;
+                
+                var cp0 = Chart.helpers.splineCurve(prevModel, p0._view, p1._view, tension);
+                var cp1 = Chart.helpers.splineCurve(p0._view, p1._view, nextModel, tension);
+
+                ctx.bezierCurveTo(
+                  cp0.next.x, cp0.next.y,
+                  cp1.previous.x, cp1.previous.y,
+                  p1._view.x, p1._view.y
+                );
+              } else {
+                ctx.lineTo(p1._view.x, p1._view.y);
+              }
+              ctx.stroke();
+            }
+          }
+          ctx.restore();
+        });
+      }
+    };
+    Chart.plugins.register(pltsOffRedSegmentPlugin);
+
     const continuousDutyPlugin = {
       afterDatasetsDraw: function(chart) {
         if (!chart.config.options.customSegmentColoring) return;
         var meta = chart.getDatasetMeta(3);
-        if (!meta) return;
+        if (!meta || meta.hidden) return; 
         
         var ctx = chart.ctx;
         if (!meta.data || meta.data.length < 2) return;
         var dataset = chart.data.datasets[3];
         var dataPoints = meta.data;
         var modes = dataset.modes || [];
-        var modeColors = { 'MANUAL': '#ff5252', 'PO': '#0284c7', 'INC': '#00e676' };
+        var mulaiOnArr = dataset.mulaiOnValues || [];
+        var modeColors = { 'MANUAL': '#d97706', 'PO': '#0284c7', 'INC': '#00e676' };
+        var redColor = '#dc2626';
         
-        // Cek status hidden dari legenda dummy (indeks 0=Manual, 1=PO, 2=INC)
         var hiddenModes = {
           'MANUAL': chart.getDatasetMeta(0).hidden === true,
           'PO': chart.getDatasetMeta(1).hidden === true,
@@ -1013,19 +1278,23 @@
         for (var i = 0; i < dataPoints.length - 1; i++) {
           var p0 = dataPoints[i];
           var p1 = dataPoints[i+1];
-          if (p0 && p1 && !isNaN(p0._view.y) && !isNaN(p1._view.y) && !isNaN(p0._view.x) && !isNaN(p1._view.x)) {
+
+          if (!p0 || !p1 || p0._datasetIndex === undefined || p1._datasetIndex === undefined) continue;
+          if (dataset.data[i] === null || dataset.data[i+1] === null) continue;
+
+          if (p0._view && p1._view && !isNaN(p0._view.y) && !isNaN(p1._view.y) && !isNaN(p0._view.x) && !isNaN(p1._view.x)) {
             var mode = modes[i+1] || modes[i] || 'PO';
             
-            // Jika mode ini disembunyikan lewat klik legenda, lewati penggambarannya!
             if (hiddenModes[mode]) continue;
 
-            ctx.strokeStyle = modeColors[mode] || '#0284c7';
+            var isOff = enableOffCurveDisconnect && (mulaiOnArr[i+1] === 1 || mulaiOnArr[i] === 1);
+            ctx.strokeStyle = isOff ? redColor : (modeColors[mode] || '#0284c7');
             ctx.beginPath();
             ctx.moveTo(p0._view.x, p0._view.y);
 
             if (tension > 0 && Chart.helpers && Chart.helpers.splineCurve) {
-              var prevModel = i > 0 ? dataPoints[i-1]._view : p0._view;
-              var nextModel = i + 2 < dataPoints.length ? dataPoints[i+2]._view : p1._view;
+              var prevModel = i > 0 && dataset.data[i-1] !== null ? dataPoints[i-1]._view : p0._view;
+              var nextModel = i + 2 < dataPoints.length && dataset.data[i+2] !== null ? dataPoints[i+2]._view : p1._view;
               
               var cp0 = Chart.helpers.splineCurve(prevModel, p0._view, p1._view, tension);
               var cp1 = Chart.helpers.splineCurve(p0._view, p1._view, nextModel, tension);
@@ -1123,22 +1392,51 @@
           }
         });
 
-        let defaultStart = "", defaultEnd = "";
-        if (dates.length > 0) {
-          dates.sort();
-          defaultStart = dates[0];
-          defaultEnd = dates[dates.length - 1];
+        if (dates.length === 0) {
+          database.ref("/mppt_data").once("value", (dataSnap) => {
+            dataSnap.forEach((child) => {
+              let item = child.val();
+              if (!item) return;
+              let waktuRtc = item.waktu_rtc || "";
+              let itemDateIso = "";
+              if (item.stempel_waktu) {
+                let d = new Date(Number(item.stempel_waktu));
+                itemDateIso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+              } else if (waktuRtc.includes(" ")) {
+                let datePart = waktuRtc.split(" ")[0];
+                let subParts = datePart.split("-");
+                if (subParts[0].length === 4) itemDateIso = datePart;
+                else if (subParts.length === 3) itemDateIso = `${subParts[2]}-${subParts[1]}-${subParts[0]}`;
+              }
+              if (itemDateIso) {
+                dates.push(itemDateIso);
+                availableDatesSet.add(itemDateIso);
+              }
+            });
+            finalizeDateRange(dates);
+          });
         } else {
-          const today = new Date();
-          const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
-          const startDateObj = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
-          const formatDateOnly = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-          defaultStart = formatDateOnly(startDateObj);
-          defaultEnd = formatDateOnly(endDateObj);
+          finalizeDateRange(dates);
         }
-        initFlatpickrPickers(defaultStart, defaultEnd);
-        loadHistory();
       });
+    }
+
+    function finalizeDateRange(dates) {
+      let defaultStart = "", defaultEnd = "";
+      if (dates.length > 0) {
+        dates.sort();
+        defaultStart = dates[0];
+        defaultEnd = dates[dates.length - 1];
+      } else {
+        const today = new Date();
+        const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
+        const startDateObj = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
+        const formatDateOnly = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        defaultStart = formatDateOnly(startDateObj);
+        defaultEnd = formatDateOnly(endDateObj);
+      }
+      initFlatpickrPickers(defaultStart, defaultEnd);
+      loadHistory();
     }
 
     function initFlatpickrPickers(defaultStart, defaultEnd) {
@@ -1350,6 +1648,14 @@
         slider.value = dutyVal;
         sliderValSpan.innerText = dutyVal + "%";
       }
+let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_LOG) : 6;
+      let jamSelesai = data && data.JAM_SELESAI_LOG !== undefined ? Number(data.JAM_SELESAI_LOG) : 18;
+
+      let elMulai = document.getElementById("val-jam-mulai-log");
+      let elSelesai = document.getElementById("val-jam-selesai-log");
+
+      if (elMulai) elMulai.innerText = String(jamMulai).padStart(2, '0');
+      if (elSelesai) elSelesai.innerText = String(jamSelesai).padStart(2, '0');
     });
 
     function checkAdminAccess(callback) {
@@ -1382,7 +1688,7 @@
       [{ label: "P and O", val: 0 }, { label: "InC", val: 1 }].forEach(opt => {
         let btn = document.createElement("button");
         btn.innerText = opt.label;
-        btn.style.cssText = `padding:12px;border-radius:6px;border:1px solid #0284c7;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;`;
+        btn.style.cssText = `padding:12px;border-radius:6px;border:1px solid #0284c7;background:#000000;color:#ffffff;font-weight:bold;cursor:pointer;`;
         btn.onclick = () => { controlRef.update({ MODE_OPERASI_MPPT: opt.val, mode_manual: false }); document.body.removeChild(overlay); };
         btnContainer.appendChild(btn);
       });
@@ -1409,11 +1715,12 @@
       [
         { label: "Parameter P&O", action: () => { document.body.removeChild(overlay); openParameterPoModal(); } },
         { label: "Parameter InC", action: () => { document.body.removeChild(overlay); openParameterInCModal(); } },
-        { label: "Jumlah Sampel Sensor", action: () => { document.body.removeChild(overlay); openParameterStatistikSensorModal(); } }
+        { label: "Jumlah Sampel Sensor", action: () => { document.body.removeChild(overlay); openParameterStatistikSensorModal(); } },
+        { label: "Waktu Awal & Akhir Log", action: () => { document.body.removeChild(overlay); openParameterWaktuLogModal(); } }
       ].forEach(opt => {
         let btn = document.createElement("button");
         btn.innerText = opt.label;
-        btn.style.cssText = `padding:12px;border-radius:6px;border:1px solid #0284c7;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;`;
+        btn.style.cssText = `padding:12px;border-radius:6px;border:1px solid #0284c7;background:#000000;color:#ffffff;font-weight:bold;cursor:pointer;`;
         btn.onclick = opt.action;
         btnContainer.appendChild(btn);
       });
@@ -1615,6 +1922,97 @@
       document.body.appendChild(overlay);
     }
 
+    function openParameterWaktuLogModal() {
+      let overlay = document.createElement("div");
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+      
+      let box = document.createElement("div");
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:20px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:380px;`;
+      let title = document.createElement("h3");
+      title.innerText = "Jam Awal & Akhir Log"; title.style.cssText = `margin-bottom:12px;color:#0284c7;font-size:18px;text-align:center;`;
+      let formContainer = document.createElement("div");
+      formContainer.style.cssText = "display:flex;flex-direction:column;gap:10px;";
+
+      let groupStart = document.createElement("div");
+      groupStart.style.cssText = "display:flex;flex-direction:column;gap:4px;";
+      let lblStart = document.createElement("label");
+      lblStart.innerText = "JAM MULAI LOG (0 - 23):"; lblStart.style.cssText = "font-size:12px;font-weight:bold;";
+      let inputStart = document.createElement("input");
+      inputStart.type = "number"; inputStart.min = "0"; inputStart.max = "23"; inputStart.step = "1"; inputStart.id = "param-jam-mulai";
+      inputStart.style.cssText = "width:100%;padding:6px 10px;border-radius:6px;border:2px solid #0284c7;background:var(--card-inner-bg);color:#ffffff;font-size:14px;font-weight:bold;outline:none;text-align:center;";
+
+      let groupEnd = document.createElement("div");
+      groupEnd.style.cssText = "display:flex;flex-direction:column;gap:4px;";
+      let lblEnd = document.createElement("label");
+      lblEnd.innerText = "JAM SELESAI LOG (0 - 23):"; lblEnd.style.cssText = "font-size:12px;font-weight:bold;";
+      let inputEnd = document.createElement("input");
+      inputEnd.type = "number"; inputEnd.min = "0"; inputEnd.max = "23"; inputEnd.step = "1"; inputEnd.id = "param-jam-selesai";
+      inputEnd.style.cssText = "width:100%;padding:6px 10px;border-radius:6px;border:2px solid #0284c7;background:var(--card-inner-bg);color:#ffffff;font-size:14px;font-weight:bold;outline:none;text-align:center;";
+
+      database.ref("/mppt_control").once("value", (snap) => {
+        if (snap.exists()) {
+          let val = snap.val();
+          inputStart.value = val.JAM_MULAI_LOG !== undefined ? Number(val.JAM_MULAI_LOG) : 6;
+          inputEnd.value = val.JAM_SELESAI_LOG !== undefined ? Number(val.JAM_SELESAI_LOG) : 18;
+        } else {
+          inputStart.value = 6;
+          inputEnd.value = 18;
+        }
+      });
+
+      groupStart.appendChild(lblStart); groupStart.appendChild(inputStart);
+      groupEnd.appendChild(lblEnd); groupEnd.appendChild(inputEnd);
+      formContainer.appendChild(groupStart); formContainer.appendChild(groupEnd);
+
+      let btnContainer = document.createElement("div");
+      btnContainer.style.cssText = "display:flex;gap:10px;margin-top:12px;";
+      let btnCancel = document.createElement("button");
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:8px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.onclick = () => document.body.removeChild(overlay);
+
+      let btnSave = document.createElement("button");
+      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:8px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
+      
+      btnSave.onclick = () => {
+        let rawStart = document.getElementById("param-jam-mulai").value;
+        let rawEnd = document.getElementById("param-jam-selesai").value;
+
+        if (rawStart === "" || rawEnd === "") {
+          alert("Input tidak boleh kosong! Masukkan angka integer antara 0 sampai 23.");
+          return;
+        }
+
+        let numStart = Number(rawStart);
+        let numEnd = Number(rawEnd);
+
+        let isValidStart = Number.isInteger(numStart) && numStart >= 0 && numStart <= 23 && !rawStart.includes(".");
+        let isValidEnd = Number.isInteger(numEnd) && numEnd >= 0 && numEnd <= 23 && !rawEnd.includes(".");
+
+        if (!isValidStart || !isValidEnd) {
+          alert("Format salah! Input harus berupa angka integer bulat (0 - 23 tanpa desimal). Silakan periksa kembali.");
+          return;
+        }
+
+        if (numStart >= numEnd) {
+          alert("Jam mulai log harus lebih kecil dari jam selesai log! Silakan periksa kembali.");
+          return;
+        }
+
+        database.ref("/mppt_control").update({ 
+          "JAM_MULAI_LOG": numStart,
+          "JAM_SELESAI_LOG": numEnd,
+          timestamp: Date.now() 
+        }).then(() => { 
+          alert("Jam mulai & selesai log berhasil disimpan!"); 
+          document.body.removeChild(overlay); 
+        });
+      };
+
+      btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnSave);
+      box.appendChild(title); box.appendChild(formContainer); box.appendChild(btnContainer); overlay.appendChild(box);
+      document.body.appendChild(overlay);
+    }
+
     function showCustomPasswordPrompt(callback) {
       let overlay = document.createElement("div");
       overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
@@ -1668,16 +2066,25 @@
     const chartRealtimeEnergi = new Chart(ctxRealtimeEnergi, {
       type: 'line',
       data: { energyHighlights: [], datasets: [
-        { label: 'Energi Matahari (Wh/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y' },
-        { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
+        { label: 'Energi Matahari (Wh/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false, 
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
             { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
@@ -1688,16 +2095,25 @@
     const chartVI = new Chart(ctxVI, {
       type: 'line',
       data: { datasets: [
-        { label: 'Tegangan (V)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y' },
-        { label: 'Arus (A)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
+        { label: 'Tegangan (V)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Arus (A)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
             { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
@@ -1708,16 +2124,25 @@
     const chartDayaIrr = new Chart(ctxDayaIrr, {
       type: 'line',
       data: { datasets: [
-        { label: 'Iradiansi (W/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y' },
-        { label: 'Daya (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
+        { label: 'Iradiansi (W/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Daya (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
             { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
@@ -1730,13 +2155,24 @@
       data: {
         boundaryIndices: [],
         datasets: [
-          { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', data: [], showLine: false },
+          { label: 'Manual', borderColor: '#d97706', backgroundColor: '#d97706', data: [], showLine: false },
           { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', data: [], showLine: false },
           { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', data: [], showLine: false },
-          { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, pointRadius: 0, showLine: false,
+          { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, showLine: false,
             pointBackgroundColor: function(c) {
               let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
-              return m === 'MANUAL' ? '#ff5252' : (m === 'INC' ? '#00e676' : '#0284c7');
+              return m === 'MANUAL' ? '#d97706' : (m === 'INC' ? '#00e676' : '#0284c7');
+            },
+            pointRadius: function(c) {
+              let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
+              let modeKeyMap = { 'MANUAL': 0, 'PO': 1, 'INC': 2 };
+              let targetDatasetIndex = modeKeyMap[m] !== undefined ? modeKeyMap[m] : 1;
+              if (c.chart && c.chart.data && c.chart.data.datasets[targetDatasetIndex]) {
+                let meta = c.chart.getDatasetMeta(targetDatasetIndex);
+                if (meta && meta.hidden) return 0;
+              }
+              let sel = document.getElementById('pointRadiusRealtimeSelect');
+              return sel ? parseFloat(sel.value) || 0 : 0;
             }
           }
         ]
@@ -1749,7 +2185,7 @@
             let index = legendItem.datasetIndex;
             let chart = this.chart;
             let meta = chart.getDatasetMeta(index);
-            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+            meta.hidden = meta.hidden ? false : true;
             chart.update();
           }
         },
@@ -1764,28 +2200,48 @@
     const chartRealtimeAkumulasi = new Chart(ctxRealtimeAkumulasi, {
       type: 'line',
       data: { datasets: [
-        { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y' },
-        { label: 'Daya Rata-rata (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, yAxisID: 'y1' }
+        { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Daya Rata-rata (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
             { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
     });
 
-    function addDataToRealtimeCharts(timestamp, v, i, p, irr, duty, energyWh, energySunWh, avgPower, avgIrr) {
+    function addDataToRealtimeCharts(timestamp, v, i, p, irr, duty, energyWh, energySunWh, avgPower, avgIrr, mulaiOnVal) {
       const MAX_DATA = 30;
-      
+
+      if (mulaiOnVal === 1) {
+        chartVI.data.datasets[0].data.push(null);
+        chartVI.data.datasets[1].data.push(null);
+
+        chartDayaIrr.data.datasets[0].data.push(null);
+        chartDayaIrr.data.datasets[1].data.push(null);
+
+        chartDutyCycle.data.datasets[3].data.push(null);
+        chartDutyCycle.data.datasets[3].modes.push(null);
+      }
+
       chartVI.data.datasets[0].data.push({ x: timestamp, y: v });
       chartVI.data.datasets[1].data.push({ x: timestamp, y: i });
-      
+
       chartDayaIrr.data.datasets[0].data.push({ x: timestamp, y: irr });
       chartDayaIrr.data.datasets[1].data.push({ x: timestamp, y: p });
 
@@ -1800,7 +2256,7 @@
 
       chartRealtimeAkumulasi.data.datasets[0].data.push({ x: timestamp, y: avgIrr });
       chartRealtimeAkumulasi.data.datasets[1].data.push({ x: timestamp, y: avgPower });
-      
+
       chartRealtimeEnergi.data.datasets[0].data.push({ x: timestamp, y: energySunWh });
       chartRealtimeEnergi.data.datasets[1].data.push({ x: timestamp, y: energyWh });
 
@@ -1829,14 +2285,14 @@
     function exportToCSV() {
       const startVal = document.getElementById("startDate").value, endVal = document.getElementById("endDate").value;
       database.ref("/mppt_data").once("value", (snapshot) => {
-        let rows = [["stempel_waktu", "waktu_rtc", "tegangan", "arus", "daya", "daya_rata_rata", "energi_plts_watt_jam", "iradiansi", "iradiansi_rata_rata", "energi_matahari_watt_jam", "lama_jam_operasi", "siklus_kerja", "mode_operasi"]];
+        let rows = [["stempel_waktu", "waktu_rtc", "tegangan", "arus", "daya", "daya_rata_rata", "energi_plts_watt_jam", "iradiansi", "iradiansi_rata_rata", "energi_matahari_watt_jam", "lama_jam_operasi", "siklus_kerja", "mode_operasi", "MULAI_ON"]];
         snapshot.forEach((child) => {
           let item = child.val();
           if (!item) return;
           let waktuRtc = item.waktu_rtc || "", tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
           let formattedTanggalData = tanggalData.includes("-") && tanggalData.indexOf("-") === 2 ? `${tanggalData.split("-")[2]}-${tanggalData.split("-")[1]}-${tanggalData.split("-")[0]}` : tanggalData;
           if (!startVal || !endVal || (formattedTanggalData >= startVal && formattedTanggalData <= endVal)) {
-            rows.push([item.stempel_waktu||"", item.waktu_rtc||"", item.tegangan||"", item.arus||"", item.daya||"", item.daya_rata_rata||"", item.energi_plts_watt_jam||"", item.iradiansi||"", item.iradiansi_rata_rata||"", item.energi_matahari_watt_jam||"", item.lama_jam_operasi||"", item.siklus_kerja||"", item.mode_operasi||""]);
+            rows.push([item.stempel_waktu||"", item.waktu_rtc||"", item.tegangan||"", item.arus||"", item.daya||"", item.daya_rata_rata||"", item.energi_plts_watt_jam||"", item.iradiansi||"", item.iradiansi_rata_rata||"", item.energi_matahari_watt_jam||"", item.lama_jam_operasi||"", item.siklus_kerja||"", item.mode_operasi||"", item.MULAI_ON||""]);
           }
         });
         let link = document.createElement("a");
@@ -1872,6 +2328,7 @@
       const v = Number(data.tegangan || 0), i = Number(data.arus || 0), p = Number(data.daya || 0), irr = Number(data.iradiansi || 0);
       const duty = Number(data.siklus_kerja || 0), energyWh = Number(data.energi_plts_watt_jam || 0), energySunWh = Number(data.energi_matahari_watt_jam || 0);
       const avgPower = Number(data.daya_rata_rata || 0), avgIrr = Number(data.iradiansi_rata_rata || 0), lamaOperasi = Number(data.lama_jam_operasi || 0);
+      const mulaiOnVal = Number(data.MULAI_ON || 2);
 
       const now = Date.now();
       if (lastEspHeartbeatTime > 0 && (now - lastEspHeartbeatTime) <= 12000) {
@@ -1891,7 +2348,7 @@
       }
 
       let rawTime = data.stempel_waktu ? Number(data.stempel_waktu) : (pushKey && pushKey.startsWith("-") ? decodeFirebasePushId(pushKey) : Date.now());
-      addDataToRealtimeCharts(rawTime, v, i, p, irr, duty, energyWh, energySunWh, avgPower, avgIrr);
+      addDataToRealtimeCharts(rawTime, v, i, p, irr, duty, energyWh, energySunWh, avgPower, avgIrr, mulaiOnVal);
     }
 
     function initFirebaseStorageAndUsersMonitor() {
@@ -1907,11 +2364,20 @@
       data: { datasets: datasetConfig },
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
             { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
@@ -1919,28 +2385,37 @@
     });
 
     const chartHistVI = createHistChart('chartHistVI', [
-      { label: 'Tegangan (V)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Tegangan (V)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
       { label: 'Arus (A)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
     ]);
 
     const chartHistAvgPowerIrr = createHistChart('chartHistAvgPowerIrr', [
-      { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
       { label: 'Daya Rata-rata (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
     ]);
 
     const chartHistEnergiPltsMatahari = new Chart(document.getElementById('chartHistEnergiPltsMatahari').getContext('2d'), {
       type: 'line',
       data: { datasets: [
-        { label: 'Energi Matahari (Wh/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Energi Matahari (Wh/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
         { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false, 
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
             { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
@@ -1950,11 +2425,22 @@
     const chartHistSiklusKerja = new Chart(document.getElementById('chartHistSiklusKerja').getContext('2d'), {
       type: 'line',
       data: { datasets: [
-        { label: 'Manual', borderColor: '#ff5252', backgroundColor: '#ff5252', data: [], showLine: false },
+        { label: 'Manual', borderColor: '#d97706', backgroundColor: '#d97706', data: [], showLine: false },
         { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', data: [], showLine: false },
         { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', data: [], showLine: false },
-        { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, pointRadius: 0, showLine: false,
-          pointBackgroundColor: (c) => c.dataset.modes && c.dataset.modes[c.dataIndex] === 'MANUAL' ? '#ff5252' : '#0284c7'
+        { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, showLine: false,
+          pointBackgroundColor: (c) => c.dataset.modes && c.dataset.modes[c.dataIndex] === 'MANUAL' ? '#d97706' : '#0284c7',
+          pointRadius: function(c) {
+            let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
+            let modeKeyMap = { 'MANUAL': 0, 'PO': 1, 'INC': 2 };
+            let targetDatasetIndex = modeKeyMap[m] !== undefined ? modeKeyMap[m] : 1;
+            if (c.chart && c.chart.data && c.chart.data.datasets[targetDatasetIndex]) {
+              let meta = c.chart.getDatasetMeta(targetDatasetIndex);
+              if (meta && meta.hidden) return 0;
+            }
+            let sel = document.getElementById('pointRadiusSelect');
+            return sel ? parseFloat(sel.value) || 0 : 0;
+          }
         }
       ]},
       options: {
@@ -1965,7 +2451,7 @@
             let index = legendItem.datasetIndex;
             let chart = this.chart;
             let meta = chart.getDatasetMeta(index);
-            meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+            meta.hidden = meta.hidden ? false : true;
             chart.update();
           }
         },
@@ -1977,23 +2463,32 @@
     });
 
     const chartHistPowerIrr = createHistChart('chartHistPowerIrr', [
-      { label: 'Iradiansi (W/m²)', borderColor: '#ff5252', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Iradiansi (W/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
       { label: 'Daya (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
     ]);
 
     const chartHistoryDayaIrr = new Chart(document.getElementById('chartHistoryDayaIrr').getContext('2d'), {
       type: 'bar',
       data: { labels: [], datasets: [
-        { label: 'Iradiansi Rata-rata Harian (W/m²)', backgroundColor: '#ff5252', data: [], yAxisID: 'y' },
+        { label: 'Iradiansi Rata-rata Harian (W/m²)', backgroundColor: '#d97706', data: [], yAxisID: 'y' },
         { label: 'Daya Rata-rata Harian (W)', backgroundColor: '#0284c7', data: [], yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }],
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
             { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
@@ -2003,16 +2498,25 @@
     const chartHistoryEnergi = new Chart(document.getElementById('chartHistoryEnergi').getContext('2d'), {
       type: 'bar',
       data: { labels: [], datasets: [
-        { label: 'Energi Matahari (Wh/m²)', backgroundColor: '#ff5252', data: [], yAxisID: 'y' },
+        { label: 'Energi Matahari (Wh/m²)', backgroundColor: '#d97706', data: [], yAxisID: 'y' },
         { label: 'Energi PLTS (Wh)', backgroundColor: '#0284c7', data: [], yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: '#0284c7', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }],
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#ff5252', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
+            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
             { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
@@ -2022,11 +2526,20 @@
     const chartHistLamaOperasi = new Chart(document.getElementById('chartHistLamaOperasi').getContext('2d'), {
       type: 'line',
       data: { datasets: [
-        { label: 'Ubah interval data jadi 5 detik dan tampilkan titik data, bagian landai indikasi PLTS offline', borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 50, 0.1)', fill: true, data: [], borderWidth: 2.5, pointRadius: 1 }
+        { label: 'Lama Jam Operasi', borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', fill: false, data: [], borderWidth: 2.5, pointRadius: 0 }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { labels: { fontColor: '#ff9800', fontStyle: 'bold' } },
+        legend: { 
+          labels: { fontColor: '#ff9800', fontStyle: 'bold' },
+          onClick: function(e, legendItem) {
+            let index = legendItem.datasetIndex;
+            let chart = this.chart;
+            let meta = chart.getDatasetMeta(index);
+            meta.hidden = meta.hidden ? false : true;
+            chart.update();
+          }
+        },
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
@@ -2040,68 +2553,130 @@
 
       database.ref("/mppt_ringkasan_harian").once("value", (ringkasanSnapshot) => {
         let ringkasanMap = {};
-        ringkasanSnapshot.forEach((childSnapshot) => {
-          const item = childSnapshot.val();
-          if (!item) return;
-          let tanggalLog = item.tanggal || (childSnapshot.key.startsWith("tanggal_") ? childSnapshot.key.replace("tanggal_", "") : childSnapshot.key);
-          let formattedTanggalLog = tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2 ? `${tanggalLog.split("-")[2]}-${tanggalLog.split("-")[1]}-${tanggalLog.split("-")[0]}` : tanggalLog;
-          if (formattedTanggalLog >= startVal && formattedTanggalLog <= endVal) {
-            ringkasanMap[formattedTanggalLog] = {
-              energiMatahari: Number(item.energi_matahari_watt_jam || 0),
-              energi: Number(item.energi_plts_watt_jam || 0),
-              lamaOperasi: Number(item.lama_jam_operasi || 0),
-              dayaRata: Number(item.daya_rata_rata || 0),
-              iradiansiRata: Number(item.iradiansi_rata_rata || 0),
-              dayaMaks: Number(item.daya_maksimum || 0),
-              iradiansiMaks: Number(item.iradian_maksimum || 0)
-            };
-          }
-        });
-
-        let calcResult = renderLogStatusTable(startVal, endVal, ringkasanMap);
-        let historyList = [], curDateChart = new Date(startVal), stopDateChart = new Date(endVal);
-        while (curDateChart <= stopDateChart) {
-          let isoStr = `${curDateChart.getFullYear()}-${String(curDateChart.getMonth()+1).padStart(2,'0')}-${String(curDateChart.getDate()).padStart(2,'0')}`;
-          let displayStr = `${String(curDateChart.getDate()).padStart(2,'0')}-${String(curDateChart.getMonth()+1).padStart(2,'0')}-${curDateChart.getFullYear()}`;
-          let ringkasan = ringkasanMap[isoStr];
-          if (ringkasan) {
-            historyList.push({ isoDate: isoStr, label: displayStr, energi: ringkasan.energi, energiMatahari: ringkasan.energiMatahari, dayaRata: ringkasan.dayaRata, iradiansiRata: ringkasan.iradiansiRata });
-          }
-          curDateChart.setDate(curDateChart.getDate() + 1);
+        
+        if (ringkasanSnapshot.exists()) {
+          ringkasanSnapshot.forEach((childSnapshot) => {
+            const item = childSnapshot.val();
+            if (!item) return;
+            let tanggalLog = item.tanggal || (childSnapshot.key.startsWith("tanggal_") ? childSnapshot.key.replace("tanggal_", "") : childSnapshot.key);
+            let formattedTanggalLog = tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2 ? `${tanggalLog.split("-")[2]}-${tanggalLog.split("-")[1]}-${tanggalLog.split("-")[0]}` : tanggalLog;
+            if (formattedTanggalLog >= startVal && formattedTanggalLog <= endVal) {
+              ringkasanMap[formattedTanggalLog] = {
+                energiMatahari: Number(item.energi_matahari_watt_jam || 0),
+                energi: Number(item.energi_plts_watt_jam || 0),
+                lamaOperasi: Number(item.lama_jam_operasi || 0),
+                dayaRata: Number(item.daya_rata_rata || 0),
+                iradiansiRata: Number(item.iradiansi_rata_rata || 0),
+                dayaMaks: Number(item.daya_maksimum || 0),
+                iradiansiMaks: Number(item.iradian_maksimum || 0)
+              };
+            }
+          });
         }
-        historyList.sort((a, b) => a.isoDate.localeCompare(b.isoDate));
 
-        chartHistoryDayaIrr.data.labels = historyList.map(item => item.label);
-        chartHistoryDayaIrr.data.datasets[0].data = historyList.map(item => item.iradiansiRata);
-        chartHistoryDayaIrr.data.datasets[1].data = historyList.map(item => item.dayaRata);
-        chartHistoryDayaIrr.update();
+        if (Object.keys(ringkasanMap).length === 0) {
+          database.ref("/mppt_data").once("value", (dataSnap) => {
+            let tempDays = {};
+            dataSnap.forEach((child) => {
+              let item = child.val();
+              if (!item) return;
+              let waktuRtc = item.waktu_rtc || "";
+              let itemDateIso = "";
+              if (item.stempel_waktu) {
+                let d = new Date(Number(item.stempel_waktu));
+                itemDateIso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+              } else if (waktuRtc.includes(" ")) {
+                let datePart = waktuRtc.split(" ")[0];
+                let subParts = datePart.split("-");
+                if (subParts[0].length === 4) itemDateIso = datePart;
+                else if (subParts.length === 3) itemDateIso = `${subParts[2]}-${subParts[1]}-${subParts[0]}`;
+              }
 
-        const dataEnergySun = historyList.map(item => item.energiMatahari);
-        const dataEnergyPlts = historyList.map(item => item.energi);
+              if (itemDateIso && itemDateIso >= startVal && itemDateIso <= endVal) {
+                if (!tempDays[itemDateIso]) {
+                  tempDays[itemDateIso] = { count: 0, sumDaya: 0, sumIrr: 0, maxDaya: 0, maxIrr: 0, maxLama: 0, maxEnergiPlts: 0, maxEnergiSun: 0 };
+                }
+                let d = tempDays[itemDateIso];
+                d.count++;
+                let daya = Number(item.daya || 0);
+                let irr = Number(item.iradiansi || 0);
+                d.sumDaya += daya;
+                d.sumIrr += irr;
+                if (daya > d.maxDaya) d.maxDaya = daya;
+                if (irr > d.maxIrr) d.maxIrr = irr;
+                let lama = Number(item.lama_jam_operasi || 0);
+                if (lama > d.maxLama) d.maxLama = lama;
+                let ePlts = Number(item.energi_plts_watt_jam || 0);
+                if (ePlts > d.maxEnergiPlts) d.maxEnergiPlts = ePlts;
+                let eSun = Number(item.energi_matahari_watt_jam || 0);
+                if (eSun > d.maxEnergiSun) d.maxEnergiSun = eSun;
+              }
+            });
 
-        chartHistoryEnergi.data.labels = historyList.map(item => item.label);
-        chartHistoryEnergi.data.datasets[0].data = dataEnergySun;
-        chartHistoryEnergi.data.datasets[1].data = dataEnergyPlts;
-
-        let maxSun = Math.max(...dataEnergySun, 1);
-        let maxPlts = Math.max(...dataEnergyPlts, 1);
-        if (!document.getElementById("min-hisen-left").value && !document.getElementById("max-hisen-left").value) {
-          chartHistoryEnergi.options.scales.yAxes[0].ticks.max = maxSun * 1.2;
+            for (let iso in tempDays) {
+              let t = tempDays[iso];
+              ringkasanMap[iso] = {
+                energiMatahari: t.maxEnergiSun,
+                energi: t.maxEnergiPlts,
+                lamaOperasi: t.maxLama,
+                dayaRata: t.count > 0 ? t.sumDaya / t.count : 0,
+                iradiansiRata: t.count > 0 ? t.sumIrr / t.count : 0,
+                dayaMaks: t.maxDaya,
+                iradiansiMaks: t.maxIrr
+              };
+            }
+            processHistoryDataAndCharts(startVal, endVal, ringkasanMap);
+          });
+        } else {
+          processHistoryDataAndCharts(startVal, endVal, ringkasanMap);
         }
-        if (!document.getElementById("min-hisen-right").value && !document.getElementById("max-hisen-right").value) {
-          chartHistoryEnergi.options.scales.yAxes[1].ticks.max = maxPlts * 1.5;
-        }
-        chartHistoryEnergi.update();
-
-        document.getElementById("sum-hari").innerText = calcResult.hariAdaLog;
-        document.getElementById("sum-energi").innerText = calcResult.totalEnergiSum.toFixed(2) + " Wh";
-        document.getElementById("sum-daya").innerText = calcResult.avgDayaVal.toFixed(2) + " W";
-        document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
-        document.getElementById("history-summary").style.display = "grid";
-
-        if (historyList.length > 0) loadSingleDayHistory(historyList[0].isoDate);
-        else clearSingleDayCharts();
       });
+    }
+
+    function processHistoryDataAndCharts(startVal, endVal, ringkasanMap) {
+      let calcResult = renderLogStatusTable(startVal, endVal, ringkasanMap);
+      let historyList = [], curDateChart = new Date(startVal), stopDateChart = new Date(endVal);
+      while (curDateChart <= stopDateChart) {
+        let isoStr = `${curDateChart.getFullYear()}-${String(curDateChart.getMonth()+1).padStart(2,'0')}-${String(curDateChart.getDate()).padStart(2,'0')}`;
+        let displayStr = `${String(curDateChart.getDate()).padStart(2,'0')}-${String(curDateChart.getMonth()+1).padStart(2,'0')}-${curDateChart.getFullYear()}`;
+        let ringkasan = ringkasanMap[isoStr];
+        if (ringkasan) {
+          historyList.push({ isoDate: isoStr, label: displayStr, energi: ringkasan.energi, energiMatahari: ringkasan.energiMatahari, dayaRata: ringkasan.dayaRata, iradiansiRata: ringkasan.iradiansiRata });
+        }
+        curDateChart.setDate(curDateChart.getDate() + 1);
+      }
+      historyList.sort((a, b) => a.isoDate.localeCompare(b.isoDate));
+
+      chartHistoryDayaIrr.data.labels = historyList.map(item => item.label);
+      chartHistoryDayaIrr.data.datasets[0].data = historyList.map(item => item.iradiansiRata);
+      chartHistoryDayaIrr.data.datasets[1].data = historyList.map(item => item.dayaRata);
+      chartHistoryDayaIrr.update();
+
+      const dataEnergySun = historyList.map(item => item.energiMatahari);
+      const dataEnergyPlts = historyList.map(item => item.energi);
+
+      chartHistoryEnergi.data.labels = historyList.map(item => item.label);
+      chartHistoryEnergi.data.datasets[0].data = dataEnergySun;
+      chartHistoryEnergi.data.datasets[1].data = dataEnergyPlts;
+
+      let maxSun = Math.max(...dataEnergySun, 1);
+      let maxPlts = Math.max(...dataEnergyPlts, 1);
+      if (!document.getElementById("min-hisen-left").value && !document.getElementById("max-hisen-left").value) {
+        chartHistoryEnergi.options.scales.yAxes[0].ticks.max = maxSun * 1.2;
+      }
+      if (!document.getElementById("min-hisen-right").value && !document.getElementById("max-hisen-right").value) {
+        chartHistoryEnergi.options.scales.yAxes[1].ticks.max = maxPlts * 1.5;
+      }
+      chartHistoryEnergi.update();
+
+      document.getElementById("sum-hari").innerText = calcResult.hariAdaLog;
+      document.getElementById("sum-energi").innerText = calcResult.totalEnergiSum.toFixed(2) + " Wh";
+      document.getElementById("sum-daya").innerText = calcResult.avgDayaVal.toFixed(2) + " W";
+      document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
+      document.getElementById("history-summary").style.display = "grid";
+
+      if (historyList.length > 0) loadSingleDayHistory(historyList[0].isoDate);
+      else clearSingleDayCharts();
     }
 
     function reloadSingleDayDetail() { if (selectedSingleDateIso) loadSingleDayHistory(selectedSingleDateIso); }
@@ -2130,29 +2705,58 @@
       let strEnd = `${String(endHourVal).padStart(2,'0')}:${String(endMinVal).padStart(2,'0')}`;
 
       ['title-day-power', 'title-day-duty', 'title-day-vi', 'title-day-avg-power-irr', 'title-day-energi-plts-matahari', 'title-day-lama-operasi'].forEach(id => {
-        document.getElementById(id).innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
+        let el = document.getElementById(id);
+        if (el) el.innerText = `(${displayDate} | ${strStart} - ${strEnd})`;
       });
 
       database.ref("/mppt_data").once("value", (snapshot) => {
-        let histV = [], histI = [], histP = [], histIrr = [], histAvgP = [], histAvgIrr = [], histEnergyPlts = [], histEnergySun = [], histSiklusData = [], histSiklusModes = [], histLamaOp = [];
+        let histV = [], histI = [], histP = [], histIrr = [], histAvgP = [], histAvgIrr = [], histEnergyPlts = [], histEnergySun = [], histSiklusData = [], histSiklusModes = [], histLamaOp = [], histMulaiOn = [];
         let intervalMs = stepValue === "10s" ? 10000 : (stepValue === "30s" ? 30000 : (stepValue === "1m" ? 60000 : (stepValue === "5m" ? 300000 : (stepValue === "10m" ? 600000 : (stepValue === "15m" ? 900000 : (stepValue === "30m" ? 1800000 : (stepValue === "1h" ? 3600000 : 5000)))))));
         let lastRecordedTime = 0, startTotalMins = startHourVal * 60 + startMinVal, endTotalMins = endHourVal * 60 + endMinVal;
 
         snapshot.forEach((child) => {
           let item = child.val();
           if (!item) return;
-          let waktuRtc = item.waktu_rtc || "", tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "", jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
-          let formattedTanggalData = tanggalData.includes("-") && tanggalData.indexOf("-") === 2 ? `${tanggalData.split("-")[2]}-${tanggalData.split("-")[1]}-${tanggalData.split("-")[0]}` : tanggalData;
+
+          let waktuRtc = item.waktu_rtc || "";
+          let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
+          let jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
+          
+          let formattedTanggalData = tanggalData;
+          if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
+            let p = tanggalData.split("-");
+            if (p.length === 3) formattedTanggalData = `${p[2]}-${p[1]}-${p[0]}`;
+          }
+
+          let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : 0;
+          if (itemTime > 0 && itemTime < 10000000000) itemTime *= 1000;
+
+          if (!formattedTanggalData && itemTime > 0) {
+            let d = new Date(itemTime);
+            formattedTanggalData = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          }
 
           if (formattedTanggalData === targetIsoDate) {
+            if (!jamData && itemTime > 0) {
+              let d = new Date(itemTime);
+              jamData = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+            }
+
             if (jamData) {
               let tp = jamData.split(":");
               let itemTotalMins = parseInt(tp[0], 10) * 60 + (parseInt(tp[1], 10) || 0);
               if (itemTotalMins < startTotalMins || itemTotalMins > endTotalMins) return;
             }
-            let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : new Date(`${formattedTanggalData}T${jamData || "00:00:00"}`).getTime();
+
+            if (!itemTime && waktuRtc) {
+              itemTime = new Date(`${formattedTanggalData}T${jamData || "00:00:00"}`).getTime();
+            }
+            if (!itemTime || isNaN(itemTime)) itemTime = Date.now();
+
             if (stepValue !== "5s" && lastRecordedTime > 0 && (itemTime - lastRecordedTime < intervalMs)) return;
             lastRecordedTime = itemTime;
+
+            let mulaiOnVal = item.MULAI_ON !== undefined && item.MULAI_ON !== null && item.MULAI_ON !== "" ? Number(item.MULAI_ON) : 2;
 
             histV.push({ x: itemTime, y: Number(item.tegangan || 0) });
             histI.push({ x: itemTime, y: Number(item.arus || 0) });
@@ -2163,16 +2767,29 @@
             histEnergyPlts.push({ x: itemTime, y: Number(item.energi_plts_watt_jam || 0) });
             histEnergySun.push({ x: itemTime, y: Number(item.energi_matahari_watt_jam || 0) });
             histSiklusData.push({ x: itemTime, y: Number(item.siklus_kerja || 0) });
-            histLamaOp.push({ x: itemTime, y: Number(item.lama_jam_operasi || 0) });
 
             let dbMode = item.mode_operasi || "";
             histSiklusModes.push(dbMode === "Man" || item.mode_manual === true ? "MANUAL" : (dbMode === "InC" ? "INC" : "PO"));
+            histLamaOp.push({ x: itemTime, y: Number(item.lama_jam_operasi || 0) });
+            histMulaiOn.push(mulaiOnVal);
           }
+        });
+
+        [chartHistVI, chartHistPowerIrr, chartHistAvgPowerIrr, chartHistEnergiPltsMatahari, chartHistLamaOperasi, chartHistSiklusKerja].forEach(chart => {
+          if (!chart) return;
+          chart.data.datasets.forEach(dataset => {
+            dataset.mulaiOnValues = histMulaiOn;
+          });
         });
 
         chartHistVI.data.datasets[0].data = histV; chartHistVI.data.datasets[1].data = histI; chartHistVI.update();
         chartHistPowerIrr.data.datasets[0].data = histIrr; chartHistPowerIrr.data.datasets[1].data = histP; chartHistPowerIrr.update();
-        chartHistSiklusKerja.data.datasets[3].data = histSiklusData; chartHistSiklusKerja.data.datasets[3].modes = histSiklusModes; chartHistSiklusKerja.update();
+        
+        chartHistSiklusKerja.data.datasets[3].data = histSiklusData; 
+        chartHistSiklusKerja.data.datasets[3].modes = histSiklusModes; 
+        chartHistSiklusKerja.data.datasets[3].mulaiOnValues = histMulaiOn;
+        chartHistSiklusKerja.update();
+
         chartHistAvgPowerIrr.data.datasets[0].data = histAvgIrr; chartHistAvgPowerIrr.data.datasets[1].data = histAvgP; chartHistAvgPowerIrr.update();
 
         chartHistLamaOperasi.data.datasets[0].data = histLamaOp;
@@ -2180,6 +2797,7 @@
 
         let histHighlights = [];
         for (let idx = 1; idx < histEnergySun.length; idx++) {
+          if (!histEnergySun[idx] || !histEnergySun[idx-1]) continue;
           let xVal = histEnergySun[idx].x;
           if ((histEnergySun[idx].y - histEnergySun[idx - 1].y) < 1e-9) histHighlights.push({ xVal: xVal, type: 'pink' });
           else if ((histEnergyPlts[idx].y - histEnergyPlts[idx - 1].y) < 1e-9) histHighlights.push({ xVal: xVal, type: 'yellow' });
@@ -2188,6 +2806,9 @@
         chartHistEnergiPltsMatahari.data.datasets[1].data = histEnergyPlts;
         chartHistEnergiPltsMatahari.data.energyHighlights = histHighlights;
         chartHistEnergiPltsMatahari.update();
+
+        if (enableOffCurveDisconnect && selectedSingleDateIso) {
+        }
       });
     }
 
@@ -2271,6 +2892,163 @@
         return valA < valB ? (sortDirection ? -1 : 1) : (valA > valB ? (sortDirection ? 1 : -1) : 0);
       });
       rows.forEach(row => tbody.appendChild(row));
+    }
+
+    function showModalPltsOff(targetIsoDate) {
+      const modal = document.getElementById("modalPltsOff");
+      const tbody = document.getElementById("tbody-plts-off");
+      const infoText = document.getElementById("info-total-off-rows");
+      
+      tbody.innerHTML = '<tr><td colspan="6" style="color: var(--text-muted); font-style: italic;">Menganalisis sesi PLTS Off...</td></tr>';
+      modal.style.display = "flex";
+
+      const startHourVal = parseInt(document.getElementById("startTime").value, 10);
+      const startMinVal = getStartMinute();
+      const endHourVal = parseInt(document.getElementById("endTime").value, 10);
+      const endMinVal = getEndMinute();
+      let startTotalMins = startHourVal * 60 + startMinVal;
+      let endTotalMins = endHourVal * 60 + endMinVal;
+
+      database.ref("/mppt_data").once("value", (snapshot) => {
+        tbody.innerHTML = "";
+        globalOffSessionsList = [];
+        let dayItems = [];
+
+        snapshot.forEach((child) => {
+          let item = child.val();
+          if (!item) return;
+
+          let waktuRtc = item.waktu_rtc || "";
+          let tanggalData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[0] : "";
+          let jamData = waktuRtc.includes(" ") ? waktuRtc.split(" ")[1] : "";
+          
+          let formattedTanggalData = tanggalData;
+          if (tanggalData.includes("-") && tanggalData.indexOf("-") === 2) {
+            let p = tanggalData.split("-");
+            if (p.length === 3) formattedTanggalData = `${p[2]}-${p[1]}-${p[0]}`;
+          }
+
+          let itemTime = item.stempel_waktu ? Number(item.stempel_waktu) : 0;
+          if (!formattedTanggalData && itemTime > 0) {
+            let d = new Date(itemTime < 10000000000 ? itemTime * 1000 : itemTime);
+            formattedTanggalData = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          }
+
+          if (formattedTanggalData === targetIsoDate) {
+            if (jamData) {
+              let tp = jamData.split(":");
+              let itemTotalMins = parseInt(tp[0], 10) * 60 + (parseInt(tp[1], 10) || 0);
+              if (itemTotalMins >= startTotalMins && itemTotalMins <= endTotalMins) {
+                dayItems.push(item);
+              }
+            } else {
+              dayItems.push(item);
+            }
+          }
+        });
+
+        let offSessions = [];
+        let currentSession = null;
+
+        for (let i = 0; i < dayItems.length; i++) {
+          let item = dayItems[i];
+          let mulaiOnVal = item.MULAI_ON !== undefined && item.MULAI_ON !== null && item.MULAI_ON !== "" ? Number(item.MULAI_ON) : 2;
+
+          let waktuJamMenitDetik = "-";
+          if (item.waktu_rtc && item.waktu_rtc.includes(" ")) {
+            waktuJamMenitDetik = item.waktu_rtc.split(" ")[1];
+          } else if (item.stempel_waktu) {
+            let d = new Date(Number(item.stempel_waktu) < 10000000000 ? Number(item.stempel_waktu) * 1000 : Number(item.stempel_waktu));
+            waktuJamMenitDetik = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+          }
+
+          if (mulaiOnVal === 1) {
+            if (!currentSession) {
+              currentSession = {
+                startTime: waktuJamMenitDetik,
+                endTime: waktuJamMenitDetik,
+                items: [item]
+              };
+            } else {
+              currentSession.endTime = waktuJamMenitDetik;
+              currentSession.items.push(item);
+            }
+          } else {
+            if (currentSession) {
+              currentSession.endTime = waktuJamMenitDetik;
+              offSessions.push(currentSession);
+              currentSession = null;
+            }
+          }
+        }
+        if (currentSession) {
+          offSessions.push(currentSession);
+        }
+
+        globalOffSessionsList = offSessions;
+
+        if (offSessions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="color: var(--text-muted); font-style: italic;">Tidak ada sesi PLTS Off pada rentang waktu ini.</td></tr>';
+          infoText.innerText = "Total Sesi Off: 0 sesi";
+          return;
+        }
+
+        offSessions.forEach((session, index) => {
+          let avgDaya = Number(session.items[0].daya_rata_rata || 0);
+          let avgIrr = Number(session.items[0].iradiansi_rata_rata || 0);
+          let energiMatahariVal = Number(session.items[0].energi_matahari_watt_jam || 0);
+          let energiPltsVal = Number(session.items[0].energi_plts_watt_jam || 0);
+
+          let tr = document.createElement("tr");
+          tr.style.color = "#ffffff";
+          tr.style.fontWeight = "600";
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${session.startTime} s.d ${session.endTime}</td>
+            <td>${avgDaya.toFixed(2)}</td>
+            <td>${avgIrr.toFixed(0)}</td>
+            <td>${energiMatahariVal.toFixed(2)}</td>
+            <td>${energiPltsVal.toFixed(2)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        infoText.innerText = `Total Sesi Off: ${offSessions.length} sesi`;
+      });
+    }
+
+    function closeModalPltsOff() {
+      document.getElementById("modalPltsOff").style.display = "none";
+    }
+
+    function exportPltsOffToCSV() {
+      if (!globalOffSessionsList || globalOffSessionsList.length === 0) {
+        alert("Tidak ada rekap sesi PLTS Off untuk diunduh.");
+        return;
+      }
+      let rows = [["no", "waktu_mulai_off", "waktu_on_kembali", "daya_rata_rata", "iradiansi_rata_rata", "energi_matahari", "energi_plts"]];
+      
+      globalOffSessionsList.forEach((session, idx) => {
+        let avgDaya = Number(session.items[0].daya_rata_rata || 0);
+        let avgIrr = Number(session.items[0].iradiansi_rata_rata || 0);
+        let energiMatahariVal = Number(session.items[0].energi_matahari_watt_jam || 0);
+        let energiPltsVal = Number(session.items[0].energi_plts_watt_jam || 0);
+
+        rows.push([
+          idx + 1,
+          `"${session.startTime}"`,
+          `"${session.endTime}"`,
+          avgDaya.toFixed(2),
+          avgIrr.toFixed(0),
+          energiMatahariVal.toFixed(2),
+          energiPltsVal.toFixed(2)
+        ]);
+      });
+
+      let link = document.createElement("a");
+      link.href = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+      link.download = `rekap_sesi_plts_off_${selectedSingleDateIso}.csv`;
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
   </script>
 </body>
