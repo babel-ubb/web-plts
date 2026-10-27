@@ -72,7 +72,7 @@
       text-align: center; 
       margin-bottom: 30px; 
       padding-bottom: 16px; 
-      border-bottom: 1px solid var(--border-color); 
+      border-bottom: 2px solid var(--border-color); 
     }
     
     .sub-title {
@@ -81,14 +81,14 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
     }
 
     h1 { 
       color: var(--title-bright-color) !important; 
       font-size: 28px; 
       font-weight: 800; 
-      margin-bottom: 10px; 
+      margin-bottom: 2px; 
       letter-spacing: 0.5px; 
     }
     
@@ -529,15 +529,11 @@
 <body>
 
   <header>
-    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 10px;">
-      <div style="width: 38px;"></div>
-      <div>
-        <div class="sub-title">Teknik Elektro Universitas Bangka Belitung</div>
-        <h1>Sistem Pemantauan & Pengendalian PLTS</h1>
-      </div>
-      <button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar">☀️</button>
+    <div style="text-align: center; max-width: 1200px; margin: 0 auto; padding: 0 10px;">
+      <div class="sub-title">Teknik Elektro Universitas Bangka Belitung</div>
+      <h1>Sistem Pemantauan & Pengendalian PLTS</h1>
     </div>
-    <p class="status" style="margin-top: 12px;">
+    <p class="status" style="margin-top: 2px;">
       Status Perangkat: 
       <span id="status-esp" class="status-badge status-offline">Offline</span>
       <span id="status-note" class="status-note" style="display:none;"></span>
@@ -1054,17 +1050,21 @@
 
     <div class="esp-memory-item" style="flex-direction: row; gap: 8px;">
       <button id="btnToggleOffCurve" class="btn-toggle-off-curve" onclick="toggleOffCurve()" style="flex: 1; height: 34px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Data PLTS Off</button>
-    </div>
+<button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar" style="height: 34px; width: 34px; border-radius: 6px;">☀️</button>    
+
+</div>
   </div>
 
   <!-- MODAL JENDELA TABEL PLTS OFF (SESI OFFLINE) -->
   <div id="modalPltsOff" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
-    <div style="background: var(--card-bg); width: 100%; max-width: 1000px; max-height: 85vh; border-radius: 14px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; color: var(--text-color); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);">
+  <div style="background: var(--card-bg); width: 100%; max-width: 1000px; max-height: 85vh; border-radius: 14px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; color: var(--text-color); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);">
       
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
         <h3 style="color: var(--primary-color); font-size: 18px; font-weight: 700;">⚠️ Rekap Sesi PLTS Off (Mulai Off sampai On Kembali)</h3>
         <button onclick="closeModalPltsOff()" style="background: transparent; border: none; color: var(--text-color); font-size: 22px; cursor: pointer; font-weight: bold;">✕</button>
-      </div>
+      
+
+</div>
 
       <div class="table-responsive" style="flex: 1; overflow-y: auto; max-height: 60vh;">
         <table class="log-status-table" id="table-plts-off">
@@ -1095,8 +1095,15 @@
         </div>
       </div>
 
+
+
+
+
     </div>
+
+
   </div>
+
 
   <script>
     let enableOffCurveDisconnect = false;
