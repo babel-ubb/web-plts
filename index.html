@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pemantauan dan Pengendalian PLTS - Teknik Elektro UBB</title>
+  <title>Pemantauan dan Pengendalian PLTS - Universitas Bangka Belitung</title>
 
   <!-- Firebase Web SDK v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -21,21 +21,21 @@
 
   <style>
     :root {
-      --bg-color: #121212;
-      --card-bg: #1e1e1e;
-      --card-inner-bg: #181818;
-      --text-color: #ffffff;
-      --text-muted: #cccccc;
-      --border-color: #333333;
-      --primary-color: #0284c7;
-      --danger-color: #d97706;
-      --warning-color: #ff9800;
-      --chart-grid: rgba(255,255,255,0.15);
-      --sub-heading-color: #0284c7;
+      --bg-color: #0b0f19;
+      --card-bg: #111827;
+      --card-inner-bg: #1f2937;
+      --text-color: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #374151;
+      --primary-color: #38bdf8;
+      --title-bright-color: #38bdf8;
+      --danger-color: #f87171;
+      --warning-color: #fbbf24;
+      --chart-grid: rgba(255,255,255,0.08);
       
-      --btn-blue-bg: #0284c7;
-      --btn-blue-hover: #0369a1;
-      --box-blue-color: #0284c7;
+      --btn-blue-bg: #1e293b;
+      --btn-blue-hover: #334155;
+      --box-blue-color: #38bdf8;
       --realtime-value-color: #38bdf8;
       
       --slider-track: #38bdf8;
@@ -43,20 +43,20 @@
     }
 
     body.light-mode {
-      --bg-color: #cbd5e1;
+      --bg-color: #f1f5f9;
       --card-bg: #ffffff;
-      --card-inner-bg: #f1f5f9;
+      --card-inner-bg: #f8fafc;
       --text-color: #0f172a;
-      --text-muted: #334155;
-      --border-color: #94a3b8;
+      --text-muted: #475569;
+      --border-color: #cbd5e1;
       --primary-color: #0284c7;
+      --title-bright-color: #0284c7;
       --danger-color: #dc2626;
       --warning-color: #d97706;
-      --chart-grid: rgba(0, 0, 0, 0.15);
-      --sub-heading-color: #0284c7;
+      --chart-grid: rgba(0, 0, 0, 0.08);
 
-      --btn-blue-bg: #0284c7;
-      --btn-blue-hover: #0369a1;
+      --btn-blue-bg: #ffffff;
+      --btn-blue-hover: #f1f5f9;
       --box-blue-color: #0284c7;
       --realtime-value-color: #2563eb;
 
@@ -64,98 +64,121 @@
       --slider-thumb: #0284c7;
     }
 
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
-    body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; transition: background-color 0.3s, color 0.3s; font-size: 16px; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
+    body { background-color: var(--bg-color); color: var(--text-color); padding: 24px; transition: background-color 0.3s, color 0.3s; font-size: 15px; line-height: 1.5; }
     
     header { 
       position: relative;
       text-align: center; 
-      margin-bottom: 25px; 
-      padding-bottom: 12px; 
-      border-bottom: 2px solid var(--border-color); 
+      margin-bottom: 30px; 
+      padding-bottom: 16px; 
+      border-bottom: 1px solid var(--border-color); 
     }
     
     .sub-title {
-      color: #0284c7 !important;
-      font-size: 24px;
+      color: var(--text-muted) !important;
+      font-size: 18px;
       font-weight: 700;
-      margin-bottom: 4px;
-      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
     }
 
-    h1 { color: #0284c7 !important; font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
+    h1 { 
+      color: var(--title-bright-color) !important; 
+      font-size: 28px; 
+      font-weight: 800; 
+      margin-bottom: 10px; 
+      letter-spacing: 0.5px; 
+    }
     
     .status { 
-      font-size: 16px; 
-      font-weight: 500;
+      font-size: 15px; 
+      font-weight: 600;
       color: var(--text-muted); 
-      margin-top: 6px; 
+      margin-top: 8px; 
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
     
     .theme-toggle-btn {
-      background: var(--btn-blue-bg);
-      border: 2px solid var(--btn-blue-bg);
-      color: #ffffff;
-      padding: 10px;
-      width: 42px;
-      height: 42px;
+      background: var(--card-inner-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 8px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       cursor: pointer;
-      font-weight: bold;
-      font-size: 18px;
-      transition: 0.3s;
+      font-size: 16px;
+      transition: 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
     }
+    body.light-mode .theme-toggle-btn {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #000000 !important;
+    }
     .theme-toggle-btn:hover {
-      background: var(--btn-blue-hover);
-      border-color: var(--btn-blue-hover);
+      transform: scale(1.05);
     }
 
-    .status-badge { font-weight: 500; font-size: 16px; padding: 0; border-radius: 0; background: transparent; border: none; transition: color 0.3s; }
-    .status-online { color: #00e676; }
+    .status-badge { font-weight: 700; font-size: 18px; padding: 2px 10px; border-radius: 6px; background: rgba(0,0,0,0.1); }
+    .status-online { color: #10b981; }
     .status-offline { color: var(--danger-color); }
-    .status-note { font-size: 14px; font-weight: 500; color: var(--text-muted); font-style: italic; }
+    .status-note { font-size: 13px; font-weight: 500; color: var(--text-muted); font-style: italic; }
 
     .control-section {
       max-width: 1200px;
-      margin: 0 auto 25px auto;
+      margin: 0 auto 24px auto;
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 24px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
       text-align: center;
     }
 
-    .control-section h2 { font-size: 20px; font-weight: 700; color: #0284c7 !important; margin-bottom: 16px; }
+    .control-section h2 { font-size: 18px; font-weight: 700; color: var(--title-bright-color) !important; margin-bottom: 16px; }
     .control-box { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: center; }
-    .mode-buttons { display: flex; gap: 12px; }
+    .mode-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
     .btn-mode {
-      padding: 12px 24px;
+      padding: 10px 20px;
       border-radius: 8px;
-      border: 2px solid #0284c7;
-      font-weight: 700;
+      border: 1px solid var(--border-color);
+      font-weight: 600;
       cursor: pointer;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      background: transparent;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      background: var(--card-inner-bg);
       color: var(--text-color);
+    }
+    body.light-mode .btn-mode {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    .btn-mode:hover {
+      border-color: var(--primary-color);
+      opacity: 0.9;
     }
     .btn-mode:disabled { opacity: 0.4; cursor: not-allowed; }
     
     .btn-mode.active-blue {
+      background: var(--primary-color) !important;
+      color: #ffffff !important;
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+    }
+    body.light-mode .btn-mode.active-blue {
       background: #0284c7 !important;
       color: #ffffff !important;
-      border-color: #0284c7 !important;
-      box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
     }
 
     .slider-container {
@@ -163,38 +186,38 @@
       align-items: center;
       gap: 15px;
       background: var(--card-inner-bg);
-      padding: 10px 20px;
+      padding: 8px 16px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
     }
-    .slider-container label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-    .slider { -webkit-appearance: none; width: 180px; height: 8px; border-radius: 5px; background: var(--slider-track); outline: none; }
-    .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--slider-thumb); cursor: pointer; }
+    .slider-container label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .slider { -webkit-appearance: none; width: 160px; height: 6px; border-radius: 3px; background: var(--slider-track); outline: none; }
+    .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--slider-thumb); cursor: pointer; }
     .slider:disabled { opacity: 0.3; cursor: not-allowed; }
-    .slider-val { font-size: 16px; font-weight: 700; color: #38bdf8; min-width: 50px; text-align: right; }
+    .slider-val { font-size: 15px; font-weight: 700; color: var(--primary-color); min-width: 45px; text-align: right; }
 
     .control-duty-realtime {
       display: flex;
       align-items: center;
       gap: 10px;
       background: var(--card-inner-bg);
-      padding: 6px 14px;
+      padding: 8px 14px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
     }
-    .control-duty-realtime label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-    .control-duty-realtime .val-box { font-size: 16px; font-weight: 800; color: var(--realtime-value-color); }
+    .control-duty-realtime label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .control-duty-realtime .val-box { font-size: 15px; font-weight: 700; color: var(--realtime-value-color); }
 
-    .dashboard-grid { max-width: 1200px; margin: 0 auto 30px auto; }
+    .dashboard-grid { max-width: 1200px; margin: 0 auto 24px auto; }
     .realtime-unified-box {
       background: var(--card-bg);
-      border: 2px solid #0284c7;
-      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
       padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
-    .realtime-header { text-align: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px dashed var(--border-color); }
-    .realtime-header h2 { font-size: 20px; font-weight: 700; color: #0284c7 !important; text-transform: uppercase; letter-spacing: 0.8px; }
+    .realtime-header { text-align: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+    .realtime-header h2 { font-size: 18px; font-weight: 700; color: var(--title-bright-color) !important; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .realtime-groups-grid {
       display: grid;
@@ -208,7 +231,7 @@
     .realtime-sub-group {
       background: var(--card-inner-bg);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 16px;
       display: flex;
       justify-content: space-around;
@@ -225,19 +248,19 @@
       align-items: center;
       padding: 4px;
     }
-    .sub-card h3 { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-    .sub-card .value { font-size: 22px; font-weight: 800; color: var(--realtime-value-color); margin: auto 0; line-height: 1.1; }
-    .sub-card .unit { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
+    .sub-card h3 { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .sub-card .value { font-size: 24px; font-weight: 800; color: var(--realtime-value-color); margin: auto 0; line-height: 1.1; }
+    .sub-card .unit { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 6px; }
 
     .vertical-divider {
       width: 1px;
       background-color: var(--border-color);
-      margin: 0 2px;
+      margin: 0 4px;
     }
 
-    .charts-wrapper { max-width: 1200px; margin: 0 auto 30px auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
-    .chart-box { background: var(--card-bg); border-radius: 12px; padding: 18px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .chart-box h2 { font-size: 16px; font-weight: 700; color: #0284c7; margin-bottom: 12px; text-align: center; }
+    .charts-wrapper { max-width: 1200px; margin: 0 auto 24px auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    .chart-box { background: var(--card-bg); border-radius: 14px; padding: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .chart-box h2 { font-size: 16px; font-weight: 700; color: var(--title-bright-color); margin-bottom: 16px; text-align: center; }
 
     .scale-control-panel {
       display: flex;
@@ -245,12 +268,13 @@
       flex-wrap: wrap;
       gap: 12px;
       background: var(--card-inner-bg);
-      padding: 10px 14px;
+      padding: 12px 16px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
-      margin-top: 14px;
-      font-size: 12px;
+      margin-top: 16px;
+      font-size: 13px;
       align-items: center;
+      color: var(--text-muted);
     }
     .scale-axis-group {
       display: flex;
@@ -258,169 +282,263 @@
       gap: 8px;
       flex-wrap: wrap;
     }
-    .scale-axis-title {
-      font-weight: 700;
-    }
+
     .scale-input-box {
       width: 65px;
-      padding: 4px 6px;
+      padding: 5px 8px;
       border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background: var(--card-bg);
+      border-radius: 6px;
+      background: var(--card-inner-bg);
       color: var(--text-color);
-      font-size: 12px;
+      font-size: 13px;
+      font-weight: 600;
       outline: none;
     }
+    body.light-mode .scale-input-box {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #000000 !important;
+    }
+    
     .scale-btn-auto {
-      background: #0284c7;
-      border: none;
-      color: #ffffff;
-      padding: 5px 12px;
+      background: var(--card-inner-bg);
+      border: 1px solid var(--border-color);
+      color: #C4B5A5 !important;
+      padding: 5px 14px;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 600;
       font-size: 12px;
-      transition: background 0.2s;
+      transition: 0.2s;
+    }
+    body.light-mode .scale-btn-auto {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #000000 !important;
     }
     .scale-btn-auto:hover {
-      background: #0369a1;
+      border-color: var(--primary-color);
+    }
+    body.light-mode .scale-btn-auto:hover {
+      background: #f1f5f9 !important;
     }
 
     .esp-memory-box {
       max-width: 1200px; 
-      margin: 25px auto 30px auto; 
+      margin: 24px auto; 
       background: var(--card-bg); 
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 16px 20px; 
       border: 1px solid var(--border-color); 
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 16px;
       align-items: stretch;
       text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
-    .esp-memory-item { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; }
-    .esp-memory-box span { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-    .esp-memory-box strong { font-size: 20px; font-weight: 800; color: var(--warning-color); }
+    @media (max-width: 800px) {
+      .esp-memory-box { grid-template-columns: repeat(2, 1fr); }
+    }
+    .esp-memory-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: var(--card-inner-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; }
+    .esp-memory-box span { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .esp-memory-box strong { font-size: 18px; font-weight: 800; color: var(--warning-color); }
 
-    .history-section { max-width: 1200px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; padding: 22px; border: 1px solid var(--border-color); }
-    .history-section h2 { font-size: 20px; font-weight: 700; color: #0284c7 !important; margin-bottom: 18px; text-align: center; }
+    .history-section { max-width: 1200px; margin: 0 auto; background: var(--card-bg); border-radius: 14px; padding: 24px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .history-section h2 { font-size: 20px; font-weight: 700; color: var(--title-bright-color) !important; margin-bottom: 20px; text-align: center; }
 
-    .filter-box { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: center; margin-bottom: 25px; }
+    .filter-box { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; align-items: center; margin-bottom: 24px; }
     .filter-group { display: flex; align-items: center; gap: 8px; }
-    .filter-group label { font-size: 15px; font-weight: 600; color: var(--text-muted); }
+    .filter-group label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    
     .filter-group input[type="text"] {
       background: var(--card-inner-bg); border: 1px solid var(--border-color); color: var(--text-color);
-      padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; outline: none;
+      padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; outline: none;
+    }
+    body.light-mode .filter-group input[type="text"] {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #000000 !important;
     }
 
     .btn-export, .btn-clear, .btn-action-custom, .select-time-kontras, #stepSelect {
-      background: #0284c7 !important;
-      border: 2px solid #0284c7 !important;
-      color: #ffffff !important;
-      padding: 3px 12px !important;
-      border-radius: 8px !important;
-      font-size: 12px !important;
-      font-weight: 800 !important;
+      background: var(--card-inner-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-color) !important;
+      padding: 6px 14px !important;
+      border-radius: 6px !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
       outline: none !important;
       cursor: pointer !important;
       transition: all 0.2s ease-in-out;
     }
-    .btn-export:hover, .btn-clear:hover, .btn-action-custom:hover, .select-time-kontras:hover, #stepSelect:hover {
-      background: #0369a1 !important;
-      border-color: #0369a1 !important;
+    body.light-mode .btn-export, 
+    body.light-mode .btn-clear, 
+    body.light-mode .btn-action-custom, 
+    body.light-mode .select-time-kontras, 
+    body.light-mode #stepSelect {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #000000 !important;
     }
+    .btn-export:hover, .btn-clear:hover, .btn-action-custom:hover, .select-time-kontras:hover, #stepSelect:hover {
+      border-color: var(--primary-color) !important;
+    }
+    body.light-mode .btn-export:hover, 
+    body.light-mode .btn-clear:hover, 
+    body.light-mode .btn-action-custom:hover, 
+    body.light-mode .select-time-kontras:hover, 
+    body.light-mode #stepSelect:hover {
+      background: #f1f5f9 !important;
+    }
+
     .select-time-kontras option, #stepSelect option {
       background-color: var(--card-bg) !important;
       color: var(--text-color) !important;
-      font-weight: 700;
+      font-weight: 600;
+    }
+    body.light-mode .select-time-kontras option, 
+    body.light-mode #stepSelect option {
+      background-color: #ffffff !important;
+      color: #000000 !important;
     }
 
-    .flatpickr-calendar .flatpickr-day, .flatpickr-calendar .flatpickr-day.selected, .flatpickr-calendar .flatpickr-day.today { color: #000 !important; }
-    .flatpickr-day.has-data { background: rgba(2, 132, 199, 0.4) !important; border-color: #0284c7 !important; color: #000 !important; font-weight: bold !important; }
+    .flatpickr-calendar .flatpickr-day, .flatpickr-calendar .flatpickr-day.selected, .flatpickr-calendar .flatpickr-day.today { color: inherit; }
+    .flatpickr-day.has-data { background: rgba(56, 189, 248, 0.2) !important; border-color: var(--primary-color) !important; font-weight: bold !important; }
 
-    .history-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .summary-card { background: var(--card-inner-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
-    .summary-card span { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-    .summary-card strong { font-size: 17px; font-weight: 800; color: #0284c7; margin-top: 4px; display: block; }
+    .history-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .summary-card { background: var(--card-inner-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
+    .summary-card span { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .summary-card strong { font-size: 18px; font-weight: 800; color: var(--primary-color); margin-top: 4px; display: block; }
 
     .history-charts-grid { display: flex; flex-direction: column; gap: 20px; }
-    .history-chart-box { background: var(--card-inner-bg); border-radius: 8px; padding: 18px; border: 1px solid var(--border-color); }
-    .history-chart-box h3 { text-align: center; color: #0284c7; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+    .history-chart-box { background: var(--card-inner-bg); border-radius: 10px; padding: 18px; border: 1px solid var(--border-color); }
+    .history-chart-box h3 { text-align: center; color: var(--title-bright-color); font-size: 16px; font-weight: 700; margin-bottom: 14px; }
 
-    .history-table-box { background: var(--card-inner-bg); border-radius: 8px; padding: 18px; border: 1px solid var(--border-color); margin: 10px 0; }
-    .history-table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+    .history-table-box { background: var(--card-inner-bg); border-radius: 10px; padding: 18px; border: 1px solid var(--border-color); margin: 10px 0; }
+    .history-table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
     .history-table-header .table-action-btns { display: flex; gap: 10px; flex-wrap: wrap; }
     
-    .history-table-box h3 { text-align: center; color: #0284c7 !important; font-size: 16px; font-weight: 700; margin: 0; flex-grow: 1; }
+    .history-table-box h3 { text-align: left; color: var(--title-bright-color) !important; font-size: 16px; font-weight: 700; margin: 0; flex-grow: 1; }
 
     .log-rekap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .log-rekap-card { background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
-    .log-rekap-card span { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .log-rekap-card span { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
     .log-rekap-card strong { font-size: 18px; font-weight: 800; margin-top: 4px; display: block; }
 
-    .table-responsive { max-height: 350px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; }
-    .log-status-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; white-space: nowrap; }
-    .log-status-table th, .log-status-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
-    .log-status-table th { background: var(--card-bg); color: #0284c7; font-weight: 700; position: sticky; top: 0; z-index: 2; cursor: pointer; }
-    .log-status-table tbody tr:hover { background: rgba(2, 132, 199, 0.1); }
-    .log-status-table tbody tr.selected-row { background: rgba(2, 132, 199, 0.25) !important; font-weight: bold; }
-    .log-status-table tfoot td { background: var(--card-bg); font-weight: 800; color: #0284c7; position: sticky; bottom: 0; z-index: 2; }
+    .table-responsive { max-height: 380px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--border-color); }
+    
+    /* DEFAULT TABEL (MODE GELAP) */
+    .log-status-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; white-space: nowrap; background-color: #0f172a !important; }
+    .log-status-table th, .log-status-table td { padding: 12px 14px; border-bottom: 1px solid #1e293b; color: #ffffff !important; }
+    .log-status-table th { background: #0f172a !important; color: #38bdf8 !important; font-weight: 700; position: sticky; top: 0; z-index: 2; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+    .log-status-table td { color: #ffffff !important; font-weight: 500; }
+    .log-status-table tbody tr { background-color: #0f172a !important; }
+    .log-status-table tbody tr:hover { background: rgba(56, 189, 248, 0.15) !important; }
+    .log-status-table tbody tr.selected-row { background: rgba(56, 189, 248, 0.3) !important; font-weight: bold; }
+    .log-status-table tfoot td { background: #0f172a !important; font-weight: 700; color: #38bdf8 !important; position: sticky; bottom: 0; z-index: 2; border-top: 2px solid #38bdf8; }
+
+    /* PENGATURAN TABEL KHUSUS: MODE TERANG (BACKGROUND ABU-ABU MUDA, TULISAN HITAM, BARIS TERPILIH ABU-ABU AGAK TUA, NILAI ANGKA DIPERBESAR 1 TINGKAT) */
+    body.light-mode .log-status-table {
+      background-color: #e2e8f0 !important;
+    }
+    body.light-mode .log-status-table th {
+      background: #cbd5e1 !important;
+      color: #000000 !important;
+      font-size: 13px !important;
+    }
+    body.light-mode .log-status-table td {
+      color: #000000 !important;
+      font-size: 14px !important;
+      font-weight: 700 !important;
+    }
+    body.light-mode .log-status-table tbody tr {
+      background-color: #e2e8f0 !important;
+    }
+    body.light-mode .log-status-table tbody tr:hover {
+      background: rgba(0, 0, 0, 0.08) !important;
+    }
+    body.light-mode .log-status-table tbody tr.selected-row {
+      background: #94a3b8 !important;
+      color: #000000 !important;
+    }
+    body.light-mode .log-status-table tbody tr.selected-row td {
+      color: #000000 !important;
+    }
+    body.light-mode .log-status-table tfoot td {
+      background: #cbd5e1 !important;
+      color: #000000 !important;
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      border-top: 2px solid #000000;
+    }
 
     .interval-bar-box {
       max-width: 1200px;
-      margin: 15px auto 10px auto;
+      margin: 16px auto;
       display: flex; 
       justify-content: space-between; 
       align-items: center;
-      padding: 12px 18px; 
-      background: var(--card-inner-bg); 
-      border-radius: 8px; 
+      padding: 14px 20px; 
+      background: var(--card-bg); 
+      border-radius: 12px; 
       border: 1px solid var(--border-color); 
       flex-wrap: wrap; 
-      gap: 12px;
+      gap: 14px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
     .txt-pilih-baris {
-      font-size: 15px;
-      font-weight: 700;
-      color: #0284c7 !important;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary-color) !important;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .btn-toggle-off-curve {
-      background: #0284c7;
-      border: 2px solid #0284c7;
-      color: #ffffff;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
+      background: var(--card-inner-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
     }
+    body.light-mode .btn-toggle-off-curve {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #000000 !important;
+    }
     .btn-toggle-off-curve:hover {
-      background: #0369a1;
-      border-color: #0369a1;
+      border-color: var(--primary-color);
+    }
+    body.light-mode .btn-toggle-off-curve:hover {
+      background: #f1f5f9 !important;
     }
     .btn-toggle-off-curve.active {
-      background: #d97706;
-      border-color: #d97706;
-    }
-    .btn-toggle-off-curve.active:hover {
-      background: #dc2626;
-      border-color: #dc2626;
+      background: #991b1b !important;
+      color: #ffffff !important;
+      border-color: #ef4444 !important;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="sub-title">Teknik Elektro UBB</div>
-    <h1>Pemantauan dan Pengendalian PLTS</h1>
-    <p class="status">
-      Status PLTS: 
+    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 10px;">
+      <div style="width: 38px;"></div>
+      <div>
+        <div class="sub-title">Teknik Elektro Universitas Bangka Belitung</div>
+        <h1>Sistem Pemantauan & Pengendalian PLTS</h1>
+      </div>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar">☀️</button>
+    </div>
+    <p class="status" style="margin-top: 12px;">
+      Status Perangkat: 
       <span id="status-esp" class="status-badge status-offline">Offline</span>
       <span id="status-note" class="status-note" style="display:none;"></span>
     </p>
@@ -428,12 +546,12 @@
 
   <!-- SECTION KONTROL MPPT -->
   <div class="control-section">
-    <h2>Parameter Pengendalian PLTS</h2>
+    <h2>Panel Pengendalian Operasional PLTS</h2>
     <div class="control-box">
       <div class="mode-buttons">
-        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT, WAKTU LOGGING, SENSOR</button>
-        <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">PILIH METODE MPPT</button>
-        <button id="btn-manual" class="btn-mode" onclick="handleManualClick()">MANUAL</button>
+        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">⚙️ PARAMETER MPPT, WAKTU LOG & SENSOR</button>
+        <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">📊 PILIH METODE MPPT</button>
+        <button id="btn-manual" class="btn-mode" onclick="handleManualClick()">🎛️ MANUAL</button>
       </div>
 
       <div class="slider-container" id="slider-container-box">
@@ -443,7 +561,7 @@
       </div>
 
       <div id="mppt-mode-info-container" class="control-duty-realtime">
-        <label>Mode MPPT:</label>
+        <label>Metode MPPT Aktif:</label>
         <span class="val-box" id="val-mppt-mode-info">-</span>
       </div>
     </div>
@@ -453,11 +571,10 @@
   <div class="dashboard-grid">
     <div class="realtime-unified-box">
       <div class="realtime-header">
-        <h2>Data Real Time (Setiap <span id="interval-label">5</span> detik)</h2>
+        <h2>Data Telemetri Real-Time (Interval: <span id="interval-label">5</span> Detik)</h2>
       </div>
       <div class="realtime-groups-grid">
         
-        <!-- a. Energi Matahari, Energi PLTS dan lama operasi -->
         <div class="realtime-sub-group">
           <div class="sub-card">
             <h3>Energi Matahari</h3>
@@ -478,8 +595,6 @@
           </div>
         </div>
 
-
-        <!-- b. Iradiansi rata rata dan daya rata rata -->
         <div class="realtime-sub-group">
           <div class="sub-card">
             <h3>Iradiansi Rata-rata</h3>
@@ -494,7 +609,6 @@
           </div>
         </div>
 
-        <!-- c. Iradiansi, daya, dan Siklus Kerja -->
         <div class="realtime-sub-group">
           <div class="sub-card">
             <h3>Iradiansi</h3>
@@ -515,7 +629,6 @@
           </div>
         </div>
 
-        <!-- d. Tegangan, Arus -->
         <div class="realtime-sub-group">
           <div class="sub-card">
             <h3>Tegangan (V)</h3>
@@ -532,9 +645,8 @@
 
       </div>
 
-<!-- TAMBAHKAN DI SINI (Di bawah semua kelompok a, b, c, dan d) -->
-      <div id="logging-time-info" style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color); text-align: center; font-size: 16px; font-weight: 600; color: var(--text-muted);">
-        Waktu Logging: <span id="val-jam-mulai-log" style="color: #0284c7; font-weight: 700;">-</span>:00 WIB s.d <span id="val-jam-selesai-log" style="color: #0284c7; font-weight: 700;">-</span>:00 WIB
+      <div id="logging-time-info" style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--border-color); text-align: center; font-size: 14px; font-weight: 600; color: var(--text-muted);">
+        Jadwal Waktu Logging: <span id="val-jam-mulai-log" style="color: var(--primary-color); font-weight: 700;">-</span>:00 WIB s.d <span id="val-jam-selesai-log" style="color: var(--primary-color); font-weight: 700;">-</span>:00 WIB
       </div>
 
     </div>
@@ -542,13 +654,13 @@
 
   <div style="max-width: 1200px; margin: 0 auto 15px auto;" class="interval-bar-box">
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 15px;">
-      <div style="font-size: 14px; font-weight: 600; color: var(--text-muted);">
-        💡 Klik keterangan warna kurva untuk menyembunyikan atau menampilkan kurva.
+      <div style="font-size: 13px; font-weight: 600; color: var(--text-muted);">
+        💡 Tips: Klik legenda warna pada grafik untuk menyembunyikan/menampilkan kurva tertentu.
       </div>
       <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
         <div class="filter-group">
-          <label for="tensionRealtimeSelect" style="font-size: 13px;">Kelengkungan Garis:</label>
-          <select id="tensionRealtimeSelect" class="scale-input-box" onchange="changeRealtimeLineTension(this.value)" style="width: 65px; height: 32px; padding: 2px 6px; font-size: 13px;">
+          <label for="tensionRealtimeSelect" style="font-size: 12px;">Kelengkungan:</label>
+          <select id="tensionRealtimeSelect" class="scale-input-box" onchange="changeRealtimeLineTension(this.value)" style="width: 65px; height: 32px; padding: 2px 6px; font-size: 12px;">
             <option value="0" selected>0</option>
             <option value="0.1">0.1</option>
             <option value="0.2">0.2</option>
@@ -556,8 +668,8 @@
           </select>
         </div>
         <div class="filter-group">
-          <label for="pointRadiusRealtimeSelect" style="font-size: 13px;">Titik Data :</label>
-          <select id="pointRadiusRealtimeSelect" class="scale-input-box" onchange="changeRealtimePointRadius(this.value)" style="width: 85px; height: 32px; padding: 2px 6px; font-size: 13px;">
+          <label for="pointRadiusRealtimeSelect" style="font-size: 12px;">Titik Data:</label>
+          <select id="pointRadiusRealtimeSelect" class="scale-input-box" onchange="changeRealtimePointRadius(this.value)" style="width: 85px; height: 32px; padding: 2px 6px; font-size: 12px;">
             <option value="0" selected>Tak ada</option>
             <option value="1">Kecil</option>
             <option value="2">Sedang</option>
@@ -572,27 +684,27 @@
   <div class="charts-wrapper">
     <div class="chart-box">
       <h2>Energi Matahari & Energi PLTS</h2>
-      <canvas id="chartRealtimeEnergi" style="max-height: 400px;"></canvas>
-    </div>
-
-    <div class="chart-box">
-      <h2>Iradiansi (W/m²) & Daya (W)</h2>
-      <canvas id="chartDayaIrradiance" style="max-height: 400px;"></canvas>
-    </div>
-
-    <div class="chart-box">
-      <h2>Siklus Kerja / Duty Cycle (%)</h2>
-      <canvas id="chartDutyCycle" style="max-height: 400px;"></canvas>
-    </div>
-
-    <div class="chart-box">
-      <h2>Tegangan (V) & Arus (A)</h2>
-      <canvas id="chartVI" style="max-height: 400px;"></canvas>
+      <canvas id="chartRealtimeEnergi" style="max-height: 380px;"></canvas>
     </div>
 
     <div class="chart-box">
       <h2>Iradiansi Rata-rata & Daya Rata-rata</h2>
-      <canvas id="chartRealtimeAkumulasi" style="max-height: 400px;"></canvas>
+      <canvas id="chartRealtimeAkumulasi" style="max-height: 380px;"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Iradiansi & Daya</h2>
+      <canvas id="chartDayaIrradiance" style="max-height: 380px;"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Siklus Kerja / Duty Cycle (%)</h2>
+      <canvas id="chartDutyCycle" style="max-height: 380px;"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h2>Tegangan (V) & Arus (A)</h2>
+      <canvas id="chartVI" style="max-height: 380px;"></canvas>
     </div>
   </div>
 
@@ -602,30 +714,30 @@
     
     <div class="filter-box">
       <div class="filter-group">
-        <label for="startDate">AWAL:</label>
+        <label for="startDate">Dari Tanggal:</label>
         <input type="text" id="startDate" placeholder="Pilih Tanggal Awal">
       </div>
       <div class="filter-group">
-        <label for="endDate">AKHIR:</label>
+        <label for="endDate">Hingga Tanggal:</label>
         <input type="text" id="endDate" placeholder="Pilih Tanggal Akhir">
       </div>
     </div>
 
     <div class="history-summary-grid" id="history-summary">
       <div class="summary-card">
-        <span>Jumlah Hari Beroperasi</span>
+        <span>Hari Beroperasi</span>
         <strong id="sum-hari">0</strong>
       </div>
       <div class="summary-card">
-        <span>Energi PLTS</span>
+        <span>Total Energi PLTS</span>
         <strong id="sum-energi">0.00 Wh</strong>
       </div>
       <div class="summary-card">
-        <span>DAYA RATA-RATA</span>
+        <span>Daya Rata-rata</span>
         <strong id="sum-daya">0.00 W</strong>
       </div>
       <div class="summary-card">
-        <span>IRADIAN RATA-RATA</span>
+        <span>Iradian Rata-rata</span>
         <strong id="sum-irr">0 W/m²</strong>
       </div>
     </div>
@@ -633,60 +745,56 @@
     <div class="history-charts-grid">
       <!-- 1. Grafik History Energi Harian -->
       <div class="history-chart-box">
-        <h3>Energi Matahari & Energi PLTS Harian</h3>
-        <canvas id="chartHistoryEnergi" style="max-height: 380px;"></canvas>
+        <h3>Energi Matahari & Energi PLTS Harian (Wh)</h3>
+        <canvas id="chartHistoryEnergi" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Energi Matahari):</span>
-            <span>Min:</span><input type="number" id="min-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'max', this.value)">
+            <span style="color: #fbbf24;">Min:</span><input type="number" id="min-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'min', this.value)">
+            <span style="color: #fbbf24;">Max:</span><input type="number" id="max-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'max', this.value)">
           </div>
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Energi PLTS):</span>
-            <span>Min:</span><input type="number" id="min-hisen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y1', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-hisen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y1', 'max', this.value)">
+            <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-hisen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y1', 'min', this.value)">
+            <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-hisen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistoryEnergi', ['y', 'y1'], ['min-hisen-left', 'max-hisen-left', 'min-hisen-right', 'max-hisen-right'])">Auto</button>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistoryEnergi', ['y', 'y1'], ['min-hisen-left', 'max-hisen-left', 'min-hisen-right', 'max-hisen-right'])">Reset Skala</button>
         </div>
       </div>
 
       <!-- 2. Grafik History Daya & Iradiansi Harian -->
       <div class="history-chart-box">
         <h3>Iradiansi Rata-rata & Daya Rata-rata Harian</h3>
-        <canvas id="chartHistoryDayaIrr" style="max-height: 380px;"></canvas>
+        <canvas id="chartHistoryDayaIrr" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Iradiansi Rata-rata):</span>
-            <span>Min:</span><input type="number" id="min-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'max', this.value)">
+            <span style="color: #fbbf24;">Min:</span><input type="number" id="min-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'min', this.value)">
+            <span style="color: #fbbf24;">Max:</span><input type="number" id="max-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'max', this.value)">
           </div>
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Daya Rata-rata):</span>
-            <span>Min:</span><input type="number" id="min-hisdayirr-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y1', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-hisdayirr-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y1', 'max', this.value)">
+            <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-hisdayirr-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y1', 'min', this.value)">
+            <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-hisdayirr-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistoryDayaIrr', ['y', 'y1'], ['min-hisdayirr-left', 'max-hisdayirr-left', 'min-hisdayirr-right', 'max-hisdayirr-right'])">Auto</button>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistoryDayaIrr', ['y', 'y1'], ['min-hisdayirr-left', 'max-hisdayirr-left', 'min-hisdayirr-right', 'max-hisdayirr-right'])">Reset Skala</button>
         </div>
       </div>
 
       <!-- Tabel Rekapitulasi Harian -->
       <div class="history-table-box">
         <div class="history-table-header">
-          <h3 style="text-align: left;">Rekapitulasi Harian</h3>
+          <h3>Tabel Rekapitulasi Harian</h3>
           <div class="table-action-btns">
-            <button class="btn-export" onclick="exportToCSV()">UNDUH DATA</button>
-            <button class="btn-export" onclick="exportTableToCSV()">UNDUH REKAPITULASI</button>
+            <button class="btn-export" onclick="exportToCSV()">📥 UNDUH DATA MENTAH</button>
+            <button class="btn-export" onclick="exportTableToCSV()">📥 UNDUH REKAP</button>
           </div>
         </div>
         
         <div class="log-rekap-grid">
           <div class="log-rekap-card">
-            <span>Jumlah Hari</span>
-            <strong id="rekap-total-hari" style="color: var(--box-blue-color);">0 Hari</strong>
+            <span>Total Hari Rentang</span>
+            <strong id="rekap-total-hari" style="color: var(--primary-color);">0 Hari</strong>
           </div>
           <div class="log-rekap-card">
-            <span>JUMLAH HARI BEROPERASI</span>
-            <strong id="rekap-hari-ada-log" style="color: #0284c7;">0 Hari</strong>
+            <span>Hari Beroperasi</span>
+            <strong id="rekap-hari-ada-log" style="color: #10b981;">0 Hari</strong>
           </div>
           <div class="log-rekap-card">
             <span>Tak Beroperasi</span>
@@ -699,11 +807,11 @@
             <thead>
               <tr>
                 <th onclick="sortTable(0)">No <span id="sort-icon-0">↕</span></th>
-                <th onclick="sortTable(1)">Tgl <span id="sort-icon-1">↕</span></th>
+                <th onclick="sortTable(1)">Tanggal <span id="sort-icon-1">↕</span></th>
                 <th onclick="sortTable(2)">Lama Operasi (Jam) <span id="sort-icon-2">↕</span></th>
                 <th onclick="sortTable(3)">Energi PLTS (Wh) <span id="sort-icon-3">↕</span></th>
-                <th onclick="sortTable(4)">Daya Rata-rata (Watt) <span id="sort-icon-4">↕</span></th>
-                <th onclick="sortTable(5)">Daya Maks (Watt) <span id="sort-icon-5">↕</span></th>
+                <th onclick="sortTable(4)">Daya Rata-rata (W) <span id="sort-icon-4">↕</span></th>
+                <th onclick="sortTable(5)">Daya Maks (W) <span id="sort-icon-5">↕</span></th>
                 <th onclick="sortTable(6)">Iradian Rata-rata (W/m²) <span id="sort-icon-6">↕</span></th>
                 <th onclick="sortTable(7)">Iradian Maks (W/m²) <span id="sort-icon-7">↕</span></th>
                 <th onclick="sortTable(8)">Energi Matahari (Wh/m²) <span id="sort-icon-8">↕</span></th>
@@ -733,105 +841,95 @@
       
       <!-- 3. Grafik Detail Harian: Energi Matahari & Energi PLTS -->
       <div class="history-chart-box">
-        <h3>Energi Matahari & Energi PLTS <span id="title-day-energi-plts-matahari" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
-        <canvas id="chartHistEnergiPltsMatahari" style="max-height: 380px;"></canvas>
+        <h3>Detail Energi Harian <span id="title-day-energi-plts-matahari" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <canvas id="chartHistEnergiPltsMatahari" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Energi Matahari):</span>
-            <span>Min:</span><input type="number" id="min-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'max', this.value)">
+            <span style="color: #fbbf24;">Min:</span><input type="number" id="min-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'min', this.value)">
+            <span style="color: #fbbf24;">Max:</span><input type="number" id="max-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'max', this.value)">
           </div>
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Energi PLTS):</span>
-            <span>Min:</span><input type="number" id="min-histdayen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y1', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-histdayen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y1', 'max', this.value)">
+            <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-histdayen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y1', 'min', this.value)">
+            <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-histdayen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistEnergiPltsMatahari', ['y', 'y1'], ['min-histdayen-left', 'max-histdayen-left', 'min-histdayen-right', 'max-histdayen-right'])">Auto</button>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistEnergiPltsMatahari', ['y', 'y1'], ['min-histdayen-left', 'max-histdayen-left', 'min-histdayen-right', 'max-histdayen-right'])">Reset Skala</button>
         </div>
       </div>
 
-      <!-- 4. Grafik Detail Harian: Iradiansi & Daya -->
+      <!-- 4. Grafik Detail Harian: Iradiansi Rata-rata & Daya Rata-rata -->
       <div class="history-chart-box">
-        <h3>Iradiansi (W/m²) & Daya (W) <span id="title-day-power" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
-        <canvas id="chartHistPowerIrr" style="max-height: 380px;"></canvas>
+        <h3>Detail Iradiansi rata-rata & Daya Rata-rata <span id="title-day-avg-power-irr" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <canvas id="chartHistAvgPowerIrr" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Iradiansi):</span>
-            <span>Min:</span><input type="number" id="min-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'max', this.value)">
+            <span style="color: #fbbf24;">Min:</span><input type="number" id="min-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'min', this.value)">
+            <span style="color: #fbbf24;">Max:</span><input type="number" id="max-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'max', this.value)">
           </div>
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Daya):</span>
-            <span>Min:</span><input type="number" id="min-histdaypow-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y1', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-histdaypow-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y1', 'max', this.value)">
+            <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-histdayavg-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y1', 'min', this.value)">
+            <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-histdayavg-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistPowerIrr', ['y', 'y1'], ['min-histdaypow-left', 'max-histdaypow-left', 'min-histdaypow-right', 'max-histdaypow-right'])">Auto</button>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistAvgPowerIrr', ['y', 'y1'], ['min-histdayavg-left', 'max-histdayavg-left', 'min-histdayavg-right', 'max-histdayavg-right'])">Reset Skala</button>
         </div>
       </div>
 
-      <!-- 5. Grafik Detail Harian: Siklus Kerja -->
+      <!-- 5. Grafik Detail Harian: Iradiansi & Daya -->
       <div class="history-chart-box">
-        <h3>Siklus Kerja (%) <span id="title-day-duty" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
-        <canvas id="chartHistSiklusKerja" style="max-height: 380px;"></canvas>
+        <h3>Detail Iradiansi & Daya <span id="title-day-power" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <canvas id="chartHistPowerIrr" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: var(--text-color);">Sumbu Y (Duty Cycle):</span>
+            <span style="color: #fbbf24;">Min:</span><input type="number" id="min-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'min', this.value)">
+            <span style="color: #fbbf24;">Max:</span><input type="number" id="max-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'max', this.value)">
+          </div>
+          <div class="scale-axis-group">
+            <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-histdaypow-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y1', 'min', this.value)">
+            <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-histdaypow-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y1', 'max', this.value)">
+          </div>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistPowerIrr', ['y', 'y1'], ['min-histdaypow-left', 'max-histdaypow-left', 'min-histdaypow-right', 'max-histdaypow-right'])">Reset Skala</button>
+        </div>
+      </div>
+
+      <!-- 6. Grafik Detail Harian: Siklus Kerja -->
+      <div class="history-chart-box">
+        <h3>Detail Siklus Kerja / Duty Cycle <span id="title-day-duty" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <canvas id="chartHistSiklusKerja" style="max-height: 360px;"></canvas>
+        <div class="scale-control-panel">
+          <div class="scale-axis-group">
             <span>Min:</span><input type="number" id="min-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistSiklusKerja', ['y'], ['min-histdayduty-left', 'max-histdayduty-left'])">Auto</button>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistSiklusKerja', ['y'], ['min-histdayduty-left', 'max-histdayduty-left'])">Reset Skala</button>
         </div>
       </div>
 
-      <!-- 6. Grafik Detail Harian: Tegangan & Arus -->
+      <!-- 7. Grafik Detail Harian: Tegangan & Arus -->
       <div class="history-chart-box">
-        <h3>Tegangan (V) & Arus (A) <span id="title-day-vi" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
-        <canvas id="chartHistVI" style="max-height: 380px;"></canvas>
+        <h3>Detail Tegangan & Arus <span id="title-day-vi" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <canvas id="chartHistVI" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Tegangan):</span>
-            <span>Min:</span><input type="number" id="min-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'max', this.value)">
+            <span style="color: #fbbf24;">Min:</span><input type="number" id="min-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'min', this.value)">
+            <span style="color: #fbbf24;">Max:</span><input type="number" id="max-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'max', this.value)">
           </div>
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Arus):</span>
-            <span>Min:</span><input type="number" id="min-histdayvi-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y1', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-histdayvi-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y1', 'max', this.value)">
+            <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-histdayvi-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y1', 'min', this.value)">
+            <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-histdayvi-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistVI', ['y', 'y1'], ['min-histdayvi-left', 'max-histdayvi-left', 'min-histdayvi-right', 'max-histdayvi-right'])">Auto</button>
-        </div>
-      </div>
-
-      <!-- 7. Grafik Detail Harian: Iradiansi Rata-rata & Daya Rata-rata -->
-      <div class="history-chart-box">
-        <h3>Iradiansi Rata-rata & Daya Rata-rata <span id="title-day-avg-power-irr" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
-        <canvas id="chartHistAvgPowerIrr" style="max-height: 380px;"></canvas>
-        <div class="scale-control-panel">
-          <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #d97706;">Sumbu Kiri (Iradiansi Rata-rata):</span>
-            <span>Min:</span><input type="number" id="min-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'max', this.value)">
-          </div>
-          <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: #0284c7;">Sumbu Kanan (Daya Rata-rata):</span>
-            <span>Min:</span><input type="number" id="min-histdayavg-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y1', 'min', this.value)">
-            <span>Max:</span><input type="number" id="max-histdayavg-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y1', 'max', this.value)">
-          </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistAvgPowerIrr', ['y', 'y1'], ['min-histdayavg-left', 'max-histdayavg-left', 'min-histdayavg-right', 'max-histdayavg-right'])">Auto</button>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistVI', ['y', 'y1'], ['min-histdayvi-left', 'max-histdayvi-left', 'min-histdayvi-right', 'max-histdayvi-right'])">Reset Skala</button>
         </div>
       </div>
 
       <!-- 8. Grafik Detail Harian: Lama Operasi (Jam) -->
       <div class="history-chart-box">
-        <h3>Lama Operasi (Jam) <span id="title-day-lama-operasi" style="font-size:14px; font-weight:normal; color:#0284c7;"></span></h3>
-        <canvas id="chartHistLamaOperasi" style="max-height: 380px;"></canvas>
+        <h3>Detail Lama Operasi (Jam) <span id="title-day-lama-operasi" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <canvas id="chartHistLamaOperasi" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
-            <span class="scale-axis-title" style="color: var(--text-color);">Sumbu Y (Lama Operasi):</span>
             <span>Min:</span><input type="number" id="min-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistLamaOperasi', ['y'], ['min-histdaylama-left', 'max-histdaylama-left'])">Auto</button>
+          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistLamaOperasi', ['y'], ['min-histdaylama-left', 'max-histdaylama-left'])">Reset Skala</button>
         </div>
       </div>
     </div>
@@ -840,12 +938,12 @@
   <!-- Baris Interval Data Detail -->
   <div class="interval-bar-box">
     <div class="txt-pilih-baris">
-      <span>ℹ️</span> Pilih baris tanggal pada tabel
+      <span>📌</span> Pilih baris tanggal pada tabel di atas untuk memuat grafik detail
     </div>
 
     <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
       <div class="filter-group">
-        <label for="stepSelect">Interval Data:</label>
+        <label for="stepSelect">Interval:</label>
         <select id="stepSelect" onchange="reloadSingleDayDetail()">
           <option value="5s" selected>5 detik</option>
           <option value="10s">10 detik</option>
@@ -860,8 +958,9 @@
       </div>
 
       <div class="filter-group" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-        <label for="startTime">Jam/menit awal:</label>
+        <label for="startTime">Jam Awal:</label>
         <select id="startTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
+          <option value="00">00</option>
           <option value="06" selected>06</option>
           <option value="07">07</option>
           <option value="08">08</option>
@@ -891,7 +990,7 @@
           <input type="number" id="startMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
         </div>
 
-        <label for="endTime" style="margin-left: 6px;">Jam/menit akhir:</label>
+        <label for="endTime" style="margin-left: 6px;">Jam Akhir:</label>
         <select id="endTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
           <option value="06">06</option>
           <option value="07">07</option>
@@ -906,6 +1005,7 @@
           <option value="16">16</option>
           <option value="17">17</option>
           <option value="18" selected>18</option>
+          <option value="23">23</option>
         </select>
         <div style="display:inline-flex; align-items:center; gap:4px;">
           <select id="endMinute" class="select-time-kontras" onchange="handleMinuteChange('end')">
@@ -925,19 +1025,16 @@
     </div>
   </div>
 
-  <!-- SECTION BAWAH (PENYIMPANAN, PENGATURAN GRAFIK HISTORI, & TOMBOL AKSI) -->
-  <div class="esp-memory-box" style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: center; text-align: center;">
-    
-    <!-- 1. Sisa Penyimpanan -->
-    <div class="esp-memory-item" style="background: var(--card-inner-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column; justify-content: center;">
-      <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px;">SISA PENYIMPANAN DATABASE</span>
-      <strong id="rekap-sisa-kuota" style="font-size: 16px; font-weight: 800; color: #0284c7;">100.0%</strong>
+  <!-- SECTION BAWAH -->
+  <div class="esp-memory-box">
+    <div class="esp-memory-item">
+      <span>Sisa Kuota Database</span>
+      <strong id="rekap-sisa-kuota" style="font-size: 16px; color: var(--primary-color);">100.0%</strong>
     </div>
 
-    <!-- 2. Pengaturan Titik Data (Dot) Histori -->
-    <div class="esp-memory-item" style="background: var(--card-inner-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <label for="pointRadiusSelect" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Titik Data (Dot) Histori:</label>
-      <select id="pointRadiusSelect" class="scale-input-box" onchange="changePointRadius(this.value)" style="width: 100%; max-width: 130px; height: 28px; padding: 2px 6px; font-size: 11px; text-align: center;">
+    <div class="esp-memory-item">
+      <label for="pointRadiusSelect" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Titik Data Histori:</label>
+      <select id="pointRadiusSelect" class="scale-input-box" onchange="changePointRadius(this.value)" style="width: 100%; max-width: 130px; height: 30px; padding: 2px 6px; font-size: 12px; text-align: center;">
         <option value="0" selected>Tak ada</option>
         <option value="1">Kecil</option>
         <option value="2">Sedang</option>
@@ -945,10 +1042,9 @@
       </select>
     </div>
 
-    <!-- 3. Pengaturan Kelengkungan Garis Histori -->
-    <div class="esp-memory-item" style="background: var(--card-inner-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <label for="tensionSelect" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Kelengkungan Garis Histori:</label>
-      <select id="tensionSelect" class="scale-input-box" onchange="changeLineTension(this.value)" style="width: 100%; max-width: 130px; height: 28px; padding: 2px 6px; font-size: 11px; text-align: center;">
+    <div class="esp-memory-item">
+      <label for="tensionSelect" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Kelengkungan Garis:</label>
+      <select id="tensionSelect" class="scale-input-box" onchange="changeLineTension(this.value)" style="width: 100%; max-width: 130px; height: 30px; padding: 2px 6px; font-size: 12px; text-align: center;">
         <option value="0" selected>0</option>
         <option value="0.1">0.1</option>
         <option value="0.2">0.2</option>
@@ -956,31 +1052,27 @@
       </select>
     </div>
 
-    <!-- 4. Tombol Tampilkan/Sembunyikan Kurva & Toggle Tema -->
-    <div class="esp-memory-item" style="background: var(--card-inner-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 8px;">
-      <button id="btnToggleOffCurve" class="btn-toggle-off-curve" onclick="toggleOffCurve()" style="flex: 1; height: 32px; font-size: 11px; padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Kurva PLTS Off</button>
-      <button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar" style="width: 32px; height: 32px; min-width: 32px; font-size: 14px; padding: 0; display: flex; align-items: center; justify-content: center;">☀️</button>
+    <div class="esp-memory-item" style="flex-direction: row; gap: 8px;">
+      <button id="btnToggleOffCurve" class="btn-toggle-off-curve" onclick="toggleOffCurve()" style="flex: 1; height: 34px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Data PLTS Off</button>
     </div>
-
   </div>
 
   <!-- MODAL JENDELA TABEL PLTS OFF (SESI OFFLINE) -->
-  <div id="modalPltsOff" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: var(--card-bg); width: 90%; max-width: 950px; max-height: 85vh; border-radius: 12px; border: 2px solid #0284c7; padding: 20px; display: flex; flex-direction: column; color: var(--text-color); box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+  <div id="modalPltsOff" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: var(--card-bg); width: 100%; max-width: 1000px; max-height: 85vh; border-radius: 14px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; color: var(--text-color); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);">
       
-      <!-- Header Modal -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-        <h3 style="color: #0284c7; font-size: 18px; font-weight: 700;">⚠️ Rekap Sesi PLTS Off (Mulai Off sampai On Kembali)</h3>
-        <button onclick="closeModalPltsOff()" style="background: transparent; border: none; color: var(--text-color); font-size: 20px; cursor: pointer; font-weight: bold;">✕</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+        <h3 style="color: var(--primary-color); font-size: 18px; font-weight: 700;">⚠️ Rekap Sesi PLTS Off (Mulai Off sampai On Kembali)</h3>
+        <button onclick="closeModalPltsOff()" style="background: transparent; border: none; color: var(--text-color); font-size: 22px; cursor: pointer; font-weight: bold;">✕</button>
       </div>
 
-      <!-- Area Tabel (Scrollable) -->
       <div class="table-responsive" style="flex: 1; overflow-y: auto; max-height: 60vh;">
         <table class="log-status-table" id="table-plts-off">
           <thead>
-            <tr style="background: var(--card-inner-bg);">
+            <tr>
               <th>No</th>
               <th>Waktu (Mulai Off - On Kembali)</th>
+              <th>Lama Off (Jam:Menit:Detik)</th>
               <th>Daya Rata-rata (W)</th>
               <th>Iradian Rata-rata (W/m²)</th>
               <th>Energi Matahari (Wh/m²)</th>
@@ -989,17 +1081,16 @@
           </thead>
           <tbody id="tbody-plts-off">
             <tr>
-              <td colspan="6" style="color: var(--text-muted); font-style: italic;">Memuat data...</td>
+              <td colspan="7" style="color: var(--text-muted); font-style: italic;">Memuat data...</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Footer Modal -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color);">
-        <span id="info-total-off-rows" style="font-size: 13px; font-weight: bold; color: var(--text-muted);">Total Sesi Off: 0 sesi</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+        <span id="info-total-off-rows" style="font-size: 13px; font-weight: 600; color: var(--text-muted);">Total Sesi Off: 0 sesi</span>
         <div style="display: flex; gap: 10px;">
-          <button class="btn-export" onclick="exportPltsOffToCSV()" style="background: #0284c7 !important; border-color: #0284c7 !important;">UNDUH REKAP OFF</button>
+          <button class="btn-export" onclick="exportPltsOffToCSV()">📥 UNDUH REKAP OFF</button>
           <button class="btn-clear" onclick="closeModalPltsOff()">TUTUP</button>
         </div>
       </div>
@@ -1008,9 +1099,16 @@
   </div>
 
   <script>
-    // Flag untuk fitur pewarnaan merah segmen PLTS Off (Default: false)
     let enableOffCurveDisconnect = false;
     let globalOffSessionsList = [];
+
+    function formatSecondsToHMS(seconds) {
+      if (isNaN(seconds) || seconds < 0) return "00:00:00";
+      let hrs = Math.floor(seconds / 3600);
+      let mins = Math.floor((seconds % 3600) / 60);
+      let secs = Math.floor(seconds % 60);
+      return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
 
     function toggleOffCurve() {
       enableOffCurveDisconnect = !enableOffCurveDisconnect;
@@ -1053,7 +1151,6 @@
       reloadSingleDayDetail();
     }
 
-    // Atur tension global awal menjadi 0 (garis lurus)
     Chart.defaults.global.elements.line.tension = 0;
 
     function changeRealtimeLineTension(val) {
@@ -1186,7 +1283,6 @@
     };
     Chart.plugins.register(annotationLinePlugin);
 
-    // Plugin Kustom untuk menggambar segmen berwarna Merah saat PLTS Off (MULAI_ON === 1)
     const pltsOffRedSegmentPlugin = {
       afterDatasetsDraw: function(chart) {
         if (!enableOffCurveDisconnect) return;
@@ -1200,8 +1296,8 @@
           var ctx = chart.ctx;
           var dataPoints = meta.data;
           var mulaiOnArr = dataset.mulaiOnValues;
-          var defaultColor = dataset.borderColor || '#0284c7';
-          var redColor = '#dc2626';
+          var defaultColor = dataset.borderColor || '#38bdf8';
+          var redColor = '#f87171';
 
           ctx.save();
           var tension = chart.options.elements && chart.options.elements.line && chart.options.elements.line.tension !== undefined 
@@ -1259,8 +1355,8 @@
         var dataPoints = meta.data;
         var modes = dataset.modes || [];
         var mulaiOnArr = dataset.mulaiOnValues || [];
-        var modeColors = { 'MANUAL': '#d97706', 'PO': '#0284c7', 'INC': '#00e676' };
-        var redColor = '#dc2626';
+        var modeColors = { 'MANUAL': '#fbbf24', 'PO': '#38bdf8', 'INC': '#10b981' };
+        var redColor = '#f87171';
         
         var hiddenModes = {
           'MANUAL': chart.getDatasetMeta(0).hidden === true,
@@ -1288,7 +1384,7 @@
             if (hiddenModes[mode]) continue;
 
             var isOff = enableOffCurveDisconnect && (mulaiOnArr[i+1] === 1 || mulaiOnArr[i] === 1);
-            ctx.strokeStyle = isOff ? redColor : (modeColors[mode] || '#0284c7');
+            ctx.strokeStyle = isOff ? redColor : (modeColors[mode] || '#38bdf8');
             ctx.beginPath();
             ctx.moveTo(p0._view.x, p0._view.y);
 
@@ -1470,7 +1566,7 @@
 
     function updateChartThemeColors() {
       const gridColor = getCssVar('--chart-grid');
-      const xAxisColor = document.body.classList.contains("light-mode") ? "#000000" : "#ffffff";
+      const xAxisColor = document.body.classList.contains("light-mode") ? "#0f172a" : "#f3f4f6";
       const dutyLamaColor = xAxisColor;
 
       const allCharts = [
@@ -1496,7 +1592,7 @@
     }
 
     function getXAxisFontColor() {
-      return document.body.classList.contains("light-mode") ? "#000000" : "#ffffff";
+      return document.body.classList.contains("light-mode") ? "#0f172a" : "#f3f4f6";
     }
 
     function getChartInstanceByName(chartName) {
@@ -1648,7 +1744,7 @@
         slider.value = dutyVal;
         sliderValSpan.innerText = dutyVal + "%";
       }
-let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_LOG) : 6;
+      let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_LOG) : 6;
       let jamSelesai = data && data.JAM_SELESAI_LOG !== undefined ? Number(data.JAM_SELESAI_LOG) : 18;
 
       let elMulai = document.getElementById("val-jam-mulai-log");
@@ -1677,25 +1773,27 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
 
     function openMpptSelectionModal() {
       let overlay = document.createElement("div");
-      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:320px;color:${getCssVar('--text-color')};`;
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:14px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:320px;color:${getCssVar('--text-color')};box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);`;
       let title = document.createElement("h3");
-      title.innerText = "Pilih Metode MPPT"; title.style.cssText = `margin-bottom:20px;color:#0284c7;font-size:18px;`;
+      title.innerText = "Pilih Metode MPPT"; title.style.cssText = `margin-bottom:20px;color:var(--primary-color);font-size:18px;font-weight:700;`;
       let btnContainer = document.createElement("div");
       btnContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
-      [{ label: "P and O", val: 0 }, { label: "InC", val: 1 }].forEach(opt => {
+      [{ label: "Perturb and Observe (P&O)", val: 0 }, { label: "Incremental Conductance (InC)", val: 1 }].forEach(opt => {
         let btn = document.createElement("button");
         btn.innerText = opt.label;
-        btn.style.cssText = `padding:12px;border-radius:6px;border:1px solid #0284c7;background:#000000;color:#ffffff;font-weight:bold;cursor:pointer;`;
+        btn.style.cssText = `padding:12px;border-radius:8px;border:1px solid var(--border-color);background:var(--card-inner-bg);color:var(--text-color);font-weight:600;cursor:pointer;transition:0.2s;`;
+        btn.onmouseover = () => btn.style.borderColor = "var(--primary-color)";
+        btn.onmouseout = () => btn.style.borderColor = "var(--border-color)";
         btn.onclick = () => { controlRef.update({ MODE_OPERASI_MPPT: opt.val, mode_manual: false }); document.body.removeChild(overlay); };
         btnContainer.appendChild(btn);
       });
 
       let btnCancel = document.createElement("button");
       btnCancel.innerText = "Batal";
-      btnCancel.style.cssText = `margin-top:8px;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.style.cssText = `margin-top:8px;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);font-weight:600;cursor:pointer;`;
       btnCancel.onclick = () => document.body.removeChild(overlay);
 
       box.appendChild(title); box.appendChild(btnContainer); box.appendChild(btnCancel); overlay.appendChild(box);
@@ -1704,30 +1802,32 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
 
     function openParameterMpptModal() {
       let overlay = document.createElement("div");
-      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:340px;color:${getCssVar('--text-color')};`;
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:14px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:340px;color:${getCssVar('--text-color')};box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);`;
       let title = document.createElement("h3");
-      title.innerText = "Parameter MPPT"; title.style.cssText = `margin-bottom:20px;color:#0284c7;font-size:18px;`;
+      title.innerText = "Parameter Sistem MPPT"; title.style.cssText = `margin-bottom:20px;color:var(--primary-color);font-size:18px;font-weight:700;`;
       let btnContainer = document.createElement("div");
       btnContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
       [
-        { label: "Parameter P&O", action: () => { document.body.removeChild(overlay); openParameterPoModal(); } },
-        { label: "Parameter InC", action: () => { document.body.removeChild(overlay); openParameterInCModal(); } },
-        { label: "Jumlah Sampel Sensor", action: () => { document.body.removeChild(overlay); openParameterStatistikSensorModal(); } },
-        { label: "Waktu Awal & Akhir Log", action: () => { document.body.removeChild(overlay); openParameterWaktuLogModal(); } }
+        { label: "⚙️ Parameter P&O", action: () => { document.body.removeChild(overlay); openParameterPoModal(); } },
+        { label: "⚙️ Parameter InC", action: () => { document.body.removeChild(overlay); openParameterInCModal(); } },
+        { label: "📊 Jumlah Sampel Sensor", action: () => { document.body.removeChild(overlay); openParameterStatistikSensorModal(); } },
+        { label: "⏰ Waktu Awal & Akhir Log", action: () => { document.body.removeChild(overlay); openParameterWaktuLogModal(); } }
       ].forEach(opt => {
         let btn = document.createElement("button");
         btn.innerText = opt.label;
-        btn.style.cssText = `padding:12px;border-radius:6px;border:1px solid #0284c7;background:#000000;color:#ffffff;font-weight:bold;cursor:pointer;`;
+        btn.style.cssText = `padding:12px;border-radius:8px;border:1px solid var(--border-color);background:var(--card-inner-bg);color:var(--text-color);font-weight:600;cursor:pointer;transition:0.2s;text-align:left;padding-left:16px;`;
+        btn.onmouseover = () => btn.style.borderColor = "var(--primary-color)";
+        btn.onmouseout = () => btn.style.borderColor = "var(--border-color)";
         btn.onclick = opt.action;
         btnContainer.appendChild(btn);
       });
 
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal";
-      btnCancel.style.cssText = `margin-top:8px;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.innerText = "Tutup";
+      btnCancel.style.cssText = `margin-top:8px;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);font-weight:600;cursor:pointer;`;
       btnCancel.onclick = () => document.body.removeChild(overlay);
 
       box.appendChild(title); box.appendChild(btnContainer); box.appendChild(btnCancel); overlay.appendChild(box);
@@ -1736,13 +1836,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
 
     function openParameterPoModal() {
       let overlay = document.createElement("div");
-      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:520px;max-height:90vh;overflow-y:auto;`;
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:14px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:520px;max-height:90vh;overflow-y:auto;box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);`;
       let title = document.createElement("h3");
-      title.innerText = "Parameter P&O"; title.style.cssText = `margin-bottom:15px;color:#0284c7;font-size:18px;text-align:center;`;
+      title.innerText = "Pengaturan Parameter P&O"; title.style.cssText = `margin-bottom:18px;color:var(--primary-color);font-size:18px;font-weight:700;text-align:center;`;
       let formContainer = document.createElement("div");
-      formContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
+      formContainer.style.cssText = "display:flex;flex-direction:column;gap:14px;";
 
       const inputsConfig = [
         { id: "po-proporsi-p-and-o", label: "PROPORSI_P_AND_O", firebaseKey: "PROPORSI_P_AND_O" },
@@ -1759,18 +1859,19 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
           group.style.cssText = "display:flex;flex-direction:column;gap:4px;";
           let lbl = document.createElement("label");
           lbl.innerText = item.label;
-          lbl.style.cssText = "font-size:13px;font-weight:bold;";
+          lbl.style.cssText = "font-size:12px;font-weight:700;color:var(--text-muted);";
           let rowFlex = document.createElement("div");
-          rowFlex.style.cssText = "display:flex;gap:8px;align-items:center;";
+          rowFlex.style.cssText = "display:flex;gap:10px;align-items:center;";
 
           let fbValSpan = document.createElement("span");
           let rawFbVal = val[item.firebaseKey];
           fbValSpan.innerText = (rawFbVal !== undefined && !isNaN(rawFbVal)) ? Number(rawFbVal).toFixed(6) : "0.000000";
-          fbValSpan.style.cssText = `min-width:110px;padding:8px;background:${getCssVar('--card-bg')};border:1px solid ${getCssVar('--border-color')};border-radius:6px;font-size:13px;font-weight:bold;color:${getCssVar('--realtime-value-color')};text-align:center;`;
+          fbValSpan.style.cssText = `min-width:110px;padding:8px;background:var(--card-inner-bg);border:1px solid var(--border-color);border-radius:6px;font-size:13px;font-weight:700;color:var(--primary-color);text-align:center;`;
 
           let input = document.createElement("input");
           input.type = "number"; input.id = item.id; input.step = "any";
-          input.style.cssText = `flex:1;padding:8px;border-radius:6px;border:1px solid ${getCssVar('--border-color')};background:${getCssVar('--card-inner-bg')};color:${getCssVar('--text-color')};font-size:14px;`;
+          input.className = "scale-input-box";
+          input.style.cssText = `flex:1;padding:8px;border-radius:6px;font-size:14px;`;
           if (rawFbVal !== undefined) input.value = rawFbVal;
 
           rowFlex.appendChild(fbValSpan); rowFlex.appendChild(input);
@@ -1780,13 +1881,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       });
 
       let btnContainer = document.createElement("div");
-      btnContainer.style.cssText = "display:flex;gap:10px;margin-top:15px;";
+      btnContainer.style.cssText = "display:flex;gap:12px;margin-top:20px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);font-weight:600;cursor:pointer;`;
       btnCancel.onclick = () => document.body.removeChild(overlay);
 
       let btnSave = document.createElement("button");
-      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
+      btnSave.innerText = "Simpan Perubahan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:8px;border:none;background:var(--primary-color);color:#ffffff;font-weight:600;cursor:pointer;";
       btnSave.onclick = () => {
         let v1 = parseFloat(document.getElementById("po-proporsi-p-and-o").value);
         let v2 = parseFloat(document.getElementById("po-perubahan-teg-min").value);
@@ -1807,13 +1908,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
 
     function openParameterInCModal() {
       let overlay = document.createElement("div");
-      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:520px;max-height:90vh;overflow-y:auto;`;
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:14px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:520px;max-height:90vh;overflow-y:auto;box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);`;
       let title = document.createElement("h3");
-      title.innerText = "Parameter InC"; title.style.cssText = `margin-bottom:15px;color:#0284c7;font-size:18px;text-align:center;`;
+      title.innerText = "Pengaturan Parameter InC"; title.style.cssText = `margin-bottom:18px;color:var(--primary-color);font-size:18px;font-weight:700;text-align:center;`;
       let formContainer = document.createElement("div");
-      formContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
+      formContainer.style.cssText = "display:flex;flex-direction:column;gap:14px;";
 
       const inputsConfig = [
         { id: "inc-proporsi", label: "PROPORSI_INC", firebaseKey: "PROPORSI_INC" },
@@ -1831,18 +1932,19 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
           group.style.cssText = "display:flex;flex-direction:column;gap:4px;";
           let lbl = document.createElement("label");
           lbl.innerText = item.label;
-          lbl.style.cssText = "font-size:13px;font-weight:bold;";
+          lbl.style.cssText = "font-size:12px;font-weight:700;color:var(--text-muted);";
           let rowFlex = document.createElement("div");
-          rowFlex.style.cssText = "display:flex;gap:8px;align-items:center;";
+          rowFlex.style.cssText = "display:flex;gap:10px;align-items:center;";
 
           let fbValSpan = document.createElement("span");
           let rawFbVal = val[item.firebaseKey];
           fbValSpan.innerText = (rawFbVal !== undefined && !isNaN(rawFbVal)) ? Number(rawFbVal).toFixed(6) : "0.000000";
-          fbValSpan.style.cssText = `min-width:110px;padding:8px;background:${getCssVar('--card-bg')};border:1px solid ${getCssVar('--border-color')};border-radius:6px;font-size:13px;font-weight:bold;color:${getCssVar('--realtime-value-color')};text-align:center;`;
+          fbValSpan.style.cssText = `min-width:110px;padding:8px;background:var(--card-inner-bg);border:1px solid var(--border-color);border-radius:6px;font-size:13px;font-weight:700;color:var(--primary-color);text-align:center;`;
 
           let input = document.createElement("input");
           input.type = "number"; input.id = item.id; input.step = "any";
-          input.style.cssText = `flex:1;padding:8px;border-radius:6px;border:1px solid ${getCssVar('--border-color')};background:${getCssVar('--card-inner-bg')};color:${getCssVar('--text-color')};font-size:14px;`;
+          input.className = "scale-input-box";
+          input.style.cssText = `flex:1;padding:8px;border-radius:6px;font-size:14px;`;
           if (rawFbVal !== undefined) input.value = rawFbVal;
 
           rowFlex.appendChild(fbValSpan); rowFlex.appendChild(input);
@@ -1852,13 +1954,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       });
 
       let btnContainer = document.createElement("div");
-      btnContainer.style.cssText = "display:flex;gap:10px;margin-top:15px;";
+      btnContainer.style.cssText = "display:flex;gap:12px;margin-top:20px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);font-weight:600;cursor:pointer;`;
       btnCancel.onclick = () => document.body.removeChild(overlay);
 
       let btnSave = document.createElement("button");
-      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
+      btnSave.innerText = "Simpan Perubahan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:8px;border:none;background:var(--primary-color);color:#ffffff;font-weight:600;cursor:pointer;";
       btnSave.onclick = () => {
         let v1 = parseFloat(document.getElementById("inc-proporsi").value);
         let v2 = parseFloat(document.getElementById("inc-batas-atas-step").value);
@@ -1880,21 +1982,22 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
 
     function openParameterStatistikSensorModal() {
       let overlay = document.createElement("div");
-      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:420px;`;
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:14px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:400px;box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);`;
       let title = document.createElement("h3");
-      title.innerText = "Jumlah Sampel Sensor"; title.style.cssText = `margin-bottom:15px;color:#0284c7;font-size:18px;text-align:center;`;
+      title.innerText = "Jumlah Sampel Sensor"; title.style.cssText = `margin-bottom:16px;color:var(--primary-color);font-size:18px;font-weight:700;text-align:center;`;
       let formContainer = document.createElement("div");
       formContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
       let group = document.createElement("div");
       group.style.cssText = "display:flex;flex-direction:column;gap:4px;";
       let lbl = document.createElement("label");
-      lbl.innerText = "JUMLAH_SAMPEL"; lbl.style.cssText = "font-size:13px;font-weight:bold;";
+      lbl.innerText = "JUMLAH_SAMPEL"; lbl.style.cssText = "font-size:12px;font-weight:700;color:var(--text-muted);";
       let input = document.createElement("input");
       input.type = "number"; input.id = "stat-jumlah-sampel";
-      input.style.cssText = `width:100%;padding:8px;border-radius:6px;border:1px solid ${getCssVar('--border-color')};background:${getCssVar('--card-inner-bg')};color:${getCssVar('--text-color')};font-size:14px;`;
+      input.className = "scale-input-box";
+      input.style.cssText = `width:100%;padding:8px;border-radius:6px;font-size:14px;`;
 
       database.ref("/mppt_control/JUMLAH_SAMPEL").once("value", (snap) => {
         if (snap.exists()) input.value = snap.val();
@@ -1903,13 +2006,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       group.appendChild(lbl); group.appendChild(input); formContainer.appendChild(group);
 
       let btnContainer = document.createElement("div");
-      btnContainer.style.cssText = "display:flex;gap:10px;margin-top:15px;";
+      btnContainer.style.cssText = "display:flex;gap:12px;margin-top:16px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);font-weight:600;cursor:pointer;`;
       btnCancel.onclick = () => document.body.removeChild(overlay);
 
       let btnSave = document.createElement("button");
-      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
+      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:8px;border:none;background:var(--primary-color);color:#ffffff;font-weight:600;cursor:pointer;";
       btnSave.onclick = () => {
         let v1 = parseFloat(document.getElementById("stat-jumlah-sampel").value);
         if (isNaN(v1)) { alert("Isi angka dengan valid!"); return; }
@@ -1924,30 +2027,32 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
 
     function openParameterWaktuLogModal() {
       let overlay = document.createElement("div");
-      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;";
       
       let box = document.createElement("div");
-      box.style.cssText = `background:${getCssVar('--card-bg')};padding:20px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:380px;`;
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:24px;border-radius:14px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:380px;box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);`;
       let title = document.createElement("h3");
-      title.innerText = "Jam Awal & Akhir Log"; title.style.cssText = `margin-bottom:12px;color:#0284c7;font-size:18px;text-align:center;`;
+      title.innerText = "Jam Awal & Akhir Log"; title.style.cssText = `margin-bottom:16px;color:var(--primary-color);font-size:18px;font-weight:700;text-align:center;`;
       let formContainer = document.createElement("div");
-      formContainer.style.cssText = "display:flex;flex-direction:column;gap:10px;";
+      formContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
 
       let groupStart = document.createElement("div");
       groupStart.style.cssText = "display:flex;flex-direction:column;gap:4px;";
       let lblStart = document.createElement("label");
-      lblStart.innerText = "JAM MULAI LOG (0 - 23):"; lblStart.style.cssText = "font-size:12px;font-weight:bold;";
+      lblStart.innerText = "JAM MULAI LOG (0 - 23):"; lblStart.style.cssText = "font-size:12px;font-weight:700;color:var(--text-muted);";
       let inputStart = document.createElement("input");
       inputStart.type = "number"; inputStart.min = "0"; inputStart.max = "23"; inputStart.step = "1"; inputStart.id = "param-jam-mulai";
-      inputStart.style.cssText = "width:100%;padding:6px 10px;border-radius:6px;border:2px solid #0284c7;background:var(--card-inner-bg);color:#ffffff;font-size:14px;font-weight:bold;outline:none;text-align:center;";
+      inputStart.className = "scale-input-box";
+      inputStart.style.cssText = "width:100%;padding:8px;border-radius:6px;font-size:14px;font-weight:600;text-align:center;";
 
       let groupEnd = document.createElement("div");
       groupEnd.style.cssText = "display:flex;flex-direction:column;gap:4px;";
       let lblEnd = document.createElement("label");
-      lblEnd.innerText = "JAM SELESAI LOG (0 - 23):"; lblEnd.style.cssText = "font-size:12px;font-weight:bold;";
+      lblEnd.innerText = "JAM SELESAI LOG (0 - 23):"; lblEnd.style.cssText = "font-size:12px;font-weight:700;color:var(--text-muted);";
       let inputEnd = document.createElement("input");
       inputEnd.type = "number"; inputEnd.min = "0"; inputEnd.max = "23"; inputEnd.step = "1"; inputEnd.id = "param-jam-selesai";
-      inputEnd.style.cssText = "width:100%;padding:6px 10px;border-radius:6px;border:2px solid #0284c7;background:var(--card-inner-bg);color:#ffffff;font-size:14px;font-weight:bold;outline:none;text-align:center;";
+      inputEnd.className = "scale-input-box";
+      inputEnd.style.cssText = "width:100%;padding:8px;border-radius:6px;font-size:14px;font-weight:600;text-align:center;";
 
       database.ref("/mppt_control").once("value", (snap) => {
         if (snap.exists()) {
@@ -1965,36 +2070,33 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       formContainer.appendChild(groupStart); formContainer.appendChild(groupEnd);
 
       let btnContainer = document.createElement("div");
-      btnContainer.style.cssText = "display:flex;gap:10px;margin-top:12px;";
+      btnContainer.style.cssText = "display:flex;gap:12px;margin-top:16px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:8px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);font-weight:600;cursor:pointer;`;
       btnCancel.onclick = () => document.body.removeChild(overlay);
 
       let btnSave = document.createElement("button");
-      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:8px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
+      btnSave.innerText = "Simpan"; btnSave.style.cssText = "flex:1;padding:10px;border-radius:8px;border:none;background:var(--primary-color);color:#ffffff;font-weight:600;cursor:pointer;";
       
       btnSave.onclick = () => {
         let rawStart = document.getElementById("param-jam-mulai").value;
         let rawEnd = document.getElementById("param-jam-selesai").value;
 
         if (rawStart === "" || rawEnd === "") {
-          alert("Input tidak boleh kosong! Masukkan angka integer antara 0 sampai 23.");
+          alert("Input tidak boleh kosong!");
           return;
         }
 
         let numStart = Number(rawStart);
         let numEnd = Number(rawEnd);
 
-        let isValidStart = Number.isInteger(numStart) && numStart >= 0 && numStart <= 23 && !rawStart.includes(".");
-        let isValidEnd = Number.isInteger(numEnd) && numEnd >= 0 && numEnd <= 23 && !rawEnd.includes(".");
-
-        if (!isValidStart || !isValidEnd) {
-          alert("Format salah! Input harus berupa angka integer bulat (0 - 23 tanpa desimal). Silakan periksa kembali.");
+        if (!Number.isInteger(numStart) || numStart < 0 || numStart > 23 || !Number.isInteger(numEnd) || numEnd < 0 || numEnd > 23) {
+          alert("Format salah! Masukkan angka bulat 0 - 23.");
           return;
         }
 
         if (numStart >= numEnd) {
-          alert("Jam mulai log harus lebih kecil dari jam selesai log! Silakan periksa kembali.");
+          alert("Jam mulai log harus lebih kecil dari jam selesai log!");
           return;
         }
 
@@ -2003,7 +2105,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
           "JAM_SELESAI_LOG": numEnd,
           timestamp: Date.now() 
         }).then(() => { 
-          alert("Jam mulai & selesai log berhasil disimpan!"); 
+          alert("Berhasil disimpan!"); 
           document.body.removeChild(overlay); 
         });
       };
@@ -2015,20 +2117,22 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
 
     function showCustomPasswordPrompt(callback) {
       let overlay = document.createElement("div");
-      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:9999;";
+      overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;";
       let box = document.createElement("div");
-      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:12px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:320px;color:${getCssVar('--text-color')};`;
+      box.style.cssText = `background:${getCssVar('--card-bg')};padding:25px;border-radius:14px;border:1px solid ${getCssVar('--border-color')};text-align:center;width:320px;color:${getCssVar('--text-color')};box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);`;
       let title = document.createElement("p");
-      title.innerText = "Masukkan Password:"; title.style.cssText = "margin-bottom:12px;font-weight:600;font-size:16px;";
+      title.innerText = "Masukkan Password Akses:"; title.style.cssText = "margin-bottom:14px;font-weight:600;font-size:15px;color:var(--text-muted);";
       let input = document.createElement("input");
-      input.type = "password"; input.style.cssText = `width:100%;padding:10px;margin-bottom:18px;border-radius:6px;border:1px solid ${getCssVar('--border-color')};background:${getCssVar('--card-inner-bg')};color:${getCssVar('--text-color')};font-size:16px;`;
+      input.type = "password"; 
+      input.className = "scale-input-box";
+      input.style.cssText = `width:100%;padding:10px;margin-bottom:18px;border-radius:6px;font-size:15px;text-align:center;`;
       
       let btnContainer = document.createElement("div");
       btnContainer.style.cssText = "display:flex;justify-content:space-between;gap:10px;";
       let btnCancel = document.createElement("button");
-      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:6px;border:none;background:${getCssVar('--border-color')};color:${getCssVar('--text-color')};font-weight:bold;cursor:pointer;`;
+      btnCancel.innerText = "Batal"; btnCancel.style.cssText = `flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-color);background:transparent;color:var(--text-muted);font-weight:600;cursor:pointer;`;
       let btnSubmit = document.createElement("button");
-      btnSubmit.innerText = "OK"; btnSubmit.style.cssText = "flex:1;padding:10px;border-radius:6px;border:none;background:#0284c7;color:#ffffff;font-weight:bold;cursor:pointer;";
+      btnSubmit.innerText = "Konfirmasi"; btnSubmit.style.cssText = "flex:1;padding:10px;border-radius:8px;border:none;background:var(--primary-color);color:#ffffff;font-weight:600;cursor:pointer;";
 
       btnContainer.appendChild(btnCancel); btnContainer.appendChild(btnSubmit);
       box.appendChild(title); box.appendChild(input); box.appendChild(btnContainer); overlay.appendChild(box);
@@ -2057,8 +2161,8 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
             hour: 'HH:mm:ss'
           }
         },
-        ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, autoSkip: true, maxTicksLimit: 15 }, 
-        gridLines: { color: 'rgba(255,255,255,0.15)', offsetGridLines: false } 
+        ticks: { fontColor: getXAxisFontColor(), fontStyle: '600', fontSize: 13, autoSkip: true, maxTicksLimit: 15 }, 
+        gridLines: { color: getCssVar('--chart-grid'), offsetGridLines: false } 
       }]
     };
 
@@ -2066,13 +2170,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
     const chartRealtimeEnergi = new Chart(ctxRealtimeEnergi, {
       type: 'line',
       data: { energyHighlights: [], datasets: [
-        { label: 'Energi Matahari (Wh/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Energi Matahari (Wh/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Energi PLTS (Wh)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false, 
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2084,8 +2188,8 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#fbbf24', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2095,13 +2199,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
     const chartVI = new Chart(ctxVI, {
       type: 'line',
       data: { datasets: [
-        { label: 'Tegangan (V)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Arus (A)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Tegangan (V)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Arus (A)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2113,8 +2217,8 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#fbbf24', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2124,13 +2228,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
     const chartDayaIrr = new Chart(ctxDayaIrr, {
       type: 'line',
       data: { datasets: [
-        { label: 'Iradiansi (W/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Daya (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Iradiansi (W/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Daya (W)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2142,8 +2246,8 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#fbbf24', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2155,13 +2259,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       data: {
         boundaryIndices: [],
         datasets: [
-          { label: 'Manual', borderColor: '#d97706', backgroundColor: '#d97706', data: [], showLine: false },
-          { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', data: [], showLine: false },
-          { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', data: [], showLine: false },
-          { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, showLine: false,
+          { label: 'Manual', borderColor: '#fbbf24', backgroundColor: '#fbbf24', data: [], showLine: false },
+          { label: 'P&O', borderColor: '#38bdf8', backgroundColor: '#38bdf8', data: [], showLine: false },
+          { label: 'InC', borderColor: '#10b981', backgroundColor: '#10b981', data: [], showLine: false },
+          { label: 'DutyCycleData', borderColor: '#38bdf8', data: [], modes: [], borderWidth: 2, showLine: false,
             pointBackgroundColor: function(c) {
               let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
-              return m === 'MANUAL' ? '#d97706' : (m === 'INC' ? '#00e676' : '#0284c7');
+              return m === 'MANUAL' ? '#fbbf24' : (m === 'INC' ? '#10b981' : '#38bdf8');
             },
             pointRadius: function(c) {
               let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
@@ -2180,7 +2284,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       options: {
         responsive: true, maintainAspectRatio: false, customSegmentColoring: true,
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold', filter: (l) => l.text !== 'DutyCycleData' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600', filter: (l) => l.text !== 'DutyCycleData' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2191,7 +2295,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         },
         scales: {
           xAxes: timeScaleOptions.xAxes,
-          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, beginAtZero: true, max: 100 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: '600', fontSize: 13, beginAtZero: true, max: 100 }, gridLines: { color: getCssVar('--chart-grid') } }]
         }
       }
     });
@@ -2200,13 +2304,13 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
     const chartRealtimeAkumulasi = new Chart(ctxRealtimeAkumulasi, {
       type: 'line',
       data: { datasets: [
-        { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Daya Rata-rata (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Daya Rata-rata (W)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2218,8 +2322,8 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#fbbf24', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2365,7 +2469,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       options: {
         responsive: true, maintainAspectRatio: false,
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2377,33 +2481,33 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#fbbf24', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
     });
 
     const chartHistVI = createHistChart('chartHistVI', [
-      { label: 'Tegangan (V)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
-      { label: 'Arus (A)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
+      { label: 'Tegangan (V)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Arus (A)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
     ]);
 
     const chartHistAvgPowerIrr = createHistChart('chartHistAvgPowerIrr', [
-      { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
-      { label: 'Daya Rata-rata (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
+      { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Daya Rata-rata (W)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
     ]);
 
     const chartHistEnergiPltsMatahari = new Chart(document.getElementById('chartHistEnergiPltsMatahari').getContext('2d'), {
       type: 'line',
       data: { datasets: [
-        { label: 'Energi Matahari (Wh/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Energi PLTS (Wh)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Energi Matahari (Wh/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+        { label: 'Energi PLTS (Wh)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false, 
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2415,8 +2519,8 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         scales: {
           xAxes: timeScaleOptions.xAxes,
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#fbbf24', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2425,11 +2529,11 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
     const chartHistSiklusKerja = new Chart(document.getElementById('chartHistSiklusKerja').getContext('2d'), {
       type: 'line',
       data: { datasets: [
-        { label: 'Manual', borderColor: '#d97706', backgroundColor: '#d97706', data: [], showLine: false },
-        { label: 'P&O', borderColor: '#0284c7', backgroundColor: '#0284c7', data: [], showLine: false },
-        { label: 'InC', borderColor: '#00e676', backgroundColor: '#00e676', data: [], showLine: false },
-        { label: 'DutyCycleData', borderColor: '#0284c7', data: [], modes: [], borderWidth: 2, showLine: false,
-          pointBackgroundColor: (c) => c.dataset.modes && c.dataset.modes[c.dataIndex] === 'MANUAL' ? '#d97706' : '#0284c7',
+        { label: 'Manual', borderColor: '#fbbf24', backgroundColor: '#fbbf24', data: [], showLine: false },
+        { label: 'P&O', borderColor: '#38bdf8', backgroundColor: '#38bdf8', data: [], showLine: false },
+        { label: 'InC', borderColor: '#10b981', backgroundColor: '#10b981', data: [], showLine: false },
+        { label: 'DutyCycleData', borderColor: '#38bdf8', data: [], modes: [], borderWidth: 2, showLine: false,
+          pointBackgroundColor: (c) => c.dataset.modes && c.dataset.modes[c.dataIndex] === 'MANUAL' ? '#fbbf24' : '#38bdf8',
           pointRadius: function(c) {
             let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
             let modeKeyMap = { 'MANUAL': 0, 'PO': 1, 'INC': 2 };
@@ -2446,7 +2550,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       options: {
         responsive: true, maintainAspectRatio: false, customSegmentColoring: true,
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold', filter: (l) => l.text !== 'DutyCycleData' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600', filter: (l) => l.text !== 'DutyCycleData' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2457,14 +2561,14 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         },
         scales: {
           xAxes: timeScaleOptions.xAxes,
-          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, beginAtZero: true, max: 100 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: '600', fontSize: 13, beginAtZero: true, max: 100 }, gridLines: { color: getCssVar('--chart-grid') } }]
         }
       }
     });
 
     const chartHistPowerIrr = createHistChart('chartHistPowerIrr', [
-      { label: 'Iradiansi (W/m²)', borderColor: '#d97706', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
-      { label: 'Daya (W)', borderColor: '#0284c7', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
+      { label: 'Iradiansi (W/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Daya (W)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2, pointRadius: 0, yAxisID: 'y1' }
     ]);
 
     const chartHistoryDayaIrr = new Chart(document.getElementById('chartHistoryDayaIrr').getContext('2d'), {
@@ -2476,7 +2580,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       options: {
         responsive: true, maintainAspectRatio: false,
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2486,10 +2590,10 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
           }
         },
         scales: {
-          xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }],
+          xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: '600', fontSize: 13 }, gridLines: { color: getCssVar('--chart-grid') } }],
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#fbbf24', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2504,7 +2608,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       options: {
         responsive: true, maintainAspectRatio: false,
         legend: { 
-          labels: { fontColor: '#0284c7', fontStyle: 'bold' },
+          labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
             let index = legendItem.datasetIndex;
             let chart = this.chart;
@@ -2514,10 +2618,10 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
           }
         },
         scales: {
-          xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12 }, gridLines: { color: 'rgba(255,255,255,0.15)' } }],
+          xAxes: [{ ticks: { fontColor: getXAxisFontColor(), fontStyle: '600', fontSize: 13 }, gridLines: { color: getCssVar('--chart-grid') } }],
           yAxes: [
-            { id: 'y', position: 'left', ticks: { fontColor: '#d97706', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } },
-            { id: 'y1', position: 'right', ticks: { fontColor: '#0284c7', fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
+            { id: 'y', position: 'left', ticks: { fontColor: '#fbbf24', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } },
+            { id: 'y1', position: 'right', ticks: { fontColor: '#38bdf8', fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { drawOnChartArea: false } }
           ]
         }
       }
@@ -2530,19 +2634,10 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
-        legend: { 
-          labels: { fontColor: '#ff9800', fontStyle: 'bold' },
-          onClick: function(e, legendItem) {
-            let index = legendItem.datasetIndex;
-            let chart = this.chart;
-            let meta = chart.getDatasetMeta(index);
-            meta.hidden = meta.hidden ? false : true;
-            chart.update();
-          }
-        },
+        legend: { display: false },
         scales: {
           xAxes: timeScaleOptions.xAxes,
-          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: 'bold', fontSize: 12, beginAtZero: true }, gridLines: { color: 'rgba(255,255,255,0.15)' } }]
+          yAxes: [{ id: 'y', position: 'left', ticks: { fontColor: getXAxisFontColor(), fontStyle: '600', fontSize: 13, beginAtZero: true }, gridLines: { color: getCssVar('--chart-grid') } }]
         }
       }
     });
@@ -2899,7 +2994,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
       const tbody = document.getElementById("tbody-plts-off");
       const infoText = document.getElementById("info-total-off-rows");
       
-      tbody.innerHTML = '<tr><td colspan="6" style="color: var(--text-muted); font-style: italic;">Menganalisis sesi PLTS Off...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="color: var(--text-muted); font-style: italic;">Menganalisis sesi PLTS Off...</td></tr>';
       modal.style.display = "flex";
 
       const startHourVal = parseInt(document.getElementById("startTime").value, 10);
@@ -2955,10 +3050,18 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
           let mulaiOnVal = item.MULAI_ON !== undefined && item.MULAI_ON !== null && item.MULAI_ON !== "" ? Number(item.MULAI_ON) : 2;
 
           let waktuJamMenitDetik = "-";
+          let itemMs = 0;
+
+          if (item.stempel_waktu) {
+            itemMs = Number(item.stempel_waktu) < 10000000000 ? Number(item.stempel_waktu) * 1000 : Number(item.stempel_waktu);
+          } else if (item.waktu_rtc) {
+            itemMs = new Date(item.waktu_rtc.replace(/-/g, "/")).getTime();
+          }
+
           if (item.waktu_rtc && item.waktu_rtc.includes(" ")) {
             waktuJamMenitDetik = item.waktu_rtc.split(" ")[1];
-          } else if (item.stempel_waktu) {
-            let d = new Date(Number(item.stempel_waktu) < 10000000000 ? Number(item.stempel_waktu) * 1000 : Number(item.stempel_waktu));
+          } else if (itemMs > 0) {
+            let d = new Date(itemMs);
             waktuJamMenitDetik = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
           }
 
@@ -2967,15 +3070,19 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
               currentSession = {
                 startTime: waktuJamMenitDetik,
                 endTime: waktuJamMenitDetik,
+                startMs: itemMs,
+                endMs: itemMs,
                 items: [item]
               };
             } else {
               currentSession.endTime = waktuJamMenitDetik;
+              currentSession.endMs = itemMs;
               currentSession.items.push(item);
             }
           } else {
             if (currentSession) {
               currentSession.endTime = waktuJamMenitDetik;
+              currentSession.endMs = itemMs;
               offSessions.push(currentSession);
               currentSession = null;
             }
@@ -2988,7 +3095,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         globalOffSessionsList = offSessions;
 
         if (offSessions.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="color: var(--text-muted); font-style: italic;">Tidak ada sesi PLTS Off pada rentang waktu ini.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" style="color: var(--text-muted); font-style: italic;">Tidak ada sesi PLTS Off pada rentang waktu ini.</td></tr>';
           infoText.innerText = "Total Sesi Off: 0 sesi";
           return;
         }
@@ -2999,12 +3106,25 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
           let energiMatahariVal = Number(session.items[0].energi_matahari_watt_jam || 0);
           let energiPltsVal = Number(session.items[0].energi_plts_watt_jam || 0);
 
+          let diffSec = 0;
+          if (session.endMs > 0 && session.startMs > 0 && session.endMs >= session.startMs) {
+            diffSec = Math.floor((session.endMs - session.startMs) / 1000);
+          } else {
+            let pStart = session.startTime.split(":");
+            let pEnd = session.endTime.split(":");
+            if (pStart.length === 3 && pEnd.length === 3) {
+              let sSec = parseInt(pStart[0], 10) * 3600 + parseInt(pStart[1], 10) * 60 + parseInt(pStart[2], 10);
+              let eSec = parseInt(pEnd[0], 10) * 3600 + parseInt(pEnd[1], 10) * 60 + parseInt(pEnd[2], 10);
+              diffSec = eSec >= sSec ? (eSec - sSec) : 0;
+            }
+          }
+          let formattedDuration = formatSecondsToHMS(diffSec);
+
           let tr = document.createElement("tr");
-          tr.style.color = "#ffffff";
-          tr.style.fontWeight = "600";
           tr.innerHTML = `
             <td>${index + 1}</td>
             <td>${session.startTime} s.d ${session.endTime}</td>
+            <td style="font-weight: 700;">${formattedDuration}</td>
             <td>${avgDaya.toFixed(2)}</td>
             <td>${avgIrr.toFixed(0)}</td>
             <td>${energiMatahariVal.toFixed(2)}</td>
@@ -3026,7 +3146,7 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         alert("Tidak ada rekap sesi PLTS Off untuk diunduh.");
         return;
       }
-      let rows = [["no", "waktu_mulai_off", "waktu_on_kembali", "daya_rata_rata", "iradiansi_rata_rata", "energi_matahari", "energi_plts"]];
+      let rows = [["no", "waktu_mulai_off", "waktu_on_kembali", "lama_off_jam_menit_detik", "daya_rata_rata", "iradiansi_rata_rata", "energi_matahari", "energi_plts"]];
       
       globalOffSessionsList.forEach((session, idx) => {
         let avgDaya = Number(session.items[0].daya_rata_rata || 0);
@@ -3034,10 +3154,25 @@ let jamMulai = data && data.JAM_MULAI_LOG !== undefined ? Number(data.JAM_MULAI_
         let energiMatahariVal = Number(session.items[0].energi_matahari_watt_jam || 0);
         let energiPltsVal = Number(session.items[0].energi_plts_watt_jam || 0);
 
+        let diffSec = 0;
+        if (session.endMs > 0 && session.startMs > 0 && session.endMs >= session.startMs) {
+          diffSec = Math.floor((session.endMs - session.startMs) / 1000);
+        } else {
+          let pStart = session.startTime.split(":");
+          let pEnd = session.endTime.split(":");
+          if (pStart.length === 3 && pEnd.length === 3) {
+            let sSec = parseInt(pStart[0], 10) * 3600 + parseInt(pStart[1], 10) * 60 + parseInt(pStart[2], 10);
+            let eSec = parseInt(pEnd[0], 10) * 3600 + parseInt(pEnd[1], 10) * 60 + parseInt(pEnd[2], 10);
+            diffSec = eSec >= sSec ? (eSec - sSec) : 0;
+          }
+        }
+        let formattedDuration = formatSecondsToHMS(diffSec);
+
         rows.push([
           idx + 1,
           `"${session.startTime}"`,
           `"${session.endTime}"`,
+          `"${formattedDuration}"`,
           avgDaya.toFixed(2),
           avgIrr.toFixed(0),
           energiMatahariVal.toFixed(2),
