@@ -2399,10 +2399,10 @@ function updateChartThemeColors() {
       [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartRealtimeEnergi].forEach(c => c.update());
     }
 
-    const mpptRef = database.ref("/mppt_data");
-    mpptRef.limitToLast(1).on("child_added", (childSnapshot) => {
-      processRealtimeData(childSnapshot.val(), childSnapshot.key);
-    });
+const mpptRef = database.ref("/mppt_data");
+mpptRef.orderByKey().limitToLast(1).on("child_added", (childSnapshot) => {
+  processRealtimeData(childSnapshot.val(), childSnapshot.key);
+});
 
     function decodeFirebasePushId(pushId) {
       if (!pushId || typeof pushId !== 'string') return 0;
@@ -3015,7 +3015,8 @@ function updateChartThemeColors() {
       rows.forEach(row => tbody.appendChild(row));
     }
 
-    function showModalPltsOff(targetIsoDate) {
+    
+function showModalPltsOff(targetIsoDate) {
       const modal = document.getElementById("modalPltsOff");
       const tbody = document.getElementById("tbody-plts-off");
       const infoText = document.getElementById("info-total-off-rows");
@@ -3069,53 +3070,41 @@ function updateChartThemeColors() {
         });
 
         let offSessions = [];
-        let currentSession = null;
 
         for (let i = 0; i < dayItems.length; i++) {
           let item = dayItems[i];
           let mulaiOnVal = item.MULAI_ON !== undefined && item.MULAI_ON !== null && item.MULAI_ON !== "" ? Number(item.MULAI_ON) : 2;
 
-          let waktuJamMenitDetik = "-";
-          let itemMs = 0;
-
-          if (item.stempel_waktu) {
-            itemMs = Number(item.stempel_waktu) < 10000000000 ? Number(item.stempel_waktu) * 1000 : Number(item.stempel_waktu);
-          } else if (item.waktu_rtc) {
-            itemMs = new Date(item.waktu_rtc.replace(/-/g, "/")).getTime();
-          }
-
-          if (item.waktu_rtc && item.waktu_rtc.includes(" ")) {
-            waktuJamMenitDetik = item.waktu_rtc.split(" ")[1];
-          } else if (itemMs > 0) {
-            let d = new Date(itemMs);
-            waktuJamMenitDetik = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
-          }
-
+          // Ketika mendeteksi baris saat MULAI_ON = 1 (Mulai Off)
           if (mulaiOnVal === 1) {
-            if (!currentSession) {
-              currentSession = {
-                startTime: waktuJamMenitDetik,
-                endTime: waktuJamMenitDetik,
-                startMs: itemMs,
-                endMs: itemMs,
-                items: [item]
+            let offItem = item; // Baris saat Mulai Off (1)
+            let prevItem = i > 0 ? dayItems[i - 1] : null; // Baris data sebelumnya
+
+            if (prevItem) {
+              let getTimeStr = (it) => {
+                if (it.waktu_rtc && it.waktu_rtc.includes(" ")) {
+                  return it.waktu_rtc.split(" ")[1];
+                }
+                let ms = it.stempel_waktu ? Number(it.stempel_waktu) : 0;
+                if (ms > 0) {
+                  let d = new Date(ms < 10000000000 ? ms * 1000 : ms);
+                  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+                }
+                return "00:00:00";
               };
-            } else {
-              currentSession.endTime = waktuJamMenitDetik;
-              currentSession.endMs = itemMs;
-              currentSession.items.push(item);
-            }
-          } else {
-            if (currentSession) {
-              currentSession.endTime = waktuJamMenitDetik;
-              currentSession.endMs = itemMs;
-              offSessions.push(currentSession);
-              currentSession = null;
+
+              let startTimeStr = getTimeStr(prevItem); // Waktu baris sebelumnya
+              let endTimeStr = getTimeStr(offItem);     // Waktu saat MULAI_ON = 1
+
+              offSessions.push({
+                startTime: startTimeStr,
+                endTime: endTimeStr,
+                items: [offItem],
+                startItem: prevItem,
+                endItem: offItem
+              });
             }
           }
-        }
-        if (currentSession) {
-          offSessions.push(currentSession);
         }
 
         globalOffSessionsList = offSessions;
@@ -3127,22 +3116,19 @@ function updateChartThemeColors() {
         }
 
         offSessions.forEach((session, index) => {
-          let avgDaya = Number(session.items[0].daya_rata_rata || 0);
-          let avgIrr = Number(session.items[0].iradiansi_rata_rata || 0);
-          let energiMatahariVal = Number(session.items[0].energi_matahari_watt_jam || 0);
-          let energiPltsVal = Number(session.items[0].energi_plts_watt_jam || 0);
+          let avgDaya = Number(session.endItem.daya_rata_rata || session.endItem.daya || 0);
+          let avgIrr = Number(session.endItem.iradiansi_rata_rata || session.endItem.iradiansi || 0);
+          let energiMatahariVal = Number(session.endItem.energi_matahari_watt_jam || 0);
+          let energiPltsVal = Number(session.endItem.energi_plts_watt_jam || 0);
 
+          // Hitung selisih waktu antara baris sebelumnya dan baris MULAI_ON = 1
           let diffSec = 0;
-          if (session.endMs > 0 && session.startMs > 0 && session.endMs >= session.startMs) {
-            diffSec = Math.floor((session.endMs - session.startMs) / 1000);
-          } else {
-            let pStart = session.startTime.split(":");
-            let pEnd = session.endTime.split(":");
-            if (pStart.length === 3 && pEnd.length === 3) {
-              let sSec = parseInt(pStart[0], 10) * 3600 + parseInt(pStart[1], 10) * 60 + parseInt(pStart[2], 10);
-              let eSec = parseInt(pEnd[0], 10) * 3600 + parseInt(pEnd[1], 10) * 60 + parseInt(pEnd[2], 10);
-              diffSec = eSec >= sSec ? (eSec - sSec) : 0;
-            }
+          let pStart = session.startTime.split(":");
+          let pEnd = session.endTime.split(":");
+          if (pStart.length === 3 && pEnd.length === 3) {
+            let sSec = parseInt(pStart[0], 10) * 3600 + parseInt(pStart[1], 10) * 60 + parseInt(pStart[2], 10);
+            let eSec = parseInt(pEnd[0], 10) * 3600 + parseInt(pEnd[1], 10) * 60 + parseInt(pEnd[2], 10);
+            diffSec = eSec >= sSec ? (eSec - sSec) : 0;
           }
           let formattedDuration = formatSecondsToHMS(diffSec);
 
