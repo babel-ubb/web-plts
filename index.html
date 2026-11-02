@@ -128,6 +128,47 @@
       transform: scale(1.05);
     }
 
+    .view-navigation {
+      max-width: 1200px;
+      margin: 18px auto 30px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .view-navigation-primary {
+      min-height: 42px;
+      padding: 10px 22px;
+      border: 1px solid var(--primary-color);
+      border-radius: 8px;
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .view-navigation-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .view-theme-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      flex: 0 0 42px;
+    }
+    .history-close-navigation {
+      display: flex;
+      justify-content: center;
+      margin: 24px auto 4px auto;
+    }
+    @media (max-width: 600px) {
+      .view-navigation-primary { flex: 1; }
+      .view-navigation { padding: 0 4px; }
+    }
+
     .status-badge { font-weight: 700; font-size: 18px; padding: 2px 10px; border-radius: 6px; background: rgba(0,0,0,0.1); }
     .status-online { color: #10b981; }
     .status-offline { color: var(--danger-color); }
@@ -264,7 +305,7 @@
 
     .scale-control-panel {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       flex-wrap: wrap;
       gap: 12px;
       background: var(--card-inner-bg);
@@ -323,32 +364,48 @@
       background: #f1f5f9 !important;
     }
 
+    /* DIATUR AGAR TAMPIL DALAM 1 BARIS (7 KOLOM) */
     .esp-memory-box {
       max-width: 1200px; 
       margin: 24px auto; 
       background: var(--card-bg); 
       border-radius: 14px;
-      padding: 16px 20px; 
+      padding: 16px; 
       border: 1px solid var(--border-color); 
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
       align-items: stretch;
       text-align: center;
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
-    @media (max-width: 800px) {
+    @media (max-width: 1100px) {
+      .esp-memory-box { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 700px) {
       .esp-memory-box { grid-template-columns: repeat(2, 1fr); }
     }
-    .esp-memory-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: var(--card-inner-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); height: 100%; }
-    .esp-memory-box span { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-    .esp-memory-box strong { font-size: 18px; font-weight: 800; color: var(--warning-color); }
+
+    .esp-memory-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      text-align: center; 
+      background: var(--card-inner-bg); 
+      padding: 10px 6px; 
+      border-radius: 8px; 
+      border: 1px solid var(--border-color); 
+      height: 100%; 
+    }
+    .esp-memory-box span { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .esp-memory-box strong { font-size: 16px; font-weight: 800; color: var(--warning-color); }
 
     .history-section { max-width: 1200px; margin: 0 auto; background: var(--card-bg); border-radius: 14px; padding: 24px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
     .history-section h2 { font-size: 20px; font-weight: 700; color: var(--title-bright-color) !important; margin-bottom: 20px; text-align: center; }
 
-body.light-mode .history-section {
-      background: #e2e8f0 !important; /* Warna latar belakang agak gelap / abu-abu tegas */
+    body.light-mode .history-section {
+      background: #e2e8f0 !important;
       border-color: #94a3b8 !important;
     }
 
@@ -366,13 +423,77 @@ body.light-mode .history-section {
       border: 1px solid #000000 !important;
     }
 
+    /* ==========================================================
+       PENGATURAN DATAPICKER FLATPICKR (CUSTOM SESUAI PERMINTAAN)
+       ========================================================== */
+    .flatpickr-calendar {
+      background: #111827 !important;
+      border: 1px solid var(--border-color) !important;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5) !important;
+      color: #ffffff !important;
+    }
+    .flatpickr-months, .flatpickr-weekdays, .flatpickr-month {
+      background: #111827 !important;
+      color: #ffffff !important;
+    }
+    
+    /* Nama hari pada kalendar dibuat berwarna putih (#ffffff) */
+    .flatpickr-weekday, .flatpickr-weekdays span {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
+
+    .flatpickr-current-month, .flatpickr-current-month .flatpickr-monthDropdown-months, .flatpickr-current-month input.cur-year {
+      color: #ffffff !important;
+    }
+    .flatpickr-current-month .flatpickr-monthDropdown-months option {
+      background: #111827 !important;
+      color: #ffffff !important;
+    }
+    .flatpickr-day {
+      color: #ffffff !important;
+      background: transparent !important;
+    }
+    .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+      color: #4b5563 !important;
+    }
+
+    /* Tanggal yang TIDAK memiliki data (tanpa kelas .has-data): saat di-hover/dipilih menjadi MERAH */
+    .flatpickr-day:hover, .flatpickr-day:focus {
+      background: #dc2626 !important;
+      border-color: #dc2626 !important;
+      color: #ffffff !important;
+    }
+
+    /* Tanggal yang memiliki data (.has-data): saat di-hover/dipilih latar belakang Hijau (#10b981), teks putih dan tebal */
+    .flatpickr-day.has-data { 
+      background: rgba(16, 185, 129, 0.3) !important; 
+      border-color: #10b981 !important; 
+      color: #ffffff !important;
+      font-weight: bold !important; 
+    }
+    .flatpickr-day.has-data:hover, .flatpickr-day.has-data:focus, .flatpickr-day.has-data.selected {
+      background: #10b981 !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+      border-color: #10b981 !important;
+    }
+
+    /* Tanggal terpilih standar (jika tidak ada kondisi khusus) */
+    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+      background: #38bdf8 !important;
+      color: #ffffff !important;
+      border-color: #38bdf8 !important;
+      font-weight: bold !important;
+    }
+
     .btn-export, .btn-clear, .btn-action-custom, .select-time-kontras, #stepSelect {
       background: var(--card-inner-bg) !important;
       border: 1px solid var(--border-color) !important;
       color: var(--text-color) !important;
-      padding: 6px 14px !important;
+      padding: 6px 10px !important;
       border-radius: 6px !important;
-      font-size: 13px !important;
+      font-size: 12px !important;
       font-weight: 600 !important;
       outline: none !important;
       cursor: pointer !important;
@@ -409,9 +530,6 @@ body.light-mode .history-section {
       color: #000000 !important;
     }
 
-    .flatpickr-calendar .flatpickr-day, .flatpickr-calendar .flatpickr-day.selected, .flatpickr-calendar .flatpickr-day.today { color: inherit; }
-    .flatpickr-day.has-data { background: rgba(56, 189, 248, 0.2) !important; border-color: var(--primary-color) !important; font-weight: bold !important; }
-
     .history-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 24px; }
     .summary-card { background: var(--card-inner-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
     .summary-card span { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
@@ -444,7 +562,6 @@ body.light-mode .history-section {
     .log-status-table tbody tr.selected-row { background: rgba(56, 189, 248, 0.3) !important; font-weight: bold; }
     .log-status-table tfoot td { background: #0f172a !important; font-weight: 700; color: #38bdf8 !important; position: sticky; bottom: 0; z-index: 2; border-top: 2px solid #38bdf8; }
 
-    /* PENGATURAN TABEL KHUSUS: MODE TERANG (BACKGROUND ABU-ABU MUDA, TULISAN HITAM, BARIS TERPILIH ABU-ABU AGAK TUA, NILAI ANGKA DIPERBESAR 1 TINGKAT) */
     body.light-mode .log-status-table {
       background-color: #e2e8f0 !important;
     }
@@ -452,7 +569,7 @@ body.light-mode .history-section {
       background: #cbd5e1 !important;
       color: #000000 !important;
       font-size: 12px !important;
-font-weight: 650 !important; /* Diubah agar kepala tabel tidak terlalu tebal */
+      font-weight: 650 !important;
     }
     body.light-mode .log-status-table td {
       color: #000000 !important;
@@ -480,20 +597,6 @@ font-weight: 650 !important; /* Diubah agar kepala tabel tidak terlalu tebal */
       border-top: 2px solid #000000;
     }
 
-    .interval-bar-box {
-      max-width: 1200px;
-      margin: 16px auto;
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
-      padding: 14px 20px; 
-      background: var(--card-bg); 
-      border-radius: 12px; 
-      border: 1px solid var(--border-color); 
-      flex-wrap: wrap; 
-      gap: 14px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    }
     .txt-pilih-baris {
       font-size: 14px;
       font-weight: 600;
@@ -503,13 +606,36 @@ font-weight: 650 !important; /* Diubah agar kepala tabel tidak terlalu tebal */
       gap: 8px;
     }
 
+    /* ==========================================================
+       KETERANGAN / TIPS DI BAWAH TABEL REKAPITULASI (SERAGAM & DINAMIS)
+       ========================================================== */
+    .recap-tips-container {
+      margin-top: 14px; 
+      padding: 12px 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      display: flex; 
+      flex-direction: column; 
+      gap: 6px;
+    }
+    
+    .recap-tips-item {
+      font-size: 13px !important;
+      font-weight: 600;
+      color: var(--text-color) !important; /* Putih pada Mode Gelap, Hitam pada Mode Terang */
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .btn-toggle-off-curve {
       background: var(--card-inner-bg);
       border: 1px solid var(--border-color);
       color: var(--text-color);
-      padding: 6px 14px;
+      padding: 6px 10px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
@@ -530,12 +656,13 @@ font-weight: 650 !important; /* Diubah agar kepala tabel tidak terlalu tebal */
       color: #ffffff !important;
       border-color: #ef4444 !important;
     }
-body.light-mode .chart-box ul.chart-legend li span,
+    body.light-mode .chart-box ul.chart-legend li span,
     body.light-mode .history-chart-box ul.chart-legend li span,
     body.light-mode div[style*="legend"] span,
     body.light-mode .chartjs-tooltip, 
     body.light-mode legend {
       color: #0369a1 !important;
+    }
   </style>
 </head>
 <body>
@@ -552,6 +679,8 @@ body.light-mode .chart-box ul.chart-legend li span,
     </p>
   </header>
 
+  <!-- BAGIAN REALTIME: mencakup panel pengendalian dan monitoring -->
+  <section id="realtime-section">
   <!-- SECTION KONTROL MPPT -->
   <div class="control-section">
     <h2>Panel Pengendalian Operasional PLTS</h2>
@@ -660,30 +789,28 @@ body.light-mode .chart-box ul.chart-legend li span,
     </div>
   </div>
 
-  <div style="max-width: 1200px; margin: 0 auto 15px auto;" class="interval-bar-box">
-    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 15px;">
-      <div style="font-size: 13px; font-weight: 600; color: var(--text-muted);">
-        💡 Tips: Klik legenda warna pada grafik untuk menyembunyikan/menampilkan kurva tertentu.
+  <div style="max-width: 1200px; margin: 0 auto 15px auto; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+    <div style="font-size: 13px; font-weight: 600; color: var(--text-muted);">
+      💡 Klik legenda warna pada grafik untuk menyembunyikan/menampilkan kurva tertentu.
+    </div>
+    <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+      <div class="filter-group">
+        <label for="tensionRealtimeSelect" style="font-size: 12px;">Kelengkungan:</label>
+        <select id="tensionRealtimeSelect" class="scale-input-box" onchange="changeRealtimeLineTension(this.value)" style="width: 65px; height: 32px; padding: 2px 6px; font-size: 12px;">
+          <option value="0" selected>0</option>
+          <option value="0.1">0.1</option>
+          <option value="0.2">0.2</option>
+          <option value="0.3">0.3</option>
+        </select>
       </div>
-      <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
-        <div class="filter-group">
-          <label for="tensionRealtimeSelect" style="font-size: 12px;">Kelengkungan:</label>
-          <select id="tensionRealtimeSelect" class="scale-input-box" onchange="changeRealtimeLineTension(this.value)" style="width: 65px; height: 32px; padding: 2px 6px; font-size: 12px;">
-            <option value="0" selected>0</option>
-            <option value="0.1">0.1</option>
-            <option value="0.2">0.2</option>
-            <option value="0.3">0.3</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="pointRadiusRealtimeSelect" style="font-size: 12px;">Titik Data:</label>
-          <select id="pointRadiusRealtimeSelect" class="scale-input-box" onchange="changeRealtimePointRadius(this.value)" style="width: 85px; height: 32px; padding: 2px 6px; font-size: 12px;">
-            <option value="0" selected>Tak ada</option>
-            <option value="1">Kecil</option>
-            <option value="2">Sedang</option>
-            <option value="3">Besar</option>
-          </select>
-        </div>
+      <div class="filter-group">
+        <label for="pointRadiusRealtimeSelect" style="font-size: 12px;">Titik Data:</label>
+        <select id="pointRadiusRealtimeSelect" class="scale-input-box" onchange="changeRealtimePointRadius(this.value)" style="width: 85px; height: 32px; padding: 2px 6px; font-size: 12px;">
+          <option value="0" selected>Tak ada</option>
+          <option value="1">Kecil</option>
+          <option value="2">Sedang</option>
+          <option value="3">Besar</option>
+        </select>
       </div>
     </div>
   </div>
@@ -716,6 +843,18 @@ body.light-mode .chart-box ul.chart-legend li span,
     </div>
   </div>
 
+  <!-- Navigasi di bawah grafik realtime -->
+  <div class="view-navigation">
+    <button type="button" id="btn-show-history" class="view-navigation-primary" onclick="showHistorySection()">
+      Tampilkan Data Histori
+    </button>
+    <button type="button" class="theme-toggle-btn view-theme-toggle" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar" aria-label="Ubah Mode Layar">☀️</button>
+  </div>
+  </section>
+  <!-- AKHIR BAGIAN REALTIME -->
+
+  <!-- BAGIAN HISTORI: tersembunyi saat halaman pertama dibuka -->
+  <section id="history-section" style="display: none;">
   <!-- Section Data Historis -->
   <div class="history-section">
     <h2>Data Historis</h2>
@@ -751,6 +890,11 @@ body.light-mode .chart-box ul.chart-legend li span,
     </div>
     
     <div class="history-charts-grid">
+      <!-- Tips Grafik Histori -->
+      <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); padding: 0 4px;">
+        💡 Klik legenda warna pada grafik untuk menyembunyikan/menampilkan kurva tertentu.
+      </div>
+
       <!-- 1. Grafik History Energi Harian -->
       <div class="history-chart-box">
         <h3>Energi Matahari & Energi PLTS Harian (Wh)</h3>
@@ -844,12 +988,21 @@ body.light-mode .chart-box ul.chart-legend li span,
             </tfoot>
           </table>
         </div>
-      </div>
 
+        <!-- Keterangan / Tips di Bawah Tabel Rekapitulasi (Seragam dalam satu kontainer) -->
+        <div class="recap-tips-container">
+          <div class="recap-tips-item txt-pilih-baris">
+            <span>💡</span> Pilih baris tanggal pada tabel di atas untuk memuat grafik
+          </div>
+          <div class="recap-tips-item">
+            <span>💡</span> Tips: Klik legenda warna pada grafik untuk menyembunyikan/menampilkan kurva tertentu.
+          </div>
+        </div>
+      </div>
       
-      <!-- 3. Grafik Detail Harian: Energi Matahari & Energi PLTS -->
+      <!-- 3. Grafik Harian: Energi Matahari & Energi PLTS -->
       <div class="history-chart-box">
-        <h3>Detail Energi Harian <span id="title-day-energi-plts-matahari" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <h3>Energi Harian <span id="title-day-energi-plts-matahari" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
         <canvas id="chartHistEnergiPltsMatahari" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
@@ -860,13 +1013,19 @@ body.light-mode .chart-box ul.chart-legend li span,
             <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-histdayen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y1', 'min', this.value)">
             <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-histdayen-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistEnergiPltsMatahari', ['y', 'y1'], ['min-histdayen-left', 'max-histdayen-left', 'min-histdayen-right', 'max-histdayen-right'])">Reset Skala</button>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistEnergiPltsMatahari', ['y', 'y1'], ['min-histdayen-left', 'max-histdayen-left', 'min-histdayen-right', 'max-histdayen-right'])">Reset Skala</button>
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
+              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
+              <span>PLTS Off</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 4. Grafik Detail Harian: Iradiansi Rata-rata & Daya Rata-rata -->
+      <!-- 4. Grafik Harian: Iradiansi Rata-rata & Daya Rata-rata -->
       <div class="history-chart-box">
-        <h3>Detail Iradiansi rata-rata & Daya Rata-rata <span id="title-day-avg-power-irr" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <h3>Iradiansi rata-rata & Daya Rata-rata <span id="title-day-avg-power-irr" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
         <canvas id="chartHistAvgPowerIrr" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
@@ -877,13 +1036,19 @@ body.light-mode .chart-box ul.chart-legend li span,
             <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-histdayavg-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y1', 'min', this.value)">
             <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-histdayavg-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistAvgPowerIrr', ['y', 'y1'], ['min-histdayavg-left', 'max-histdayavg-left', 'min-histdayavg-right', 'max-histdayavg-right'])">Reset Skala</button>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistAvgPowerIrr', ['y', 'y1'], ['min-histdayavg-left', 'max-histdayavg-left', 'min-histdayavg-right', 'max-histdayavg-right'])">Reset Skala</button>
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
+              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
+              <span>PLTS Off</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 5. Grafik Detail Harian: Iradiansi & Daya -->
+      <!-- 5. Grafik Harian: Iradiansi & Daya -->
       <div class="history-chart-box">
-        <h3>Detail Iradiansi & Daya <span id="title-day-power" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <h3>Iradiansi & Daya <span id="title-day-power" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
         <canvas id="chartHistPowerIrr" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
@@ -894,26 +1059,38 @@ body.light-mode .chart-box ul.chart-legend li span,
             <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-histdaypow-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y1', 'min', this.value)">
             <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-histdaypow-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistPowerIrr', ['y', 'y1'], ['min-histdaypow-left', 'max-histdaypow-left', 'min-histdaypow-right', 'max-histdaypow-right'])">Reset Skala</button>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistPowerIrr', ['y', 'y1'], ['min-histdaypow-left', 'max-histdaypow-left', 'min-histdaypow-right', 'max-histdaypow-right'])">Reset Skala</button>
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
+              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
+              <span>PLTS Off</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 6. Grafik Detail Harian: Siklus Kerja -->
+      <!-- 6. Grafik Harian: Siklus Kerja -->
       <div class="history-chart-box">
-        <h3>Detail Siklus Kerja / Duty Cycle <span id="title-day-duty" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <h3>Siklus Kerja / Duty Cycle <span id="title-day-duty" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
         <canvas id="chartHistSiklusKerja" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span>Min:</span><input type="number" id="min-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistSiklusKerja', ['y'], ['min-histdayduty-left', 'max-histdayduty-left'])">Reset Skala</button>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistSiklusKerja', ['y'], ['min-histdayduty-left', 'max-histdayduty-left'])">Reset Skala</button>
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
+              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
+              <span>PLTS Off</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 7. Grafik Detail Harian: Tegangan & Arus -->
+      <!-- 7. Grafik Harian: Tegangan & Arus -->
       <div class="history-chart-box">
-        <h3>Detail Tegangan & Arus <span id="title-day-vi" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <h3>Tegangan & Arus <span id="title-day-vi" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
         <canvas id="chartHistVI" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
@@ -924,50 +1101,84 @@ body.light-mode .chart-box ul.chart-legend li span,
             <span style="color: var(--primary-color);">Min:</span><input type="number" id="min-histdayvi-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y1', 'min', this.value)">
             <span style="color: var(--primary-color);">Max:</span><input type="number" id="max-histdayvi-right" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y1', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistVI', ['y', 'y1'], ['min-histdayvi-left', 'max-histdayvi-left', 'min-histdayvi-right', 'max-histdayvi-right'])">Reset Skala</button>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistVI', ['y', 'y1'], ['min-histdayvi-left', 'max-histdayvi-left', 'min-histdayvi-right', 'max-histdayvi-right'])">Reset Skala</button>
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
+              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
+              <span>PLTS Off</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 8. Grafik Detail Harian: Lama Operasi (Jam) -->
+      <!-- 8. Grafik Harian: Lama Operasi (Jam) -->
       <div class="history-chart-box">
-        <h3>Detail Lama Operasi (Jam) <span id="title-day-lama-operasi" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
+        <h3>Lama Operasi (Jam) <span id="title-day-lama-operasi" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
         <canvas id="chartHistLamaOperasi" style="max-height: 360px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span>Min:</span><input type="number" id="min-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'min', this.value)">
             <span>Max:</span><input type="number" id="max-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'max', this.value)">
           </div>
-          <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistLamaOperasi', ['y'], ['min-histdaylama-left', 'max-histdaylama-left'])">Reset Skala</button>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistLamaOperasi', ['y'], ['min-histdaylama-left', 'max-histdaylama-left'])">Reset Skala</button>
+            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
+              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
+              <span>PLTS Off</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Baris Interval Data Detail -->
-  <div class="interval-bar-box">
-    <div class="txt-pilih-baris">
-      <span>📌</span> Pilih baris tanggal pada tabel di atas untuk memuat grafik detail
+  <!-- SECTION BAWAH: 7 KOLOM DALAM 1 BARIS -->
+  <div class="esp-memory-box">
+    
+    <div class="esp-memory-item">
+      <span>Sisa Kuota</span>
+      <strong id="rekap-sisa-kuota" style="font-size: 14px; color: var(--primary-color);">100.0%</strong>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-      <div class="filter-group">
-        <label for="stepSelect">Interval:</label>
-        <select id="stepSelect" onchange="reloadSingleDayDetail()">
-          <option value="5s" selected>5 detik</option>
-          <option value="10s">10 detik</option>
-          <option value="30s">30 detik</option>
-          <option value="1m">1 menit</option>
-          <option value="5m">5 menit</option>
-          <option value="10m">10 menit</option>
-          <option value="15m">15 menit</option>
-          <option value="30m">30 menit</option>
-          <option value="1h">1 jam</option>
-        </select>
-      </div>
+    <div class="esp-memory-item">
+      <label for="pointRadiusSelect" style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Titik Data:</label>
+      <select id="pointRadiusSelect" class="scale-input-box" onchange="changePointRadius(this.value)" style="width: 100%; height: 28px; padding: 2px 4px; font-size: 11px; text-align: center;">
+        <option value="0" selected>Tak ada</option>
+        <option value="1">Kecil</option>
+        <option value="2">Sedang</option>
+        <option value="3">Besar</option>
+      </select>
+    </div>
 
-      <div class="filter-group" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-        <label for="startTime">Jam Awal:</label>
-        <select id="startTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
+    <div class="esp-memory-item">
+      <label for="tensionSelect" style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Kelengkungan:</label>
+      <select id="tensionSelect" class="scale-input-box" onchange="changeLineTension(this.value)" style="width: 100%; height: 28px; padding: 2px 4px; font-size: 11px; text-align: center;">
+        <option value="0" selected>0</option>
+        <option value="0.1">0.1</option>
+        <option value="0.2">0.2</option>
+        <option value="0.3">0.3</option>
+      </select>
+    </div>
+
+    <div class="esp-memory-item">
+      <label for="stepSelect" style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Interval:</label>
+      <select id="stepSelect" class="scale-input-box" onchange="reloadSingleDayDetail()" style="width: 100%; height: 28px; padding: 2px 4px; font-size: 11px; text-align: center;">
+        <option value="5s" selected>5 dtk</option>
+        <option value="10s">10 dtk</option>
+        <option value="30s">30 dtk</option>
+        <option value="1m">1 mnt</option>
+        <option value="5m">5 mnt</option>
+        <option value="10m">10 mnt</option>
+        <option value="15m">15 mnt</option>
+        <option value="30m">30 mnt</option>
+        <option value="1h">1 jam</option>
+      </select>
+    </div>
+
+    <div class="esp-memory-item">
+      <label for="startTime" style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Jam Awal:</label>
+      <div style="display: flex; gap: 2px; justify-content: center; align-items: center; width: 100%;">
+        <select id="startTime" class="select-time-kontras" onchange="reloadSingleDayDetail()" style="height: 28px; font-size: 11px; padding: 2px 2px; flex: 1;">
           <option value="00">00</option>
           <option value="06" selected>06</option>
           <option value="07">07</option>
@@ -983,23 +1194,25 @@ body.light-mode .chart-box ul.chart-legend li span,
           <option value="17">17</option>
           <option value="18">18</option>
         </select>
-        <div style="display:inline-flex; align-items:center; gap:4px;">
-          <select id="startMinute" class="select-time-kontras" onchange="handleMinuteChange('start')">
-            <option value="00" selected>00</option>
-            <option value="05">05</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="50">50</option>
-            <option value="55">55</option>
-            <option value="custom">Ketik...</option>
-          </select>
-          <input type="number" id="startMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
-        </div>
+        <select id="startMinute" class="select-time-kontras" onchange="handleMinuteChange('start')" style="height: 28px; font-size: 11px; padding: 2px 2px; flex: 1;">
+          <option value="00" selected>00</option>
+          <option value="05">05</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
+          <option value="55">55</option>
+          <option value="custom">Ketik</option>
+        </select>
+        <input type="number" id="startMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:35px; height: 28px; font-size: 11px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
+      </div>
+    </div>
 
-        <label for="endTime" style="margin-left: 6px;">Jam Akhir:</label>
-        <select id="endTime" class="select-time-kontras" onchange="reloadSingleDayDetail()">
+    <div class="esp-memory-item">
+      <label for="endTime" style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Jam Akhir:</label>
+      <div style="display: flex; gap: 2px; justify-content: center; align-items: center; width: 100%;">
+        <select id="endTime" class="select-time-kontras" onchange="reloadSingleDayDetail()" style="height: 28px; font-size: 11px; padding: 2px 2px; flex: 1;">
           <option value="06">06</option>
           <option value="07">07</option>
           <option value="08">08</option>
@@ -1015,68 +1228,44 @@ body.light-mode .chart-box ul.chart-legend li span,
           <option value="18" selected>18</option>
           <option value="23">23</option>
         </select>
-        <div style="display:inline-flex; align-items:center; gap:4px;">
-          <select id="endMinute" class="select-time-kontras" onchange="handleMinuteChange('end')">
-            <option value="00" selected>00</option>
-            <option value="05">05</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="50">50</option>
-            <option value="55">55</option>
-            <option value="custom">Ketik...</option>
-          </select>
-          <input type="number" id="endMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:55px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
-        </div>
+        <select id="endMinute" class="select-time-kontras" onchange="handleMinuteChange('end')" style="height: 28px; font-size: 11px; padding: 2px 2px; flex: 1;">
+          <option value="00" selected>00</option>
+          <option value="05">05</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
+          <option value="55">55</option>
+          <option value="custom">Ketik</option>
+        </select>
+        <input type="number" id="endMinuteInput" min="0" max="59" value="00" class="scale-input-box" style="display:none; width:35px; height: 28px; font-size: 11px;" onchange="reloadSingleDayDetail()" placeholder="Mnt">
       </div>
     </div>
+
+    <div class="esp-memory-item" style="justify-content: flex-end;">
+      <span style="visibility: hidden; margin-bottom: 4px;">Aksi</span>
+      <button id="btnToggleOffCurve" class="btn-toggle-off-curve" onclick="toggleOffCurve()" style="width: 100%; height: 28px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px;">PLTS Off</button>
+    </div>
+
   </div>
 
-  <!-- SECTION BAWAH -->
-  <div class="esp-memory-box">
-    <div class="esp-memory-item">
-      <span>Sisa Kuota Database</span>
-      <strong id="rekap-sisa-kuota" style="font-size: 16px; color: var(--primary-color);">100.0%</strong>
-    </div>
-
-    <div class="esp-memory-item">
-      <label for="pointRadiusSelect" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Titik Data Histori:</label>
-      <select id="pointRadiusSelect" class="scale-input-box" onchange="changePointRadius(this.value)" style="width: 100%; max-width: 130px; height: 30px; padding: 2px 6px; font-size: 12px; text-align: center;">
-        <option value="0" selected>Tak ada</option>
-        <option value="1">Kecil</option>
-        <option value="2">Sedang</option>
-        <option value="3">Besar</option>
-      </select>
-    </div>
-
-    <div class="esp-memory-item">
-      <label for="tensionSelect" style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Kelengkungan Garis:</label>
-      <select id="tensionSelect" class="scale-input-box" onchange="changeLineTension(this.value)" style="width: 100%; max-width: 130px; height: 30px; padding: 2px 6px; font-size: 12px; text-align: center;">
-        <option value="0" selected>0</option>
-        <option value="0.1">0.1</option>
-        <option value="0.2">0.2</option>
-        <option value="0.3">0.3</option>
-      </select>
-    </div>
-
-    <div class="esp-memory-item" style="flex-direction: row; gap: 8px;">
-      <button id="btnToggleOffCurve" class="btn-toggle-off-curve" onclick="toggleOffCurve()" style="flex: 1; height: 34px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Data PLTS Off</button>
-<button class="theme-toggle-btn" onclick="toggleTheme()" id="btn-theme" title="Ubah Mode Layar" style="height: 34px; width: 34px; border-radius: 6px;">☀️</button>    
-
-</div>
+  <div class="history-close-navigation">
+    <button type="button" id="btn-close-history" class="view-navigation-primary" onclick="showRealtimeSection()">
+      Tutup Data Histori
+    </button>
   </div>
+  </section>
+  <!-- AKHIR BAGIAN HISTORI -->
 
   <!-- MODAL JENDELA TABEL PLTS OFF (SESI OFFLINE) -->
   <div id="modalPltsOff" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
-  <div style="background: var(--card-bg); width: 100%; max-width: 1000px; max-height: 85vh; border-radius: 14px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; color: var(--text-color); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);">
+    <div style="background: var(--card-bg); width: 100%; max-width: 1000px; max-height: 85vh; border-radius: 14px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; color: var(--text-color); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);">
       
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
         <h3 style="color: var(--primary-color); font-size: 18px; font-weight: 700;">⚠️ Rekap Sesi PLTS Off (Mulai Off sampai On Kembali)</h3>
         <button onclick="closeModalPltsOff()" style="background: transparent; border: none; color: var(--text-color); font-size: 22px; cursor: pointer; font-weight: bold;">✕</button>
-      
-
-</div>
+      </div>
 
       <div class="table-responsive" style="flex: 1; overflow-y: auto; max-height: 60vh;">
         <table class="log-status-table" id="table-plts-off">
@@ -1107,18 +1296,10 @@ body.light-mode .chart-box ul.chart-legend li span,
         </div>
       </div>
 
-
-
-
-
     </div>
-
-
   </div>
 
-
   <script>
-    let enableOffCurveDisconnect = false;
     let globalOffSessionsList = [];
 
     function formatSecondsToHMS(seconds) {
@@ -1129,45 +1310,19 @@ body.light-mode .chart-box ul.chart-legend li span,
       return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
 
+    // Tombol Data PLTS Off otomatis mengubah interval menjadi 5 detik dan membuka tabel rekap sesi.
     function toggleOffCurve() {
-      enableOffCurveDisconnect = !enableOffCurveDisconnect;
-      const btn = document.getElementById("btnToggleOffCurve");
-      
-      const historyCharts = [
-        chartHistVI, chartHistPowerIrr, chartHistSiklusKerja, 
-        chartHistAvgPowerIrr, chartHistEnergiPltsMatahari, chartHistLamaOperasi
-      ];
-
-      if (enableOffCurveDisconnect) {
-        btn.classList.add("active");
-        const stepSelect = document.getElementById("stepSelect");
-        if (stepSelect) stepSelect.value = "5s";
-
-        historyCharts.forEach(chart => {
-          if (!chart) return;
-          chart.data.datasets.forEach(dataset => {
-            if (dataset.label !== 'DutyCycleData') dataset.showLine = false;
-          });
-          chart.update();
-        });
-
-        if (selectedSingleDateIso) {
-          showModalPltsOff(selectedSingleDateIso);
-        }
-      } else {
-        btn.classList.remove("active");
-        
-        historyCharts.forEach(chart => {
-          if (!chart) return;
-          chart.data.datasets.forEach(dataset => {
-            if (dataset.label !== 'DutyCycleData') dataset.showLine = true;
-          });
-          chart.update();
-        });
-
-        closeModalPltsOff();
+      const stepSelectEl = document.getElementById("stepSelect");
+      if (stepSelectEl) {
+        stepSelectEl.value = "5s";
       }
       reloadSingleDayDetail();
+
+      if (selectedSingleDateIso) {
+        showModalPltsOff(selectedSingleDateIso);
+      } else {
+        alert("Pilih tanggal pada tabel rekapitulasi harian terlebih dahulu.");
+      }
     }
 
     Chart.defaults.global.elements.line.tension = 0;
@@ -1304,7 +1459,6 @@ body.light-mode .chart-box ul.chart-legend li span,
 
     const pltsOffRedSegmentPlugin = {
       afterDatasetsDraw: function(chart) {
-        if (!enableOffCurveDisconnect) return;
         if (chart.canvas.id === 'chartHistSiklusKerja' || chart.canvas.id === 'chartDutyCycle') return;
 
         chart.data.datasets.forEach((dataset, datasetIndex) => {
@@ -1402,7 +1556,7 @@ body.light-mode .chart-box ul.chart-legend li span,
             
             if (hiddenModes[mode]) continue;
 
-            var isOff = enableOffCurveDisconnect && (mulaiOnArr[i+1] === 1 || mulaiOnArr[i] === 1);
+            var isOff = (mulaiOnArr[i+1] === 1 || mulaiOnArr[i] === 1);
             ctx.strokeStyle = isOff ? redColor : (modeColors[mode] || '#38bdf8');
             ctx.beginPath();
             ctx.moveTo(p0._view.x, p0._view.y);
@@ -1576,6 +1730,52 @@ body.light-mode .chart-box ul.chart-legend li span,
       return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
     }
 
+    function showHistorySection() {
+      const realtimeSection = document.getElementById("realtime-section");
+      const historySection = document.getElementById("history-section");
+
+      realtimeSection.style.display = "none";
+      historySection.style.display = "block";
+
+      requestAnimationFrame(() => {
+        const historyCharts = [
+          chartHistoryEnergi,
+          chartHistoryDayaIrr,
+          chartHistEnergiPltsMatahari,
+          chartHistAvgPowerIrr,
+          chartHistPowerIrr,
+          chartHistSiklusKerja,
+          chartHistVI,
+          chartHistLamaOperasi
+        ];
+        historyCharts.forEach(chart => {
+          if (chart && typeof chart.resize === "function") chart.resize();
+        });
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showRealtimeSection() {
+      document.getElementById("history-section").style.display = "none";
+      document.getElementById("realtime-section").style.display = "block";
+
+      requestAnimationFrame(() => {
+        const realtimeCharts = [
+          chartRealtimeEnergi,
+          chartRealtimeAkumulasi,
+          chartDayaIrr,
+          chartDutyCycle,
+          chartVI
+        ];
+        realtimeCharts.forEach(chart => {
+          if (chart && typeof chart.resize === "function") chart.resize();
+        });
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
     function toggleTheme() {
       document.body.classList.toggle("light-mode");
       const isLight = document.body.classList.contains("light-mode");
@@ -1583,11 +1783,11 @@ body.light-mode .chart-box ul.chart-legend li span,
       updateChartThemeColors();
     }
 
-function updateChartThemeColors() {
+    function updateChartThemeColors() {
       const gridColor = getCssVar('--chart-grid');
       const isLight = document.body.classList.contains("light-mode");
       const xAxisColor = isLight ? "#0f172a" : "#f3f4f6";
-      const legendFontColor = isLight ? "#0369a1" : "#f3f4f6"; // Warna khusus legenda agar jelas di mode terang
+      const legendFontColor = isLight ? "#0369a1" : "#f3f4f6";
       const dutyLamaColor = xAxisColor;
 
       const allCharts = [
@@ -1598,8 +1798,6 @@ function updateChartThemeColors() {
       
       allCharts.forEach((chart) => {
         if (!chart) return;
-
-        // Memperbarui warna teks legenda grafik
         if (chart.options.legend && chart.options.legend.labels) {
           chart.options.legend.labels.fontColor = legendFontColor;
         }
@@ -1617,6 +1815,7 @@ function updateChartThemeColors() {
         chart.update();
       });
     }    
+
     function getXAxisFontColor() {
       return document.body.classList.contains("light-mode") ? "#0f172a" : "#f3f4f6";
     }
@@ -2399,10 +2598,10 @@ function updateChartThemeColors() {
       [chartVI, chartDayaIrr, chartDutyCycle, chartRealtimeAkumulasi, chartRealtimeEnergi].forEach(c => c.update());
     }
 
-const mpptRef = database.ref("/mppt_data");
-mpptRef.orderByKey().limitToLast(1).on("child_added", (childSnapshot) => {
-  processRealtimeData(childSnapshot.val(), childSnapshot.key);
-});
+    const mpptRef = database.ref("/mppt_data");
+    mpptRef.orderByKey().limitToLast(1).on("child_added", (childSnapshot) => {
+      processRealtimeData(childSnapshot.val(), childSnapshot.key);
+    });
 
     function decodeFirebasePushId(pushId) {
       if (!pushId || typeof pushId !== 'string') return 0;
@@ -2766,6 +2965,7 @@ mpptRef.orderByKey().limitToLast(1).on("child_added", (childSnapshot) => {
         }
         curDateChart.setDate(curDateChart.getDate() + 1);
       }
+      
       historyList.sort((a, b) => a.isoDate.localeCompare(b.isoDate));
 
       chartHistoryDayaIrr.data.labels = historyList.map(item => item.label);
@@ -2796,8 +2996,13 @@ mpptRef.orderByKey().limitToLast(1).on("child_added", (childSnapshot) => {
       document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
       document.getElementById("history-summary").style.display = "grid";
 
-      if (historyList.length > 0) loadSingleDayHistory(historyList[0].isoDate);
-      else clearSingleDayCharts();
+      if (selectedSingleDateIso) {
+        loadSingleDayHistory(selectedSingleDateIso);
+      } else if (historyList.length > 0) {
+        loadSingleDayHistory(historyList[historyList.length - 1].isoDate);
+      } else {
+        clearSingleDayCharts();
+      }
     }
 
     function reloadSingleDayDetail() { if (selectedSingleDateIso) loadSingleDayHistory(selectedSingleDateIso); }
@@ -2927,18 +3132,18 @@ mpptRef.orderByKey().limitToLast(1).on("child_added", (childSnapshot) => {
         chartHistEnergiPltsMatahari.data.datasets[1].data = histEnergyPlts;
         chartHistEnergiPltsMatahari.data.energyHighlights = histHighlights;
         chartHistEnergiPltsMatahari.update();
-
-        if (enableOffCurveDisconnect && selectedSingleDateIso) {
-        }
       });
     }
 
     function renderLogStatusTable(startDateStr, endDateStr, ringkasanMap) {
       const tbody = document.getElementById("log-status-tbody");
       tbody.innerHTML = "";
+      
       let curDate = new Date(startDateStr), stopDate = new Date(endDateStr);
       let rowNum = 1, hariAdaLog = 0, hariTakAdaLog = 0, totalHariRentang = 0;
       let totalEnergiMatahariSum = 0, totalEnergiSum = 0, totalLamaOperasiSum = 0, sumDayaRataKaliLamaOp = 0, sumIrrRataKaliLamaOp = 0, maxDayaVal = 0, maxIrrVal = 0;
+
+      let rowsData = [];
 
       while (curDate <= stopDate) {
         totalHariRentang++;
@@ -2956,24 +3161,30 @@ mpptRef.orderByKey().limitToLast(1).on("child_added", (childSnapshot) => {
           if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
           if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
 
-          let tr = document.createElement("tr");
-          tr.setAttribute("data-iso-date", isoStr);
-          if (selectedSingleDateIso === isoStr || (!selectedSingleDateIso && hariAdaLog === 1)) {
-            tr.classList.add("selected-row");
-            selectedSingleDateIso = isoStr;
-          }
-          tr.onclick = function() {
-            tbody.querySelectorAll("tr").forEach(r => r.classList.remove("selected-row"));
-            tr.classList.add("selected-row");
-            loadSingleDayHistory(isoStr);
-          };
-          tr.innerHTML = `<td>${rowNum++}</td><td>${displayStr}</td><td>${lamaOpVal.toFixed(2)}</td><td>${eVal.toFixed(2)}</td><td>${dRataVal.toFixed(2)}</td><td>${dMaksVal.toFixed(2)}</td><td>${iRataVal.toFixed(2)}</td><td>${iMaksVal.toFixed(0)}</td><td>${eMatVal.toFixed(2)}</td>`;
-          tbody.appendChild(tr);
+          rowsData.push({ isoStr, displayStr, eMatVal, eVal, lamaOpVal, dRataVal, iRataVal, dMaksVal, iMaksVal });
         } else {
           hariTakAdaLog++;
         }
         curDate.setDate(curDate.getDate() + 1);
       }
+
+      selectedSingleDateIso = "";
+      rowsData.forEach((data, index) => {
+        let tr = document.createElement("tr");
+        tr.setAttribute("data-iso-date", data.isoStr);
+        let isLatest = (index === rowsData.length - 1);
+        if (isLatest) {
+          tr.classList.add("selected-row");
+          selectedSingleDateIso = data.isoStr;
+        }
+        tr.onclick = function() {
+          tbody.querySelectorAll("tr").forEach(r => r.classList.remove("selected-row"));
+          tr.classList.add("selected-row");
+          loadSingleDayHistory(data.isoStr);
+        };
+        tr.innerHTML = `<td>${rowNum++}</td><td>${data.displayStr}</td><td>${data.lamaOpVal.toFixed(2)}</td><td>${data.eVal.toFixed(2)}</td><td>${data.dRataVal.toFixed(2)}</td><td>${data.dMaksVal.toFixed(2)}</td><td>${data.iRataVal.toFixed(2)}</td><td>${data.iMaksVal.toFixed(0)}</td><td>${data.eMatVal.toFixed(2)}</td>`;
+        tbody.appendChild(tr);
+      });
 
       if (rowNum === 1) tbody.innerHTML = `<tr><td colspan="9" style="color: var(--text-muted); font-style: italic;">Tidak ada data historis pada rentang tanggal ini.</td></tr>`;
 
@@ -3015,8 +3226,7 @@ mpptRef.orderByKey().limitToLast(1).on("child_added", (childSnapshot) => {
       rows.forEach(row => tbody.appendChild(row));
     }
 
-    
-function showModalPltsOff(targetIsoDate) {
+    function showModalPltsOff(targetIsoDate) {
       const modal = document.getElementById("modalPltsOff");
       const tbody = document.getElementById("tbody-plts-off");
       const infoText = document.getElementById("info-total-off-rows");
@@ -3075,10 +3285,9 @@ function showModalPltsOff(targetIsoDate) {
           let item = dayItems[i];
           let mulaiOnVal = item.MULAI_ON !== undefined && item.MULAI_ON !== null && item.MULAI_ON !== "" ? Number(item.MULAI_ON) : 2;
 
-          // Ketika mendeteksi baris saat MULAI_ON = 1 (Mulai Off)
           if (mulaiOnVal === 1) {
-            let offItem = item; // Baris saat Mulai Off (1)
-            let prevItem = i > 0 ? dayItems[i - 1] : null; // Baris data sebelumnya
+            let offItem = item;
+            let prevItem = i > 0 ? dayItems[i - 1] : null;
 
             if (prevItem) {
               let getTimeStr = (it) => {
@@ -3093,8 +3302,8 @@ function showModalPltsOff(targetIsoDate) {
                 return "00:00:00";
               };
 
-              let startTimeStr = getTimeStr(prevItem); // Waktu baris sebelumnya
-              let endTimeStr = getTimeStr(offItem);     // Waktu saat MULAI_ON = 1
+              let startTimeStr = getTimeStr(prevItem);
+              let endTimeStr = getTimeStr(offItem);
 
               offSessions.push({
                 startTime: startTimeStr,
@@ -3121,7 +3330,6 @@ function showModalPltsOff(targetIsoDate) {
           let energiMatahariVal = Number(session.endItem.energi_matahari_watt_jam || 0);
           let energiPltsVal = Number(session.endItem.energi_plts_watt_jam || 0);
 
-          // Hitung selisih waktu antara baris sebelumnya dan baris MULAI_ON = 1
           let diffSec = 0;
           let pStart = session.startTime.split(":");
           let pEnd = session.endTime.split(":");
@@ -3167,16 +3375,12 @@ function showModalPltsOff(targetIsoDate) {
         let energiPltsVal = Number(session.items[0].energi_plts_watt_jam || 0);
 
         let diffSec = 0;
-        if (session.endMs > 0 && session.startMs > 0 && session.endMs >= session.startMs) {
-          diffSec = Math.floor((session.endMs - session.startMs) / 1000);
-        } else {
-          let pStart = session.startTime.split(":");
-          let pEnd = session.endTime.split(":");
-          if (pStart.length === 3 && pEnd.length === 3) {
-            let sSec = parseInt(pStart[0], 10) * 3600 + parseInt(pStart[1], 10) * 60 + parseInt(pStart[2], 10);
-            let eSec = parseInt(pEnd[0], 10) * 3600 + parseInt(pEnd[1], 10) * 60 + parseInt(pEnd[2], 10);
-            diffSec = eSec >= sSec ? (eSec - sSec) : 0;
-          }
+        let pStart = session.startTime.split(":");
+        let pEnd = session.endTime.split(":");
+        if (pStart.length === 3 && pEnd.length === 3) {
+          let sSec = parseInt(pStart[0], 10) * 3600 + parseInt(pStart[1], 10) * 60 + parseInt(pStart[2], 10);
+          let eSec = parseInt(pEnd[0], 10) * 3600 + parseInt(pEnd[1], 10) * 60 + parseInt(pEnd[2], 10);
+          diffSec = eSec >= sSec ? (eSec - sSec) : 0;
         }
         let formattedDuration = formatSecondsToHMS(diffSec);
 
