@@ -31,7 +31,7 @@
       --title-bright-color: #38bdf8;
       --danger-color: #f87171;
       --warning-color: #fbbf24;
-      --chart-grid: rgba(255,255,255,0.08);
+      --chart-grid: rgba(255, 255, 255, 0.1);
       
       --btn-blue-bg: #1e293b;
       --btn-blue-hover: #334155;
@@ -46,14 +46,14 @@
       --bg-color: #f1f5f9;
       --card-bg: #ffffff;
       --card-inner-bg: #f8fafc;
-      --text-color: #0f172a;
+      --text-color: #000000;
       --text-muted: #475569;
       --border-color: #cbd5e1;
       --primary-color: #0284c7;
       --title-bright-color: #0284c7;
       --danger-color: #dc2626;
       --warning-color: #d97706;
-      --chart-grid: rgba(0, 0, 0, 0.08);
+      --chart-grid: rgba(0, 0, 0, 0.07);
 
       --btn-blue-bg: #ffffff;
       --btn-blue-hover: #f1f5f9;
@@ -299,7 +299,7 @@
       margin: 0 4px;
     }
 
-    .charts-wrapper { max-width: 1200px; margin: 0 auto 24px auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    .charts-wrapper { max-width: 1200px; margin: 0 auto 24px auto; display: grid; grid-template-columns: 1fr; gap: 30px; }
     .chart-box { background: var(--card-bg); border-radius: 14px; padding: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
     .chart-box h2 { font-size: 16px; font-weight: 700; color: var(--title-bright-color); margin-bottom: 16px; text-align: center; }
 
@@ -364,7 +364,6 @@
       background: #f1f5f9 !important;
     }
 
-    /* DIATUR AGAR TAMPIL DALAM 1 BARIS (7 KOLOM) */
     .esp-memory-box {
       max-width: 1200px; 
       margin: 24px auto; 
@@ -423,9 +422,7 @@
       border: 1px solid #000000 !important;
     }
 
-    /* ==========================================================
-       PENGATURAN DATAPICKER FLATPICKR (CUSTOM SESUAI PERMINTAAN)
-       ========================================================== */
+    /* CUSTOM FLATPICKR STYLES */
     .flatpickr-calendar {
       background: #111827 !important;
       border: 1px solid var(--border-color) !important;
@@ -437,7 +434,6 @@
       color: #ffffff !important;
     }
     
-    /* Nama hari pada kalendar dibuat berwarna putih (#ffffff) */
     .flatpickr-weekday, .flatpickr-weekdays span {
       color: #ffffff !important;
       font-weight: 700 !important;
@@ -458,14 +454,12 @@
       color: #4b5563 !important;
     }
 
-    /* Tanggal yang TIDAK memiliki data (tanpa kelas .has-data): saat di-hover/dipilih menjadi MERAH */
     .flatpickr-day:hover, .flatpickr-day:focus {
       background: #dc2626 !important;
       border-color: #dc2626 !important;
       color: #ffffff !important;
     }
 
-    /* Tanggal yang memiliki data (.has-data): saat di-hover/dipilih latar belakang Hijau (#10b981), teks putih dan tebal */
     .flatpickr-day.has-data { 
       background: rgba(16, 185, 129, 0.3) !important; 
       border-color: #10b981 !important; 
@@ -479,7 +473,6 @@
       border-color: #10b981 !important;
     }
 
-    /* Tanggal terpilih standar (jika tidak ada kondisi khusus) */
     .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
       background: #38bdf8 !important;
       color: #ffffff !important;
@@ -530,14 +523,29 @@
       color: #000000 !important;
     }
 
-    .history-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 24px; }
-    .summary-card { background: var(--card-inner-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
-    .summary-card span { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-    .summary-card strong { font-size: 18px; font-weight: 800; color: var(--primary-color); margin-top: 4px; display: block; }
+   
+.history-charts-grid { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 30px !important; /* Memberikan jarak renggang antar kotak grafik */
+    }
 
-    .history-charts-grid { display: flex; flex-direction: column; gap: 20px; }
-    .history-chart-box { background: var(--card-inner-bg); border-radius: 10px; padding: 18px; border: 1px solid var(--border-color); }
-    .history-chart-box h3 { text-align: center; color: var(--title-bright-color); font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+    .history-chart-box { 
+      background: var(--card-bg) !important; 
+      border-radius: 14px !important; 
+      padding: 20px !important; 
+      border: 1px solid var(--border-color) !important; 
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      margin-bottom: 24px !important; 
+    }
+
+    .history-chart-box h3 { 
+      text-align: center !important; /* Memposisikan judul persis di tengah */
+      color: var(--title-bright-color) !important; 
+      font-size: 16px !important; 
+      font-weight: 700 !important; 
+      margin-bottom: 16px !important; 
+    }
 
     .history-table-box { background: var(--card-inner-bg); border-radius: 10px; padding: 18px; border: 1px solid var(--border-color); margin: 10px 0; }
     .history-table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
@@ -545,22 +553,64 @@
     
     .history-table-box h3 { text-align: left; color: var(--title-bright-color) !important; font-size: 16px; font-weight: 700; margin: 0; flex-grow: 1; }
 
-    .log-rekap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
-    .log-rekap-card { background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
-    .log-rekap-card span { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-    .log-rekap-card strong { font-size: 18px; font-weight: 800; margin-top: 4px; display: block; }
+    /* PENAMPIL REKAPITULASI DENGAN 7 KOLOM TERHUBUNG DALAM 1 BARIS */
+    .log-rekap-grid { 
+      display: grid; 
+      grid-template-columns: repeat(7, 1fr); 
+      gap: 10px; 
+      margin-bottom: 16px; 
+    }
+    @media (max-width: 1200px) {
+      .log-rekap-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .log-rekap-grid { grid-template-columns: repeat(2, 1fr); }
+    }
 
-    .table-responsive { max-height: 380px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--border-color); }
+    .log-rekap-card { background: var(--card-bg); padding: 12px 6px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
+    .log-rekap-card span { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .log-rekap-card strong { 
+      font-size: 14px; 
+      font-weight: 800; 
+      display: block; 
+      color: #38bdf8 !important; 
+    }
+
+    /* Warna saat masuk Mode Terang (Biru Gelap / Navy) */
+    body.light-mode .log-rekap-card strong { 
+      color: #1e40af !important; /* Biru agak gelap yang sangat jelas di latar terang */
+    }
+    .table-responsive { max-height: 380px; overflow-y: auto; overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-color); }
     
-    /* DEFAULT TABEL (MODE GELAP) */
-    .log-status-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; white-space: nowrap; background-color: #0f172a !important; }
-    .log-status-table th, .log-status-table td { padding: 12px 14px; border-bottom: 1px solid #1e293b; color: #ffffff !important; }
-    .log-status-table th { background: #0f172a !important; color: #38bdf8 !important; font-weight: 700; position: sticky; top: 0; z-index: 2; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+    /* DEFAULT TABEL (MODE GELAP) - LEBAR DITERAPKAN AGAR SELURUH BARIS & TEKS TAMPIL UTUH */
+    .log-status-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      text-align: center; 
+      font-size: 12px; 
+      white-space: normal; 
+      word-break: break-word; 
+      table-layout: fixed; 
+      background-color: #0f172a !important; 
+    }
+    .log-status-table th, .log-status-table td { padding: 8px 6px; border-bottom: 1px solid #1e293b; color: #ffffff !important; vertical-align: middle; }
+    .log-status-table th { background: #0f172a !important; color: #38bdf8 !important; font-weight: 700; position: sticky; top: 0; z-index: 2; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 0.3px; line-height: 1.3; }
     .log-status-table td { color: #ffffff !important; font-weight: 500; }
     .log-status-table tbody tr { background-color: #0f172a !important; }
     .log-status-table tbody tr:hover { background: rgba(56, 189, 248, 0.15) !important; }
     .log-status-table tbody tr.selected-row { background: rgba(56, 189, 248, 0.3) !important; font-weight: bold; }
     .log-status-table tfoot td { background: #0f172a !important; font-weight: 700; color: #38bdf8 !important; position: sticky; bottom: 0; z-index: 2; border-top: 2px solid #38bdf8; }
+
+    /* Pengaturan Lebar Kolom yang Presisi */
+    .log-status-table th:nth-child(1), .log-status-table td:nth-child(1) { width: 5%; }
+    .log-status-table th:nth-child(2), .log-status-table td:nth-child(2) { width: 13%; }
+    .log-status-table th:nth-child(3), .log-status-table td:nth-child(3) { width: 11%; }
+    .log-status-table th:nth-child(4), .log-status-table td:nth-child(4) { width: 13%; }
+    .log-status-table th:nth-child(5), .log-status-table td:nth-child(5) { width: 12%; }
+    .log-status-table th:nth-child(6), .log-status-table td:nth-child(6) { width: 12%; }
+    .log-status-table th:nth-child(7), .log-status-table td:nth-child(7) { width: 11%; }
+    .log-status-table th:nth-child(8), .log-status-table td:nth-child(8) { width: 11.5%; }
+    .log-status-table th:nth-child(9), .log-status-table td:nth-child(9) { width: 11.5%; }
 
     body.light-mode .log-status-table {
       background-color: #e2e8f0 !important;
@@ -568,7 +618,7 @@
     body.light-mode .log-status-table th {
       background: #cbd5e1 !important;
       color: #000000 !important;
-      font-size: 12px !important;
+      font-size: 11px !important;
       font-weight: 650 !important;
     }
     body.light-mode .log-status-table td {
@@ -592,7 +642,7 @@
     body.light-mode .log-status-table tfoot td {
       background: #cbd5e1 !important;
       color: #000000 !important;
-      font-size: 12px !important;
+      font-size: 11px !important;
       font-weight: 650 !important;
       border-top: 2px solid #000000;
     }
@@ -606,9 +656,6 @@
       gap: 8px;
     }
 
-    /* ==========================================================
-       KETERANGAN / TIPS DI BAWAH TABEL REKAPITULASI (SERAGAM & DINAMIS)
-       ========================================================== */
     .recap-tips-container {
       margin-top: 14px; 
       padding: 12px 16px;
@@ -623,7 +670,7 @@
     .recap-tips-item {
       font-size: 13px !important;
       font-weight: 600;
-      color: var(--text-color) !important; /* Putih pada Mode Gelap, Hitam pada Mode Terang */
+      color: var(--text-color) !important;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -679,16 +726,16 @@
     </p>
   </header>
 
-  <!-- BAGIAN REALTIME: mencakup panel pengendalian dan monitoring -->
+  <!-- BAGIAN REALTIME -->
   <section id="realtime-section">
   <!-- SECTION KONTROL MPPT -->
   <div class="control-section">
     <h2>Panel Pengendalian Operasional PLTS</h2>
     <div class="control-box">
       <div class="mode-buttons">
-        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">⚙️ PARAMETER MPPT, WAKTU LOG & SENSOR</button>
-        <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">📊 PILIH METODE MPPT</button>
-        <button id="btn-manual" class="btn-mode" onclick="handleManualClick()">🎛️ MANUAL</button>
+        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT, WAKTU LOG & SENSOR</button>
+        <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">PILIH METODE MPPT</button>
+        <button id="btn-manual" class="btn-mode" onclick="handleManualClick()">MANUAL</button>
       </div>
 
       <div class="slider-container" id="slider-container-box">
@@ -797,18 +844,18 @@
       <div class="filter-group">
         <label for="tensionRealtimeSelect" style="font-size: 12px;">Kelengkungan:</label>
         <select id="tensionRealtimeSelect" class="scale-input-box" onchange="changeRealtimeLineTension(this.value)" style="width: 65px; height: 32px; padding: 2px 6px; font-size: 12px;">
-          <option value="0" selected>0</option>
+          <option value="0">0</option>
           <option value="0.1">0.1</option>
-          <option value="0.2">0.2</option>
+          <option value="0.2" selected>0.2</option>
           <option value="0.3">0.3</option>
         </select>
       </div>
       <div class="filter-group">
         <label for="pointRadiusRealtimeSelect" style="font-size: 12px;">Titik Data:</label>
         <select id="pointRadiusRealtimeSelect" class="scale-input-box" onchange="changeRealtimePointRadius(this.value)" style="width: 85px; height: 32px; padding: 2px 6px; font-size: 12px;">
-          <option value="0" selected>Tak ada</option>
+          <option value="0">Tak ada</option>
           <option value="1">Kecil</option>
-          <option value="2">Sedang</option>
+          <option value="2" selected>Sedang</option>
           <option value="3">Besar</option>
         </select>
       </div>
@@ -853,7 +900,7 @@
   </section>
   <!-- AKHIR BAGIAN REALTIME -->
 
-  <!-- BAGIAN HISTORI: tersembunyi saat halaman pertama dibuka -->
+  <!-- BAGIAN HISTORI -->
   <section id="history-section" style="display: none;">
   <!-- Section Data Historis -->
   <div class="history-section">
@@ -869,25 +916,6 @@
         <input type="text" id="endDate" placeholder="Pilih Tanggal Akhir">
       </div>
     </div>
-
-    <div class="history-summary-grid" id="history-summary">
-      <div class="summary-card">
-        <span>Hari Beroperasi</span>
-        <strong id="sum-hari">0</strong>
-      </div>
-      <div class="summary-card">
-        <span>Total Energi PLTS</span>
-        <strong id="sum-energi">0.00 Wh</strong>
-      </div>
-      <div class="summary-card">
-        <span>Daya Rata-rata</span>
-        <strong id="sum-daya">0.00 W</strong>
-      </div>
-      <div class="summary-card">
-        <span>Iradian Rata-rata</span>
-        <strong id="sum-irr">0 W/m²</strong>
-      </div>
-    </div>
     
     <div class="history-charts-grid">
       <!-- Tips Grafik Histori -->
@@ -897,8 +925,40 @@
 
       <!-- 1. Grafik History Energi Harian -->
       <div class="history-chart-box">
+        <!-- PENAMPIL DATA 7 KOLOM DALAM 1 BARIS (POIN 3) -->
+        <div class="log-rekap-grid">
+          <div class="log-rekap-card">
+            <span>Total Hari Rentang</span>
+            <strong id="rekap-total-hari" style="color: var(--primary-color);">0 Hari</strong>
+          </div>
+          <div class="log-rekap-card">
+            <span>Hari Beroperasi</span>
+            <strong id="rekap-hari-ada-log" style="color: #10b981;">0 Hari</strong>
+          </div>
+          <div class="log-rekap-card">
+            <span>Lama Total Operasi</span>
+            <strong id="rekap-total-lama-op" style="color: #38bdf8;">0.00 Jam</strong>
+          </div>
+          <div class="log-rekap-card">
+            <span>Total Energi Matahari</span>
+            <strong id="rekap-total-energi-matahari" style="color: #fbbf24;">0.00 Wh/m²</strong>
+          </div>
+          <div class="log-rekap-card">
+            <span>Total Energi PLTS</span>
+            <strong id="rekap-total-energi-plts" style="color: #38bdf8;">0.00 Wh</strong>
+          </div>
+          <div class="log-rekap-card">
+            <span>Iradiansi Rata-rata</span>
+            <strong id="rekap-avg-irr" style="color: #fbbf24;">0 W/m²</strong>
+          </div>
+          <div class="log-rekap-card">
+            <span>Daya Rata-rata</span>
+            <strong id="rekap-avg-daya" style="color: #38bdf8;">0.00 W</strong>
+          </div>
+        </div>
+
         <h3>Energi Matahari & Energi PLTS Harian (Wh)</h3>
-        <canvas id="chartHistoryEnergi" style="max-height: 360px;"></canvas>
+        <canvas id="chartHistoryEnergi" style="max-height: 320px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span style="color: #fbbf24;">Min:</span><input type="number" id="min-hisen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryEnergi', 'y', 'min', this.value)">
@@ -915,7 +975,7 @@
       <!-- 2. Grafik History Daya & Iradiansi Harian -->
       <div class="history-chart-box">
         <h3>Iradiansi Rata-rata & Daya Rata-rata Harian</h3>
-        <canvas id="chartHistoryDayaIrr" style="max-height: 360px;"></canvas>
+        <canvas id="chartHistoryDayaIrr" style="max-height: 320px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span style="color: #fbbf24;">Min:</span><input type="number" id="min-hisdayirr-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistoryDayaIrr', 'y', 'min', this.value)">
@@ -938,35 +998,21 @@
             <button class="btn-export" onclick="exportTableToCSV()">📥 UNDUH REKAP</button>
           </div>
         </div>
-        
-        <div class="log-rekap-grid">
-          <div class="log-rekap-card">
-            <span>Total Hari Rentang</span>
-            <strong id="rekap-total-hari" style="color: var(--primary-color);">0 Hari</strong>
-          </div>
-          <div class="log-rekap-card">
-            <span>Hari Beroperasi</span>
-            <strong id="rekap-hari-ada-log" style="color: #10b981;">0 Hari</strong>
-          </div>
-          <div class="log-rekap-card">
-            <span>Tak Beroperasi</span>
-            <strong id="rekap-hari-tak-ada-log" style="color: var(--danger-color);">0 Hari</strong>
-          </div>
-        </div>
 
         <div class="table-responsive">
+          <!-- URUTAN KOLOM YANG DISESUAIKAN DAN LEBAR OPTIMAL -->
           <table class="log-status-table" id="table-rekap-harian">
             <thead>
               <tr>
                 <th onclick="sortTable(0)">No <span id="sort-icon-0">↕</span></th>
                 <th onclick="sortTable(1)">Tanggal <span id="sort-icon-1">↕</span></th>
                 <th onclick="sortTable(2)">Lama Operasi (Jam) <span id="sort-icon-2">↕</span></th>
-                <th onclick="sortTable(3)">Energi PLTS (Wh) <span id="sort-icon-3">↕</span></th>
-                <th onclick="sortTable(4)">Daya Rata-rata (W) <span id="sort-icon-4">↕</span></th>
-                <th onclick="sortTable(5)">Daya Maks (W) <span id="sort-icon-5">↕</span></th>
-                <th onclick="sortTable(6)">Iradian Rata-rata (W/m²) <span id="sort-icon-6">↕</span></th>
-                <th onclick="sortTable(7)">Iradian Maks (W/m²) <span id="sort-icon-7">↕</span></th>
-                <th onclick="sortTable(8)">Energi Matahari (Wh/m²) <span id="sort-icon-8">↕</span></th>
+                <th onclick="sortTable(3)">Energi Matahari (Wh/m²) <span id="sort-icon-3">↕</span></th>
+                <th onclick="sortTable(4)">Energi PLTS (Wh) <span id="sort-icon-4">↕</span></th>
+                <th onclick="sortTable(5)">Iradiansi Rata-rata (W/m²) <span id="sort-icon-5">↕</span></th>
+                <th onclick="sortTable(6)">Daya Rata-rata (W) <span id="sort-icon-6">↕</span></th>
+                <th onclick="sortTable(7)">Iradiansi Maks (W/m²) <span id="sort-icon-7">↕</span></th>
+                <th onclick="sortTable(8)">Daya Maks (W) <span id="sort-icon-8">↕</span></th>
               </tr>
             </thead>
             <tbody id="log-status-tbody">
@@ -978,32 +1024,39 @@
               <tr>
                 <td colspan="2" style="text-align: right;">TOTAL / RATA-RATA / MAKS:</td>
                 <td id="foot-total-lama-operasi">0.00</td>
-                <td id="foot-total-energi">0.00</td>
-                <td id="foot-avg-daya">0.00</td>
-                <td id="foot-max-daya">0.00</td>
-                <td id="foot-avg-irr">0</td>
-                <td id="foot-max-irr">0</td>
                 <td id="foot-total-energi-matahari">0.00</td>
+                <td id="foot-total-energi">0.00</td>
+                <td id="foot-avg-irr">0</td>
+                <td id="foot-avg-daya">0.00</td>
+                <td id="foot-max-irr">0</td>
+                <td id="foot-max-daya">0.00</td>
               </tr>
             </tfoot>
           </table>
         </div>
 
-        <!-- Keterangan / Tips di Bawah Tabel Rekapitulasi (Seragam dalam satu kontainer) -->
+        <!-- Keterangan / Tips di Bawah Tabel Rekapitulasi -->
+        <!-- Keterangan / Tips di Bawah Tabel Rekapitulasi -->
+
+<!-- Keterangan / Tips di Bawah Tabel Rekapitulasi -->
         <div class="recap-tips-container">
           <div class="recap-tips-item txt-pilih-baris">
             <span>💡</span> Pilih baris tanggal pada tabel di atas untuk memuat grafik
           </div>
           <div class="recap-tips-item">
-            <span>💡</span> Tips: Klik legenda warna pada grafik untuk menyembunyikan/menampilkan kurva tertentu.
+            <span>💡</span> Klik legenda warna pada grafik untuk menyembunyikan/menampilkan kurva tertentu yang ada dibawah tabel.
+          </div>
+          <div class="recap-tips-item" style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 12px; height: 12px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
+            <span>Garis merah : PLTS tak beroperasi</span>
           </div>
         </div>
-      </div>
-      
+
+
       <!-- 3. Grafik Harian: Energi Matahari & Energi PLTS -->
       <div class="history-chart-box">
         <h3>Energi Harian <span id="title-day-energi-plts-matahari" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
-        <canvas id="chartHistEnergiPltsMatahari" style="max-height: 360px;"></canvas>
+        <canvas id="chartHistEnergiPltsMatahari" height="320" style="width: 100%; display: block;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span style="color: #fbbf24;">Min:</span><input type="number" id="min-histdayen-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistEnergiPltsMatahari', 'y', 'min', this.value)">
@@ -1015,10 +1068,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistEnergiPltsMatahari', ['y', 'y1'], ['min-histdayen-left', 'max-histdayen-left', 'min-histdayen-right', 'max-histdayen-right'])">Reset Skala</button>
-            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
-              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
-              <span>PLTS Off</span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -1026,7 +1076,7 @@
       <!-- 4. Grafik Harian: Iradiansi Rata-rata & Daya Rata-rata -->
       <div class="history-chart-box">
         <h3>Iradiansi rata-rata & Daya Rata-rata <span id="title-day-avg-power-irr" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
-        <canvas id="chartHistAvgPowerIrr" style="max-height: 360px;"></canvas>
+        <canvas id="chartHistAvgPowerIrr" style="max-height: 320px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span style="color: #fbbf24;">Min:</span><input type="number" id="min-histdayavg-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistAvgPowerIrr', 'y', 'min', this.value)">
@@ -1038,10 +1088,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistAvgPowerIrr', ['y', 'y1'], ['min-histdayavg-left', 'max-histdayavg-left', 'min-histdayavg-right', 'max-histdayavg-right'])">Reset Skala</button>
-            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
-              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
-              <span>PLTS Off</span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -1049,7 +1096,7 @@
       <!-- 5. Grafik Harian: Iradiansi & Daya -->
       <div class="history-chart-box">
         <h3>Iradiansi & Daya <span id="title-day-power" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
-        <canvas id="chartHistPowerIrr" style="max-height: 360px;"></canvas>
+        <canvas id="chartHistPowerIrr" style="max-height: 320px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span style="color: #fbbf24;">Min:</span><input type="number" id="min-histdaypow-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistPowerIrr', 'y', 'min', this.value)">
@@ -1061,10 +1108,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistPowerIrr', ['y', 'y1'], ['min-histdaypow-left', 'max-histdaypow-left', 'min-histdaypow-right', 'max-histdaypow-right'])">Reset Skala</button>
-            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
-              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
-              <span>PLTS Off</span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -1072,7 +1116,7 @@
       <!-- 6. Grafik Harian: Siklus Kerja -->
       <div class="history-chart-box">
         <h3>Siklus Kerja / Duty Cycle <span id="title-day-duty" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
-        <canvas id="chartHistSiklusKerja" style="max-height: 360px;"></canvas>
+        <canvas id="chartHistSiklusKerja" style="max-height: 320px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span>Min:</span><input type="number" id="min-histdayduty-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistSiklusKerja', 'y', 'min', this.value)">
@@ -1080,10 +1124,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistSiklusKerja', ['y'], ['min-histdayduty-left', 'max-histdayduty-left'])">Reset Skala</button>
-            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
-              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
-              <span>PLTS Off</span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -1091,7 +1132,7 @@
       <!-- 7. Grafik Harian: Tegangan & Arus -->
       <div class="history-chart-box">
         <h3>Tegangan & Arus <span id="title-day-vi" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
-        <canvas id="chartHistVI" style="max-height: 360px;"></canvas>
+        <canvas id="chartHistVI" style="max-height: 320px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span style="color: #fbbf24;">Min:</span><input type="number" id="min-histdayvi-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistVI', 'y', 'min', this.value)">
@@ -1103,10 +1144,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistVI', ['y', 'y1'], ['min-histdayvi-left', 'max-histdayvi-left', 'min-histdayvi-right', 'max-histdayvi-right'])">Reset Skala</button>
-            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
-              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
-              <span>PLTS Off</span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -1114,7 +1152,7 @@
       <!-- 8. Grafik Harian: Lama Operasi (Jam) -->
       <div class="history-chart-box">
         <h3>Lama Operasi (Jam) <span id="title-day-lama-operasi" style="font-size:13px; font-weight:normal; color:var(--primary-color);"></span></h3>
-        <canvas id="chartHistLamaOperasi" style="max-height: 360px;"></canvas>
+        <canvas id="chartHistLamaOperasi" style="max-height: 320px;"></canvas>
         <div class="scale-control-panel">
           <div class="scale-axis-group">
             <span>Min:</span><input type="number" id="min-histdaylama-left" class="scale-input-box" placeholder="Auto" onchange="applyCustomScale('chartHistLamaOperasi', 'y', 'min', this.value)">
@@ -1122,10 +1160,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
             <button class="scale-btn-auto" onclick="resetChartScaleAuto('chartHistLamaOperasi', ['y'], ['min-histdaylama-left', 'max-histdaylama-left'])">Reset Skala</button>
-            <div style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;">
-              <span style="width: 10px; height: 10px; background: #f87171; display: inline-block; border-radius: 2px;"></span>
-              <span>PLTS Off</span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -1258,7 +1293,7 @@
   </section>
   <!-- AKHIR BAGIAN HISTORI -->
 
-  <!-- MODAL JENDELA TABEL PLTS OFF (SESI OFFLINE) -->
+  <!-- MODAL JENDELA TABEL PLTS OFF -->
   <div id="modalPltsOff" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
     <div style="background: var(--card-bg); width: 100%; max-width: 1000px; max-height: 85vh; border-radius: 14px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; color: var(--text-color); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);">
       
@@ -1310,7 +1345,6 @@
       return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
 
-    // Tombol Data PLTS Off otomatis mengubah interval menjadi 5 detik dan membuka tabel rekap sesi.
     function toggleOffCurve() {
       const stepSelectEl = document.getElementById("stepSelect");
       if (stepSelectEl) {
@@ -1325,7 +1359,8 @@
       }
     }
 
-    Chart.defaults.global.elements.line.tension = 0;
+    // POIN 1: DEFAULT KELENGKUNGAN GRAFIK REALTIME 0.2
+    Chart.defaults.global.elements.line.tension = 0.2;
 
     function changeRealtimeLineTension(val) {
       if (val === "" || isNaN(val)) return;
@@ -1475,7 +1510,7 @@
           ctx.save();
           var tension = chart.options.elements && chart.options.elements.line && chart.options.elements.line.tension !== undefined 
                         ? chart.options.elements.line.tension 
-                        : (dataset.lineTension !== undefined ? dataset.lineTension : 0);
+                        : (dataset.lineTension !== undefined ? dataset.lineTension : 0.2);
 
           for (var i = 0; i < dataPoints.length - 1; i++) {
             var p0 = dataPoints[i];
@@ -1542,7 +1577,7 @@
         
         var tension = chart.options.elements && chart.options.elements.line && chart.options.elements.line.tension !== undefined 
                       ? chart.options.elements.line.tension 
-                      : (Chart.defaults.global.elements.line.tension || 0);
+                      : (Chart.defaults.global.elements.line.tension || 0.2);
 
         for (var i = 0; i < dataPoints.length - 1; i++) {
           var p0 = dataPoints[i];
@@ -1691,26 +1726,33 @@
     }
 
     function finalizeDateRange(dates) {
-      let defaultStart = "", defaultEnd = "";
+      let defaultStartIso = "", defaultEndIso = "";
       if (dates.length > 0) {
         dates.sort();
-        defaultStart = dates[0];
-        defaultEnd = dates[dates.length - 1];
+        defaultStartIso = dates[0];
+        defaultEndIso = dates[dates.length - 1];
       } else {
         const today = new Date();
         const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
         const startDateObj = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
         const formatDateOnly = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        defaultStart = formatDateOnly(startDateObj);
-        defaultEnd = formatDateOnly(endDateObj);
+        defaultStartIso = formatDateOnly(startDateObj);
+        defaultEndIso = formatDateOnly(endDateObj);
       }
-      initFlatpickrPickers(defaultStart, defaultEnd);
+      initFlatpickrPickers(defaultStartIso, defaultEndIso);
       loadHistory();
     }
 
-    function initFlatpickrPickers(defaultStart, defaultEnd) {
+    // POIN 2: PENGGUNAAN FORMAT TANGGAL TGL:BULAN:TAHUN (d-m-Y)
+    function initFlatpickrPickers(defaultStartIso, defaultEndIso) {
+      const convertIsoToDmy = (isoStr) => {
+        if (!isoStr) return "";
+        let p = isoStr.split("-");
+        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : isoStr;
+      };
+
       const fpConfig = {
-        dateFormat: "Y-m-d",
+        dateFormat: "d-m-Y",
         onChange: function(selectedDates, dateStr, instance) { loadHistory(); },
         onDayCreate: function(dObj, dStr, fp, dayElem) {
           const year = dayElem.dateObj.getFullYear();
@@ -1720,8 +1762,8 @@
           if (availableDatesSet.has(dateStr)) dayElem.classList.add("has-data");
         }
       };
-      startDatePickerInstance = flatpickr("#startDate", { ...fpConfig, defaultDate: defaultStart });
-      endDatePickerInstance = flatpickr("#endDate", { ...fpConfig, defaultDate: defaultEnd });
+      startDatePickerInstance = flatpickr("#startDate", { ...fpConfig, defaultDate: convertIsoToDmy(defaultStartIso) });
+      endDatePickerInstance = flatpickr("#endDate", { ...fpConfig, defaultDate: convertIsoToDmy(defaultEndIso) });
     }
 
     let lastEspHeartbeatTime = 0;
@@ -1737,7 +1779,8 @@
       realtimeSection.style.display = "none";
       historySection.style.display = "block";
 
-      requestAnimationFrame(() => {
+      // Memaksa Chart.js menyesuaikan ukuran agar tidak kecil saat pertama kali dibuka
+      setTimeout(() => {
         const historyCharts = [
           chartHistoryEnergi,
           chartHistoryDayaIrr,
@@ -1749,13 +1792,15 @@
           chartHistLamaOperasi
         ];
         historyCharts.forEach(chart => {
-          if (chart && typeof chart.resize === "function") chart.resize();
+          if (chart && typeof chart.resize === "function") {
+            chart.resize();
+            chart.update();
+          }
         });
-      });
+      }, 50); // Jeda waktu singkat agar DOM selesai merender display block
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-
     function showRealtimeSection() {
       document.getElementById("history-section").style.display = "none";
       document.getElementById("realtime-section").style.display = "block";
@@ -1784,8 +1829,10 @@
     }
 
     function updateChartThemeColors() {
-      const gridColor = getCssVar('--chart-grid');
       const isLight = document.body.classList.contains("light-mode");
+      
+      // Menentukan warna grid yang sangat kontras dan jelas
+      const gridColor = isLight ? "rgba(0, 0, 0, 0.15)" : "rgba(255, 255, 255, 0.15)";
       const xAxisColor = isLight ? "#0f172a" : "#f3f4f6";
       const legendFontColor = isLight ? "#0369a1" : "#f3f4f6";
       const dutyLamaColor = xAxisColor;
@@ -1802,19 +1849,26 @@
           chart.options.legend.labels.fontColor = legendFontColor;
         }
 
+        // Menerapkan warna grid langsung pada sumbu X dan Y
         chart.options.scales.xAxes.forEach(axis => {
-          if (axis.gridLines) axis.gridLines.color = gridColor;
+          if (!axis.gridLines) axis.gridLines = {};
+          axis.gridLines.color = gridColor;
           if (axis.ticks) axis.ticks.fontColor = xAxisColor;
         });
+        
         chart.options.scales.yAxes.forEach(axis => {
-          if (axis.gridLines) axis.gridLines.color = gridColor;
+          if (!axis.gridLines) axis.gridLines = {};
+          // Hanya beri warna grid pada sumbu utama agar tidak menumpuk
+          if (axis.position === 'left' || !axis.position) {
+            axis.gridLines.color = gridColor;
+          }
           if (chart === chartDutyCycle || chart === chartHistSiklusKerja || chart === chartHistLamaOperasi) {
             if (axis.ticks) axis.ticks.fontColor = dutyLamaColor;
           }
         });
         chart.update();
       });
-    }    
+    }
 
     function getXAxisFontColor() {
       return document.body.classList.contains("light-mode") ? "#0f172a" : "#f3f4f6";
@@ -2391,12 +2445,13 @@
       }]
     };
 
+    // POIN 1: INISIALISASI REALTIME DEFAULTS (Kelengkungan 0.2 & Titik Data 2)
     const ctxRealtimeEnergi = document.getElementById('chartRealtimeEnergi').getContext('2d');
     const chartRealtimeEnergi = new Chart(ctxRealtimeEnergi, {
       type: 'line',
       data: { energyHighlights: [], datasets: [
-        { label: 'Energi Matahari (Wh/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Energi PLTS (Wh)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Energi Matahari (Wh/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 2, lineTension: 0.2, yAxisID: 'y' },
+        { label: 'Energi PLTS (Wh)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 2, lineTension: 0.2, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false, 
@@ -2424,8 +2479,8 @@
     const chartVI = new Chart(ctxVI, {
       type: 'line',
       data: { datasets: [
-        { label: 'Tegangan (V)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Arus (A)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Tegangan (V)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 2, lineTension: 0.2, yAxisID: 'y' },
+        { label: 'Arus (A)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 2, lineTension: 0.2, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
@@ -2453,8 +2508,8 @@
     const chartDayaIrr = new Chart(ctxDayaIrr, {
       type: 'line',
       data: { datasets: [
-        { label: 'Iradiansi (W/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Daya (W)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Iradiansi (W/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 2, lineTension: 0.2, yAxisID: 'y' },
+        { label: 'Daya (W)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 2, lineTension: 0.2, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
@@ -2487,22 +2542,25 @@
           { label: 'Manual', borderColor: '#fbbf24', backgroundColor: '#fbbf24', data: [], showLine: false },
           { label: 'P&O', borderColor: '#38bdf8', backgroundColor: '#38bdf8', data: [], showLine: false },
           { label: 'InC', borderColor: '#10b981', backgroundColor: '#10b981', data: [], showLine: false },
-          { label: 'DutyCycleData', borderColor: '#38bdf8', data: [], modes: [], borderWidth: 2, showLine: false,
+          { label: 'DutyCycleData', borderColor: '#38bdf8', data: [], modes: [], borderWidth: 2, showLine: false, lineTension: 0.2,
             pointBackgroundColor: function(c) {
               let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
               return m === 'MANUAL' ? '#fbbf24' : (m === 'INC' ? '#10b981' : '#38bdf8');
             },
             pointRadius: function(c) {
-              let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
-              let modeKeyMap = { 'MANUAL': 0, 'PO': 1, 'INC': 2 };
-              let targetDatasetIndex = modeKeyMap[m] !== undefined ? modeKeyMap[m] : 1;
-              if (c.chart && c.chart.data && c.chart.data.datasets[targetDatasetIndex]) {
-                let meta = c.chart.getDatasetMeta(targetDatasetIndex);
-                if (meta && meta.hidden) return 0;
-              }
-              let sel = document.getElementById('pointRadiusRealtimeSelect');
-              return sel ? parseFloat(sel.value) || 0 : 0;
+            let sel = document.getElementById('pointRadiusRealtimeSelect') || document.getElementById('pointRadiusSelect');
+            let userVal = sel ? parseFloat(sel.value) : 2;
+            if (userVal === 0) return 0; // Jika dipilih "Tak ada", pastikan langsung 0 (hilang)
+
+            let m = c.dataset.modes && c.dataset.modes[c.dataIndex];
+            let modeKeyMap = { 'MANUAL': 0, 'PO': 1, 'INC': 2 };
+            let targetDatasetIndex = modeKeyMap[m] !== undefined ? modeKeyMap[m] : 1;
+            if (c.chart && c.chart.data && c.chart.data.datasets[targetDatasetIndex]) {
+              let meta = c.chart.getDatasetMeta(targetDatasetIndex);
+              if (meta && meta.hidden) return 0;
             }
+            return userVal;
+          }
           }
         ]
       },
@@ -2529,8 +2587,8 @@
     const chartRealtimeAkumulasi = new Chart(ctxRealtimeAkumulasi, {
       type: 'line',
       data: { datasets: [
-        { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y' },
-        { label: 'Daya Rata-rata (W)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 0, yAxisID: 'y1' }
+        { label: 'Iradiansi Rata-rata (W/m²)', borderColor: '#fbbf24', fill: false, data: [], borderWidth: 2.5, pointRadius: 2, lineTension: 0.2, yAxisID: 'y' },
+        { label: 'Daya Rata-rata (W)', borderColor: '#38bdf8', fill: false, data: [], borderWidth: 2.5, pointRadius: 2, lineTension: 0.2, yAxisID: 'y1' }
       ]},
       options: {
         responsive: true, maintainAspectRatio: false,
@@ -2612,7 +2670,15 @@
     }
 
     function exportToCSV() {
-      const startVal = document.getElementById("startDate").value, endVal = document.getElementById("endDate").value;
+      const startValDmy = document.getElementById("startDate").value, endValDmy = document.getElementById("endDate").value;
+      const parseDmyToIso = (dmy) => {
+        if (!dmy) return "";
+        let p = dmy.split("-");
+        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : dmy;
+      };
+      let startVal = parseDmyToIso(startValDmy);
+      let endVal = parseDmyToIso(endValDmy);
+
       database.ref("/mppt_data").once("value", (snapshot) => {
         let rows = [["stempel_waktu", "waktu_rtc", "tegangan", "arus", "daya", "daya_rata_rata", "energi_plts_watt_jam", "iradiansi", "iradiansi_rata_rata", "energi_matahari_watt_jam", "lama_jam_operasi", "siklus_kerja", "mode_operasi", "MULAI_ON"]];
         snapshot.forEach((child) => {
@@ -2626,7 +2692,7 @@
         });
         let link = document.createElement("a");
         link.href = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
-        link.download = `data_mppt_${startVal}_hingga_${endVal}.csv`;
+        link.download = `data_mppt_${startValDmy}_hingga_${endValDmy}.csv`;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
       });
     }
@@ -2637,7 +2703,7 @@
         let data = [];
         if (row.parentElement.tagName === "TFOOT") {
           data.push('"TOTAL / RATA-RATA / MAKS"', '""');
-          ['foot-total-lama-operasi', 'foot-total-energi', 'foot-avg-daya', 'foot-max-daya', 'foot-avg-irr', 'foot-max-irr', 'foot-total-energi-matahari'].forEach(id => {
+          ['foot-total-lama-operasi', 'foot-total-energi-matahari', 'foot-total-energi', 'foot-avg-irr', 'foot-avg-daya', 'foot-max-irr', 'foot-max-daya'].forEach(id => {
             data.push('"' + document.getElementById(id).innerText + '"');
           });
         } else {
@@ -2688,11 +2754,16 @@
       });
     }
 
-    const createHistChart = (id, datasetConfig) => new Chart(document.getElementById(id).getContext('2d'), {
+    
+const createHistChart = (id, datasetConfig) => new Chart(document.getElementById(id).getContext('2d'), {
       type: 'line',
       data: { datasets: datasetConfig },
       options: {
         responsive: true, maintainAspectRatio: false,
+        maintainAspectRatio: false, // Penting agar tidak menciut
+        layout: {
+          padding: { bottom: 30 }
+        },
         legend: { 
           labels: { fontColor: getXAxisFontColor(), fontStyle: '600' },
           onClick: function(e, legendItem) {
@@ -2868,8 +2939,16 @@
     });
 
     function loadHistory() {
-      const startVal = document.getElementById("startDate").value, endVal = document.getElementById("endDate").value;
-      if (!startVal || !endVal) return;
+      const startValDmy = document.getElementById("startDate").value, endValDmy = document.getElementById("endDate").value;
+      if (!startValDmy || !endValDmy) return;
+
+      const parseDmyToIso = (dmy) => {
+        let p = dmy.split("-");
+        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : dmy;
+      };
+
+      let startVal = parseDmyToIso(startValDmy);
+      let endVal = parseDmyToIso(endValDmy);
 
       database.ref("/mppt_ringkasan_harian").once("value", (ringkasanSnapshot) => {
         let ringkasanMap = {};
@@ -2989,12 +3068,6 @@
         chartHistoryEnergi.options.scales.yAxes[1].ticks.max = maxPlts * 1.5;
       }
       chartHistoryEnergi.update();
-
-      document.getElementById("sum-hari").innerText = calcResult.hariAdaLog;
-      document.getElementById("sum-energi").innerText = calcResult.totalEnergiSum.toFixed(2) + " Wh";
-      document.getElementById("sum-daya").innerText = calcResult.avgDayaVal.toFixed(2) + " W";
-      document.getElementById("sum-irr").innerText = calcResult.avgIrrVal.toFixed(0) + " W/m²";
-      document.getElementById("history-summary").style.display = "grid";
 
       if (selectedSingleDateIso) {
         loadSingleDayHistory(selectedSingleDateIso);
@@ -3135,6 +3208,7 @@
       });
     }
 
+    // POIN 3 & TAMBAHAN: RENDERING REKAPITULASI SESUAI URUTAN BARU KOLOM TABEL
     function renderLogStatusTable(startDateStr, endDateStr, ringkasanMap) {
       const tbody = document.getElementById("log-status-tbody");
       tbody.innerHTML = "";
@@ -3161,7 +3235,7 @@
           if (dMaksVal > maxDayaVal) maxDayaVal = dMaksVal;
           if (iMaksVal > maxIrrVal) maxIrrVal = iMaksVal;
 
-          rowsData.push({ isoStr, displayStr, eMatVal, eVal, lamaOpVal, dRataVal, iRataVal, dMaksVal, iMaksVal });
+          rowsData.push({ isoStr, displayStr, lamaOpVal, eMatVal, eVal, iRataVal, dRataVal, iMaksVal, dMaksVal });
         } else {
           hariTakAdaLog++;
         }
@@ -3182,26 +3256,44 @@
           tr.classList.add("selected-row");
           loadSingleDayHistory(data.isoStr);
         };
-        tr.innerHTML = `<td>${rowNum++}</td><td>${data.displayStr}</td><td>${data.lamaOpVal.toFixed(2)}</td><td>${data.eVal.toFixed(2)}</td><td>${data.dRataVal.toFixed(2)}</td><td>${data.dMaksVal.toFixed(2)}</td><td>${data.iRataVal.toFixed(2)}</td><td>${data.iMaksVal.toFixed(0)}</td><td>${data.eMatVal.toFixed(2)}</td>`;
+        // URUTAN KOLOM TABEL BARU:
+        // No | Tanggal | Lama Operasi | Energi Matahari | Energi PLTS | Iradiansi Rata | Daya Rata | Iradiansi Maks | Daya Maks
+        tr.innerHTML = `
+          <td>${rowNum++}</td>
+          <td>${data.displayStr}</td>
+          <td>${data.lamaOpVal.toFixed(2)}</td>
+          <td>${data.eMatVal.toFixed(2)}</td>
+          <td>${data.eVal.toFixed(2)}</td>
+          <td>${data.iRataVal.toFixed(2)}</td>
+          <td>${data.dRataVal.toFixed(2)}</td>
+          <td>${data.iMaksVal.toFixed(0)}</td>
+          <td>${data.dMaksVal.toFixed(2)}</td>
+        `;
         tbody.appendChild(tr);
       });
 
       if (rowNum === 1) tbody.innerHTML = `<tr><td colspan="9" style="color: var(--text-muted); font-style: italic;">Tidak ada data historis pada rentang tanggal ini.</td></tr>`;
 
-      document.getElementById("rekap-total-hari").innerText = totalHariRentang + " Hari";
-      document.getElementById("rekap-hari-ada-log").innerText = hariAdaLog + " Hari";
-      document.getElementById("rekap-hari-tak-ada-log").innerText = hariTakAdaLog + " Hari";
-
+      // UPDATE STATISTIK DALAM 1 BARIS (7 KOLOM)
       let finalAvgDaya = totalLamaOperasiSum > 0 ? (sumDayaRataKaliLamaOp / totalLamaOperasiSum) : 0;
       let finalAvgIrr = totalLamaOperasiSum > 0 ? (sumIrrRataKaliLamaOp / totalLamaOperasiSum) : 0;
 
+      document.getElementById("rekap-total-hari").innerText = totalHariRentang + " Hari";
+      document.getElementById("rekap-hari-ada-log").innerText = hariAdaLog + " Hari";
+      document.getElementById("rekap-total-lama-op").innerText = totalLamaOperasiSum.toFixed(2) + " Jam";
+      document.getElementById("rekap-total-energi-matahari").innerText = totalEnergiMatahariSum.toFixed(2) + " Wh/m²";
+      document.getElementById("rekap-total-energi-plts").innerText = totalEnergiSum.toFixed(2) + " Wh";
+      document.getElementById("rekap-avg-irr").innerText = finalAvgIrr.toFixed(0) + " W/m²";
+      document.getElementById("rekap-avg-daya").innerText = finalAvgDaya.toFixed(2) + " W";
+
+      // FOOTER TABEL SESUAI URUTAN KOLOM BARU
+      document.getElementById("foot-total-lama-operasi").innerText = totalLamaOperasiSum.toFixed(2);
       document.getElementById("foot-total-energi-matahari").innerText = totalEnergiMatahariSum.toFixed(2);
       document.getElementById("foot-total-energi").innerText = totalEnergiSum.toFixed(2);
-      document.getElementById("foot-total-lama-operasi").innerText = totalLamaOperasiSum.toFixed(2);
-      document.getElementById("foot-avg-daya").innerText = finalAvgDaya.toFixed(2);
       document.getElementById("foot-avg-irr").innerText = finalAvgIrr.toFixed(2);
-      document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2);
+      document.getElementById("foot-avg-daya").innerText = finalAvgDaya.toFixed(2);
       document.getElementById("foot-max-irr").innerText = maxIrrVal.toFixed(0);
+      document.getElementById("foot-max-daya").innerText = maxDayaVal.toFixed(2);
 
       return { hariAdaLog, totalEnergiSum, avgDayaVal: finalAvgDaya, avgIrrVal: finalAvgIrr };
     }
