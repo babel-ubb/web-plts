@@ -190,16 +190,20 @@
     .mode-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
     .btn-mode {
-      padding: 10px 20px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s ease;
-      background: var(--card-inner-bg);
-      color: var(--text-color);
-    }
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.3;
+  transition: all 0.2s ease;
+  background: var(--card-inner-bg);
+  color: var(--text-color);
+  white-space: normal;        /* <-- Tambahkan ini agar teks bisa turun baris */
+  text-align: center;         /* <-- Agar teks di tengah */
+  max-width: 280px;           /* <-- Batasi lebar tombol agar pas menjadi 2 baris */
+}
     body.light-mode .btn-mode {
       background: #f1f5f9;
       color: #334155;
@@ -733,7 +737,7 @@
     <h2>Panel Pengendalian Operasional PLTS</h2>
     <div class="control-box">
       <div class="mode-buttons">
-        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT, WAKTU LOG & SENSOR</button>
+        <button id="btn-param-mppt" class="btn-mode" onclick="handleParameterMpptClick()">PARAMETER MPPT, WAKTU LOG, JUMLAH HARI REKAPITULASI, SAMPEL</button>
         <button id="btn-param" class="btn-mode" onclick="handleMpptSelectionClick()">PILIH METODE MPPT</button>
         <button id="btn-manual" class="btn-mode" onclick="handleManualClick()">MANUAL</button>
       </div>
@@ -928,15 +932,15 @@
         <!-- PENAMPIL DATA 7 KOLOM DALAM 1 BARIS (POIN 3) -->
         <div class="log-rekap-grid">
           <div class="log-rekap-card">
-            <span>Total Hari Rentang</span>
+            <span>Total Hari</span>
             <strong id="rekap-total-hari" style="color: var(--primary-color);">0 Hari</strong>
           </div>
           <div class="log-rekap-card">
-            <span>Hari Beroperasi</span>
+            <span>Total Hari Beroperasi</span>
             <strong id="rekap-hari-ada-log" style="color: #10b981;">0 Hari</strong>
           </div>
           <div class="log-rekap-card">
-            <span>Lama Total Operasi</span>
+            <span>Total Lama Operasi</span>
             <strong id="rekap-total-lama-op" style="color: #38bdf8;">0.00 Jam</strong>
           </div>
           <div class="log-rekap-card">
@@ -1726,22 +1730,43 @@
     }
 
     function finalizeDateRange(dates) {
-      let defaultStartIso = "", defaultEndIso = "";
-      if (dates.length > 0) {
-        dates.sort();
-        defaultStartIso = dates[0];
-        defaultEndIso = dates[dates.length - 1];
-      } else {
-        const today = new Date();
-        const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
-        const startDateObj = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
-        const formatDateOnly = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        defaultStartIso = formatDateOnly(startDateObj);
-        defaultEndIso = formatDateOnly(endDateObj);
-      }
-      initFlatpickrPickers(defaultStartIso, defaultEndIso);
-      loadHistory();
+  // Ambil variabel JUMLAH_HARI_MAKS_REKAP terlebih dahulu dari Firebase
+  database.ref("/mppt_control/JUMLAH_HARI_MAKS_REKAP").once("value", (maxDaySnap) => {
+    let maxAllowedDays = maxDaySnap.exists() ? Number(maxDaySnap.val()) : 31; // Default 31 hari
+
+    let defaultStartIso = "", defaultEndIso = "";
+    
+    if (dates.length > 0) {
+      dates.sort();
+      // Ambil tanggal paling akhir (terbaru) yang ada di data
+      defaultEndIso = dates[dates.length - 1];
+      
+      // Hitung mundur sebanyak maxAllowedDays dari tanggal akhir
+      let endDateObj = new Date(defaultEndIso);
+      let startDateObj = new Date(endDateObj.getTime() - ((maxAllowedDays - 1) * 24 * 60 * 60 * 1000));
+      
+      let formatDateOnly = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      let calculatedStartIso = formatDateOnly(startDateObj);
+
+      // Pastikan tanggal awal tidak melebihi tanggal data paling awal yang tersedia
+      let earliestDateIso = dates[0];
+      defaultStartIso = calculatedStartIso < earliestDateIso ? earliestDateIso : calculatedStartIso;
+
+    } else {
+      // Fallback jika data kosong
+      const today = new Date();
+      const endDateObj = new Date(today.getTime() - (1 * 24 * 60 * 60 * 1000));
+      const startDateObj = new Date(endDateObj.getTime() - ((maxAllowedDays - 1) * 24 * 60 * 60 * 1000));
+      const formatDateOnly = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      defaultStartIso = formatDateOnly(startDateObj);
+      defaultEndIso = formatDateOnly(endDateObj);
     }
+
+    // Inisialisasi datepicker Flatpickr dengan rentang default tersebut
+    initFlatpickrPickers(defaultStartIso, defaultEndIso);
+    loadHistory();
+  });
+}
 
     // POIN 2: PENGGUNAAN FORMAT TANGGAL TGL:BULAN:TAHUN (d-m-Y)
     function initFlatpickrPickers(defaultStartIso, defaultEndIso) {
@@ -2093,7 +2118,8 @@
         { label: "⚙️ Parameter P&O", action: () => { document.body.removeChild(overlay); openParameterPoModal(); } },
         { label: "⚙️ Parameter InC", action: () => { document.body.removeChild(overlay); openParameterInCModal(); } },
         { label: "📊 Jumlah Sampel Sensor", action: () => { document.body.removeChild(overlay); openParameterStatistikSensorModal(); } },
-        { label: "⏰ Waktu Awal & Akhir Log", action: () => { document.body.removeChild(overlay); openParameterWaktuLogModal(); } }
+        { label: "⏰ Waktu Awal & Akhir Log", action: () => { document.body.removeChild(overlay); openParameterWaktuLogModal(); } },
+	{ label: "📅 Jumlah Hari Maks Untuk Tabel Rekap", action: () => { document.body.removeChild(overlay); openParameterHariMaksRekapModal(); } } 
       ].forEach(opt => {
         let btn = document.createElement("button");
         btn.innerText = opt.label;
@@ -2303,6 +2329,99 @@
       box.appendChild(title); box.appendChild(formContainer); box.appendChild(btnContainer); overlay.appendChild(box);
       document.body.appendChild(overlay);
     }
+
+function openParameterHariMaksRekapModal() {
+  let overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:9999;";
+  
+  let box = document.createElement("div");
+  box.style.cssText = `background:${getCssVar('--card-bg')};padding:24px;border-radius:14px;border:1px solid ${getCssVar('--border-color')};color:${getCssVar('--text-color')};width:380px;box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);`;
+  
+  let title = document.createElement("h3");
+  title.innerText = "Jumlah Hari Maks Untuk Rekap"; 
+  title.style.cssText = `margin-bottom:16px;color:var(--primary-color);font-size:18px;font-weight:700;text-align:center;`;
+  
+  let formContainer = document.createElement("div");
+  formContainer.style.cssText = "display:flex;flex-direction:column;gap:12px;";
+
+  let group = document.createElement("div");
+  group.style.cssText = "display:flex;flex-direction:column;gap:4px;";
+  
+  let lbl = document.createElement("label");
+  lbl.innerText = "NILAI HARI MAKS (MIN 3, MAKS 366):"; 
+  lbl.style.cssText = "font-size:12px;font-weight:700;color:var(--text-muted);";
+  
+  let input = document.createElement("input");
+  input.type = "number"; 
+  input.min = "3"; 
+  input.max = "366"; 
+  input.step = "1"; 
+  input.id = "param-hari-maks-rekap";
+  input.className = "scale-input-box";
+  input.style.cssText = "width:100%;padding:8px;border-radius:6px;font-size:14px;font-weight:600;text-align:center;";
+
+  // Baca nilai dari folder mppt_control/JUMLAH_HARI_MAKS_REKAP
+  database.ref("/mppt_control/JUMLAH_HARI_MAKS_REKAP").once("value", (snap) => {
+    if (snap.exists()) {
+      input.value = snap.val();
+    } else {
+      input.value = 31; // Default awal jika belum ada di Firebase
+    }
+  });
+
+  group.appendChild(lbl); 
+  group.appendChild(input); 
+  formContainer.appendChild(group);
+
+  let btnContainer = document.createElement("div");
+  btnContainer.style.cssText = "display:flex;gap:12px;margin-top:16px;";
+  
+  let btnCancel = document.createElement("button");
+  btnCancel.innerText = "Batal"; 
+  btnCancel.style.cssText = `flex:1;padding:10px;border-radius:8px;border:1px solid ${getCssVar('--border-color')};background:transparent;color:var(--text-muted);font-weight:600;cursor:pointer;`;
+  btnCancel.onclick = () => document.body.removeChild(overlay);
+
+  let btnSave = document.createElement("button");
+  btnSave.innerText = "Simpan"; 
+  btnSave.style.cssText = "flex:1;padding:10px;border-radius:8px;border:none;background:var(--primary-color);color:#ffffff;font-weight:600;cursor:pointer;";
+  
+  btnSave.onclick = () => {
+    let rawVal = document.getElementById("param-hari-maks-rekap").value;
+
+    if (rawVal === "") {
+      alert("Input tidak boleh kosong!");
+      return;
+    }
+
+    let numVal = Number(rawVal);
+
+    // Validasi integer, min 3, maks 366
+    if (!Number.isInteger(numVal) || numVal < 3 || numVal > 366) {
+      alert("Nilai harus berupa angka bulat antara 3 sampai 366!");
+      return;
+    }
+
+    // Kirim dan simpan ke Firebase folder mppt_control
+    database.ref("/mppt_control").update({ 
+      "JUMLAH_HARI_MAKS_REKAP": numVal,
+      timestamp: Date.now() 
+    }).then(() => { 
+      alert("Berhasil disimpan!"); 
+      document.body.removeChild(overlay); 
+      loadHistory(); // Refresh rekapitulasi setelah parameter diubah
+    });
+  };
+
+  btnContainer.appendChild(btnCancel); 
+  btnContainer.appendChild(btnSave);
+  box.appendChild(title); 
+  box.appendChild(formContainer); 
+  box.appendChild(btnContainer); 
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+
 
     function openParameterWaktuLogModal() {
       let overlay = document.createElement("div");
@@ -2938,100 +3057,141 @@ const createHistChart = (id, datasetConfig) => new Chart(document.getElementById
       }
     });
 
-    function loadHistory() {
-      const startValDmy = document.getElementById("startDate").value, endValDmy = document.getElementById("endDate").value;
-      if (!startValDmy || !endValDmy) return;
+function loadHistory() {
+  const startValDmy = document.getElementById("startDate").value, endValDmy = document.getElementById("endDate").value;
+  if (!startValDmy || !endValDmy) return;
 
-      const parseDmyToIso = (dmy) => {
-        let p = dmy.split("-");
-        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : dmy;
-      };
+  const parseDmyToIso = (dmy) => {
+    let p = dmy.split("-");
+    return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : dmy;
+  };
 
-      let startVal = parseDmyToIso(startValDmy);
-      let endVal = parseDmyToIso(endValDmy);
+  let startVal = parseDmyToIso(startValDmy);
+  let endVal = parseDmyToIso(endValDmy);
 
-      database.ref("/mppt_ringkasan_harian").once("value", (ringkasanSnapshot) => {
-        let ringkasanMap = {};
-        
-        if (ringkasanSnapshot.exists()) {
-          ringkasanSnapshot.forEach((childSnapshot) => {
-            const item = childSnapshot.val();
-            if (!item) return;
-            let tanggalLog = item.tanggal || (childSnapshot.key.startsWith("tanggal_") ? childSnapshot.key.replace("tanggal_", "") : childSnapshot.key);
-            let formattedTanggalLog = tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2 ? `${tanggalLog.split("-")[2]}-${tanggalLog.split("-")[1]}-${tanggalLog.split("-")[0]}` : tanggalLog;
-            if (formattedTanggalLog >= startVal && formattedTanggalLog <= endVal) {
-              ringkasanMap[formattedTanggalLog] = {
-                energiMatahari: Number(item.energi_matahari_watt_jam || 0),
-                energi: Number(item.energi_plts_watt_jam || 0),
-                lamaOperasi: Number(item.lama_jam_operasi || 0),
-                dayaRata: Number(item.daya_rata_rata || 0),
-                iradiansiRata: Number(item.iradiansi_rata_rata || 0),
-                dayaMaks: Number(item.daya_maksimum || 0),
-                iradiansiMaks: Number(item.iradian_maksimum || 0)
-              };
-            }
-          });
-        }
+  // Ambil variabel JUMLAH_HARI_MAKS_REKAP dari folder /mppt_control
+  database.ref("/mppt_control/JUMLAH_HARI_MAKS_REKAP").once("value", (maxDaySnap) => {
+    let maxAllowedDays = maxDaySnap.exists() ? Number(maxDaySnap.val()) : 31; // Default 31 hari jika belum diset
 
-        if (Object.keys(ringkasanMap).length === 0) {
-          database.ref("/mppt_data").once("value", (dataSnap) => {
-            let tempDays = {};
-            dataSnap.forEach((child) => {
-              let item = child.val();
-              if (!item) return;
-              let waktuRtc = item.waktu_rtc || "";
-              let itemDateIso = "";
-              if (item.stempel_waktu) {
-                let d = new Date(Number(item.stempel_waktu));
-                itemDateIso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-              } else if (waktuRtc.includes(" ")) {
-                let datePart = waktuRtc.split(" ")[0];
-                let subParts = datePart.split("-");
-                if (subParts[0].length === 4) itemDateIso = datePart;
-                else if (subParts.length === 3) itemDateIso = `${subParts[2]}-${subParts[1]}-${subParts[0]}`;
-              }
+    // Hitung selisih hari dari rentang tanggal yang dipilih
+    let d1 = new Date(startVal);
+    let d2 = new Date(endVal);
+    let diffTime = Math.abs(d2 - d1);
+    let selectedDaysCount = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-              if (itemDateIso && itemDateIso >= startVal && itemDateIso <= endVal) {
-                if (!tempDays[itemDateIso]) {
-                  tempDays[itemDateIso] = { count: 0, sumDaya: 0, sumIrr: 0, maxDaya: 0, maxIrr: 0, maxLama: 0, maxEnergiPlts: 0, maxEnergiSun: 0 };
-                }
-                let d = tempDays[itemDateIso];
-                d.count++;
-                let daya = Number(item.daya || 0);
-                let irr = Number(item.iradiansi || 0);
-                d.sumDaya += daya;
-                d.sumIrr += irr;
-                if (daya > d.maxDaya) d.maxDaya = daya;
-                if (irr > d.maxIrr) d.maxIrr = irr;
-                let lama = Number(item.lama_jam_operasi || 0);
-                if (lama > d.maxLama) d.maxLama = lama;
-                let ePlts = Number(item.energi_plts_watt_jam || 0);
-                if (ePlts > d.maxEnergiPlts) d.maxEnergiPlts = ePlts;
-                let eSun = Number(item.energi_matahari_watt_jam || 0);
-                if (eSun > d.maxEnergiSun) d.maxEnergiSun = eSun;
-              }
-            });
+    // Pengecekan jika rentang tanggal melebihi nilai maksimum variabel
+    if (selectedDaysCount > maxAllowedDays) {
+      // 1. POP-UP JENDELA NOTIFIKASI / ALERT
+      alert(`⚠️ Peringatan!\n\nRentang tanggal yang Anda pilih (${selectedDaysCount} hari) melebihi batas maksimum untuk tabel rekapitulasi & grafik.\n\nBatas maksimum yang diizinkan saat ini adalah: ${maxAllowedDays} Hari.`);
 
-            for (let iso in tempDays) {
-              let t = tempDays[iso];
-              ringkasanMap[iso] = {
-                energiMatahari: t.maxEnergiSun,
-                energi: t.maxEnergiPlts,
-                lamaOperasi: t.maxLama,
-                dayaRata: t.count > 0 ? t.sumDaya / t.count : 0,
-                iradiansiRata: t.count > 0 ? t.sumIrr / t.count : 0,
-                dayaMaks: t.maxDaya,
-                iradiansiMaks: t.maxIrr
-              };
-            }
-            processHistoryDataAndCharts(startVal, endVal, ringkasanMap);
-          });
-        } else {
-          processHistoryDataAndCharts(startVal, endVal, ringkasanMap);
-        }
-      });
+      // 2. Tampilkan pesan peringatan pada tabel rekapitulasi
+      let tbody = document.getElementById("log-status-tbody");
+      tbody.innerHTML = `<tr><td colspan="9" style="color: var(--danger-color); font-weight: bold; padding: 20px;">
+        ⚠️ Rentang tanggal yang dipilih (${selectedDaysCount} hari) melebihi batas maksimum untuk tabel rekapitulasi & grafik!<br>
+        Nilai maksimum yang diizinkan adalah: <span style="font-size: 16px; color: var(--primary-color);">${maxAllowedDays} Hari</span>.
+      </td></tr>`;
+
+      // 3. Kosongkan data pada grafik batang (Energi Harian & Daya/Iradiansi Harian)
+      chartHistoryEnergi.data.labels = [];
+      chartHistoryEnergi.data.datasets[0].data = [];
+      chartHistoryEnergi.data.datasets[1].data = [];
+      chartHistoryEnergi.update();
+
+      chartHistoryDayaIrr.data.labels = [];
+      chartHistoryDayaIrr.data.datasets[0].data = [];
+      chartHistoryDayaIrr.data.datasets[1].data = [];
+      chartHistoryDayaIrr.update();
+
+      // 4. Kosongkan grafik detail harian di bawahnya
+      clearSingleDayCharts();
+
+      // 5. Hentikan pemrosesan pencarian data selanjutnya
+      return;
     }
 
+    // Jika jumlah hari VALID, jalankan pencarian data seperti biasa
+    database.ref("/mppt_ringkasan_harian").once("value", (ringkasanSnapshot) => {
+      let ringkasanMap = {};
+      
+      if (ringkasanSnapshot.exists()) {
+        ringkasanSnapshot.forEach((childSnapshot) => {
+          const item = childSnapshot.val();
+          if (!item) return;
+          let tanggalLog = item.tanggal || (childSnapshot.key.startsWith("tanggal_") ? childSnapshot.key.replace("tanggal_", "") : childSnapshot.key);
+          let formattedTanggalLog = tanggalLog.includes("-") && tanggalLog.indexOf("-") === 2 ? `${tanggalLog.split("-")[2]}-${tanggalLog.split("-")[1]}-${tanggalLog.split("-")[0]}` : tanggalLog;
+          if (formattedTanggalLog >= startVal && formattedTanggalLog <= endVal) {
+            ringkasanMap[formattedTanggalLog] = {
+              energiMatahari: Number(item.energi_matahari_watt_jam || 0),
+              energi: Number(item.energi_plts_watt_jam || 0),
+              lamaOperasi: Number(item.lama_jam_operasi || 0),
+              dayaRata: Number(item.daya_rata_rata || 0),
+              iradiansiRata: Number(item.iradiansi_rata_rata || 0),
+              dayaMaks: Number(item.daya_maksimum || 0),
+              iradiansiMaks: Number(item.iradian_maksimum || 0)
+            };
+          }
+        });
+      }
+
+      if (Object.keys(ringkasanMap).length === 0) {
+        database.ref("/mppt_data").once("value", (dataSnap) => {
+          let tempDays = {};
+          dataSnap.forEach((child) => {
+            let item = child.val();
+            if (!item) return;
+            let waktuRtc = item.waktu_rtc || "";
+            let itemDateIso = "";
+            if (item.stempel_waktu) {
+              let d = new Date(Number(item.stempel_waktu));
+              itemDateIso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            } else if (waktuRtc.includes(" ")) {
+              let datePart = waktuRtc.split(" ")[0];
+              let subParts = datePart.split("-");
+              if (subParts[0].length === 4) itemDateIso = datePart;
+              else if (subParts.length === 3) itemDateIso = `${subParts[2]}-${subParts[1]}-${subParts[0]}`;
+            }
+
+            if (itemDateIso && itemDateIso >= startVal && itemDateIso <= endVal) {
+              if (!tempDays[itemDateIso]) {
+                tempDays[itemDateIso] = { count: 0, sumDaya: 0, sumIrr: 0, maxDaya: 0, maxIrr: 0, maxLama: 0, maxEnergiPlts: 0, maxEnergiSun: 0 };
+              }
+              let d = tempDays[itemDateIso];
+              d.count++;
+              let daya = Number(item.daya || 0);
+              let irr = Number(item.iradiansi || 0);
+              d.sumDaya += daya;
+              d.sumIrr += irr;
+              if (daya > d.maxDaya) d.maxDaya = daya;
+              if (irr > d.maxIrr) d.maxIrr = irr;
+              let lama = Number(item.lama_jam_operasi || 0);
+              if (lama > d.maxLama) d.maxLama = lama;
+              let ePlts = Number(item.energi_plts_watt_jam || 0);
+              if (ePlts > d.maxEnergiPlts) d.maxEnergiPlts = ePlts;
+              let eSun = Number(item.energi_matahari_watt_jam || 0);
+              if (eSun > d.maxEnergiSun) d.maxEnergiSun = eSun;
+            }
+          });
+
+          for (let iso in tempDays) {
+            let t = tempDays[iso];
+            ringkasanMap[iso] = {
+              energiMatahari: t.maxEnergiSun,
+              energi: t.maxEnergiPlts,
+              lamaOperasi: t.maxLama,
+              dayaRata: t.count > 0 ? t.sumDaya / t.count : 0,
+              iradiansiRata: t.count > 0 ? t.sumIrr / t.count : 0,
+              dayaMaks: t.maxDaya,
+              iradiansiMaks: t.maxIrr
+            };
+          }
+          processHistoryDataAndCharts(startVal, endVal, ringkasanMap);
+        });
+      } else {
+        processHistoryDataAndCharts(startVal, endVal, ringkasanMap);
+      }
+    });
+  });
+}
     function processHistoryDataAndCharts(startVal, endVal, ringkasanMap) {
       let calcResult = renderLogStatusTable(startVal, endVal, ringkasanMap);
       let historyList = [], curDateChart = new Date(startVal), stopDateChart = new Date(endVal);
